@@ -1,10 +1,12 @@
+package Clases;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class Conexion {
 
     public Connection establecerConexion() {
-        String url = "jdbc:mysql://localhost:3306/gestor_tutoriales?serverTimeZone=utc";
+        String url = "jdbc:mysql://localhost:3306/pqrs?serverTimeZone=utc";
         String user = "root";
         String password = "18131707";
         Connection conn = null;

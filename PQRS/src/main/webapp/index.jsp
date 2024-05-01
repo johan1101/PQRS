@@ -11,7 +11,7 @@
 <!--Formulario que se envia por POST -->
 <div class="container" id="container">
     <div class="form-container sign-up">
-        <form action="SvRegister" method="POST">
+        <form action="SvRegistrarUsuario" method="POST">
             <h1>Crear Cuenta</h1>
             <span>Ingresa tus datos</span>
             <input type="text" class="form-control" id="floatingInputValue" name="cedula" placeholder="Ingrese su cédula" value="" maxlength="10" required pattern="[0-9]+" title="Solo se permiten números">
@@ -21,10 +21,10 @@
             <input type="email" class="form-control" id="floatingInputValue" name="correo" placeholder="Ingrese su correo electrónico" value="" required>
             <input type="password" class="form-control" id="floatingPassword" name="contrasenia" placeholder="Ingrese su contraseña" required>
             <select name="rol" class="form-control">
-                <option value="Usuario">Usuario</option>
-                <option value="Administrador">Administrador</option>
+                <option value="1">Usuario</option>
+                <option value="2">Administrador</option>
             </select>
-            <button type="submit" class="btn btn-primary">Registrar Usuario</button>
+            <button type="submit" class="btn btn-primary">Registrar</button>
         </form>
     </div>
 
