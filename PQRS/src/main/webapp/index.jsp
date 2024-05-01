@@ -1,327 +1,79 @@
+<!-- Pagina principal- LOGIN -->
+
+<!-- Inclución de la plantilla de header -->
 <%@include file= "templates/header.jsp" %>
 
 <style>
-    <%@include file= "styles/style.css" %>
-   </style>
-    <!-- partial:index.partial.html -->
-    <header class="header">
-        <div class="header-content responsive-wrapper">
-            <div class="header-logo">
-                <a href="#">
-                    <div>
-                        <img src="https://assets.codepen.io/285131/untitled-ui-icon.svg" />
-                    </div>
-                    <img src="https://assets.codepen.io/285131/untitled-ui.svg" />
-                </a>
+    <!-- Inclución del STYLE -->
+    <%@include file= "styles/styleLogin.css" %>
+</style>
+
+<!--Formulario que se envia por POST -->
+<div class="container" id="container">
+    <div class="form-container sign-up">
+        <form action="SvRegister" method="POST">
+            <h1>Crear Cuenta</h1>
+            <span>Ingresa tus datos</span>
+            <input type="text" class="form-control" id="floatingInputValue" name="cedula" placeholder="Ingrese su cédula" value="" maxlength="10" required pattern="[0-9]+" title="Solo se permiten números">
+            <input type="text" class="form-control" id="floatingInputValue" name="nombre" placeholder="Ingrese su nombre" value="" required>
+            <input type="text" class="form-control" id="floatingInputValue" name="apellido" placeholder="Ingrese su apellido" value="" required>
+            <input type="text" class="form-control" id="floatingInputValue" name="celular" placeholder="Ingrese su número celular" value="" maxlength="10" required pattern="[0-9]+" title="Solo se permiten números">
+            <input type="email" class="form-control" id="floatingInputValue" name="correo" placeholder="Ingrese su correo electrónico" value="" required>
+            <input type="password" class="form-control" id="floatingPassword" name="contrasenia" placeholder="Ingrese su contraseña" required>
+            <select name="rol" class="form-control">
+                <option value="Usuario">Usuario</option>
+                <option value="Administrador">Administrador</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Registrar Usuario</button>
+        </form>
+    </div>
+
+    <!-- Contenedor adicional para los toastr -->
+    <div class="posicion"></div>
+    <div class="form-container sign-in">
+        <form action="SvLoginCheck" method="POST">
+            <h1>Ingresar</h1>
+            <span>Ingresa tus datos de acceso</span>
+            <input type="text" class="input1" name="cedula" placeholder="Cédula Usuario" maxlength="10" required pattern="[0-9]+" title="Solo se permiten números">
+            <input type="password" class="input1" name="contrasenia" placeholder="Contraseña" required>
+            <button type="submit" class="btn">Ingresar</button>
+        </form>
+    </div>
+    <!-- Contenedor derecho -->
+
+    <div class="toggle-container">
+        <div class="toggle">
+            <div class="toggle-panel toggle-left">
+                <img src="img/vector.png" width="100%">
+                <button class="hidden" id="login">Regresar</button>
             </div>
-            <div class="header-navigation">
-                <nav class="header-navigation-links">
-                    <a href="#"> Home </a>
-                    <a href="#"> Dashboard </a>
-                    <a href="#"> Projects </a>
-                    <a href="#"> Tasks </a>
-                    <a href="#"> Reporting </a>
-                    <a href="#"> Users </a>
-                </nav>
-                <div class="header-navigation-actions">
-                    <a href="#" class="button">
-                        <i class="ph-lightning-bold"></i>
-                        <span>Upgrade now</span>
-                    </a>
-                    <a href="#" class="icon-button">
-                        <i class="ph-gear-bold"></i>
-                    </a>
-                    <a href="#" class="icon-button">
-                        <i class="ph-bell-bold"></i>
-                    </a>
-                    <a href="#" class="avatar">
-                        <img src="https://uifaces.co/our-content/donated/gPZwCbdS.jpg" alt="" />
-                    </a>
-                </div>
-            </div>
-            <a href="#" class="button">
-                <i class="ph-list-bold"></i>
-                <span>Menu</span>
-            </a>
-        </div>
-    </header>
-    <main class="main">
-        <div class="responsive-wrapper">
-            <div class="main-header">
-                <h1>Settings</h1>
-                <div class="search">
-                    <input type="text" placeholder="Search" />
-                    <button type="submit">
-                        <i class="ph-magnifying-glass-bold"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="horizontal-tabs">
-                <a href="#">My details</a>
-                <a href="#">Profile</a>
-                <a href="#">Password</a>
-                <a href="#">Team</a>
-                <a href="#">Plan</a>
-                <a href="#">Billing</a>
-                <a href="#">Email</a>
-                <a href="#">Notifications</a>
-                <a href="#" class="active">Integrations</a>
-                <a href="#">API</a>
-            </div>
-            <div class="content-header">
-                <div class="content-header-intro">
-                    <h2>Intergrations and connected apps</h2>
-                    <p>Supercharge your workflow and connect the tool you use every day.</p>
-                </div>
-                <div class="content-header-actions">
-                    <a href="#" class="button">
-                        <i class="ph-faders-bold"></i>
-                        <span>Filters</span>
-                    </a>
-                    <a href="#" class="button">
-                        <i class="ph-plus-bold"></i>
-                        <span>Request integration</span>
-                    </a>
-                </div>
-            </div>
-            <div class="content">
-                <div class="content-panel">
-                    <div class="vertical-tabs">
-                        <a href="#" class="active">View all</a>
-                        <a href="#">Developer tools</a>
-                        <a href="#">Communication</a>
-                        <a href="#">Productivity</a>
-                        <a href="#">Browser tools</a>
-                        <a href="#">Marketplace</a>
-                    </div>
-                </div>
-                <div class="content-main">
-                    <div class="card-grid">
-                        <article class="card">
-                            <div class="card-header">
-                                <div>
-                                    <span><img src="https://assets.codepen.io/285131/zeplin.svg" /></span>
-                                    <h3>Zeplin</h3>
-                                </div>
-                                <label class="toggle">
-                                    <input type="checkbox" checked>
-                                    <span></span>
-                                </label>
-                            </div>
-                            <div class="card-body">
-                                <p>Collaboration between designers and developers.</p>
-                            </div>
-                            <div class="card-footer">
-                                <a href="#">View integration</a>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-header">
-                                <div>
-                                    <span><img src="https://assets.codepen.io/285131/github.svg" /></span>
-                                    <h3>GitHub</h3>
-                                </div>
-                                <label class="toggle">
-                                    <input type="checkbox" checked>
-                                    <span></span>
-                                </label>
-                            </div>
-                            <div class="card-body">
-                                <p>Link pull requests and automate workflows.</p>
-                            </div>
-                            <div class="card-footer">
-                                <a href="#">View integration</a>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-header">
-                                <div>
-                                    <span><img src="https://assets.codepen.io/285131/figma.svg" /></span>
-                                    <h3>Figma</h3>
-                                </div>
-                                <label class="toggle">
-                                    <input type="checkbox" checked>
-                                    <span></span>
-                                </label>
-                            </div>
-                            <div class="card-body">
-                                <p>Embed file previews in projects.</p>
-                            </div>
-                            <div class="card-footer">
-                                <a href="#">View integration</a>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-header">
-                                <div>
-                                    <span><img src="https://assets.codepen.io/285131/zapier.svg" /></span>
-                                    <h3>Zapier</h3>
-                                </div>
-                                <label class="toggle">
-                                    <input type="checkbox">
-                                    <span></span>
-                                </label>
-                            </div>
-                            <div class="card-body">
-                                <p>Build custom automations and integrations with apps.</p>
-                            </div>
-                            <div class="card-footer">
-                                <a href="#">View integration</a>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-header">
-                                <div>
-                                    <span><img src="https://assets.codepen.io/285131/notion.svg" /></span>
-                                    <h3>Notion</h3>
-                                </div>
-                                <label class="toggle">
-                                    <input type="checkbox" checked>
-                                    <span></span>
-                                </label>
-                            </div>
-                            <div class="card-body">
-                                <p>Embed notion pages and notes in projects.</p>
-                            </div>
-                            <div class="card-footer">
-                                <a href="#">View integration</a>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-header">
-                                <div>
-                                    <span><img src="https://assets.codepen.io/285131/slack.svg" /></span>
-                                    <h3>Slack</h3>
-                                </div>
-                                <label class="toggle">
-                                    <input type="checkbox" checked>
-                                    <span></span>
-                                </label>
-                            </div>
-                            <div class="card-body">
-                                <p>Send notifications to channels and create projects.</p>
-                            </div>
-                            <div class="card-footer">
-                                <a href="#">View integration</a>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-header">
-                                <div>
-                                    <span><img src="https://assets.codepen.io/285131/zendesk.svg" /></span>
-                                    <h3>Zendesk</h3>
-                                </div>
-                                <label class="toggle">
-                                    <input type="checkbox" checked>
-                                    <span></span>
-                                </label>
-                            </div>
-                            <div class="card-body">
-                                <p>Link and automate Zendesk tickets.</p>
-                            </div>
-                            <div class="card-footer">
-                                <a href="#">View integration</a>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-header">
-                                <div>
-                                    <span><img src="https://assets.codepen.io/285131/jira.svg" /></span>
-                                    <h3>Atlassian JIRA</h3>
-                                </div>
-                                <label class="toggle">
-                                    <input type="checkbox">
-                                    <span></span>
-                                </label>
-                            </div>
-                            <div class="card-body">
-                                <p>Plan, track, and release great software.</p>
-                            </div>
-                            <div class="card-footer">
-                                <a href="#">View integration</a>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-header">
-                                <div>
-                                    <span><img src="https://assets.codepen.io/285131/dropbox.svg" /></span>
-                                    <h3>Dropbox</h3>
-                                </div>
-                                <label class="toggle">
-                                    <input type="checkbox" checked>
-                                    <span></span>
-                                </label>
-                            </div>
-                            <div class="card-body">
-                                <p>Everything you need for work, all in one place.</p>
-                            </div>
-                            <div class="card-footer">
-                                <a href="#">View integration</a>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-header">
-                                <div>
-                                    <span><img src="https://assets.codepen.io/285131/google-chrome.svg" /></span>
-                                    <h3>Google Chrome</h3>
-                                </div>
-                                <label class="toggle">
-                                    <input type="checkbox" checked>
-                                    <span></span>
-                                </label>
-                            </div>
-                            <div class="card-body">
-                                <p>Link your Google account to share bookmarks across your entire team.</p>
-                            </div>
-                            <div class="card-footer">
-                                <a href="#">View integration</a>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-header">
-                                <div>
-                                    <span><img src="https://assets.codepen.io/285131/discord.svg" /></span>
-                                    <h3>Discord</h3>
-                                </div>
-                                <label class="toggle">
-                                    <input type="checkbox" checked>
-                                    <span></span>
-                                </label>
-                            </div>
-                            <div class="card-body">
-                                <p>Keep in touch with your customers without leaving the app.</p>
-                            </div>
-                            <div class="card-footer">
-                                <a href="#">View integration</a>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-header">
-                                <div>
-                                    <span><img src="https://assets.codepen.io/285131/google-drive.svg" /></span>
-                                    <h3>Google Drive</h3>
-                                </div>
-                                <label class="toggle">
-                                    <input type="checkbox">
-                                    <span></span>
-                                </label>
-                            </div>
-                            <div class="card-body">
-                                <p>Link your Google account to share files across your entire team.</p>
-                            </div>
-                            <div class="card-footer">
-                                <a href="#">View integration</a>
-                            </div>
-                        </article>
-                    </div>
-                </div>
+            <div class="toggle-panel toggle-right">
+                <h1 id="nalmi">PQRSolution</h1>
+                <img id="im" src="img/vector2.png" width="80%">
+                <p id="cuenta">No tiene una cuenta?</p>
+                <!-- Boton que muestra opcion registrar -->
+                <button class="hidden" id="register">Regístrese aqui</button>
             </div>
         </div>
-    </main>
-    <!-- partial -->
+    </div>
+</div>
 
-    <script>
-        <%@include file= "scripts/script.js" %>
-    </script>
+<script>
+    // Manejo boton REGISTRAR y REGRESAR 
+    const container = document.getElementById('container');
+    const registerBtn = document.getElementById('register');
+    const loginBtn = document.getElementById('login');
 
-    <%@include file= "templates/footer.jsp" %>
+    registerBtn.addEventListener('click', () => {
+        container.classList.add("active");
+    });
+
+    loginBtn.addEventListener('click', () => {
+        container.classList.remove("active");
+    });
+
+</script>
+
+
+<!-- Inclución de la plantilla de footer -->
+<%@include file= "templates/footer.jsp" %>
