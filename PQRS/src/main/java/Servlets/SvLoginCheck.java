@@ -12,6 +12,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -42,9 +43,10 @@ public class SvLoginCheck extends HttpServlet {
         // Obtener los parámetros del formulario
         String cedula = request.getParameter("cedula");
         String contrasenia = request.getParameter("contrasenia");
+         HttpSession session = request.getSession();
         
         try {
-            metodo.validarIngreso(cedula, contrasenia, connection, response);
+            metodo.validarIngreso(cedula, contrasenia, connection, response, session);
         } catch (SQLException ex) {
             Logger.getLogger(SvLoginCheck.class.getName()).log(Level.SEVERE, null, ex);
         }
