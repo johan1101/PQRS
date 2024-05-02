@@ -1,12 +1,21 @@
 package Clases;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 
 /**
  *
@@ -63,4 +72,84 @@ public class Metodos {
         }
     }
 
+    public static String agregarPdf(Part filePart, ServletContext context, Connection connection) throws IOException, SQLException {
+        // Procesa el archivo aquí, por ejemplo, guarda el PDF en el servidor
+        // Directorio de carga en el servidor donde se guardarán los PDFs
+
+        String pdfText = null;
+        String uploadPath = context.getRealPath("/pdfs");
+
+        // Obtener el nombre del archivo PDF enviado
+        String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+
+        // Construir la ruta completa del archivo PDF en el servidor
+        String filePath = uploadPath + File.separator + fileName;
+
+        //Abrir un flujo de entrada para el archivo PDF recibido
+        try (InputStream fileContent = filePart.getInputStream(); FileOutputStream outputStream = new FileOutputStream(filePath)) {
+
+            int read;
+            byte[] buffer = new byte[1024];
+
+            //Leer el archivo PDF y escribirlo en el servidor
+            while ((read = fileContent.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, read);
+            }
+        }
+
+        // Leer el contenido del PDF y guardarlo en una descripción
+        try (PDDocument document = PDDocument.load(new File(filePath))) {
+            PDFTextStripper stripper = new PDFTextStripper();
+            pdfText = stripper.getText(document);
+            // Aquí puedes guardar pdfText en la base de datos o hacer cualquier otra operación con él
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        agregarPdfBD(connection, fileName);
+        return pdfText;
+    }
+
+    public static void agregarPdfBD(Connection connection, String fileName) throws SQLException, IOException {
+        // Llamar al procedimiento almacenado para agregar el nombre del PDF a la base de datos
+        try (PreparedStatement statement = connection.prepareStatement("CALL AgregarPDF(?)")) {
+            statement.setString(1, fileName);
+            statement.executeUpdate();
+        }
+    }
+
+    public static void agregarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario, Connection connection) throws SQLException {
+        
+        // Llamar al procedimiento almacenado
+        CallableStatement statement = connection.prepareCall("{CALL AgregarSolicitud(?, ?, ?, ?, ?, ?)}");
+        statement.setString(1, nombreSolicitud);
+        statement.setString(2, tipoSolicitud);
+        statement.setString(3, estado);
+        statement.setString(4, descripcion);
+        if (idPdf == 0) {
+            statement.setNull(5, java.sql.Types.INTEGER); // Establecer el parámetro como NULL
+        } else {
+            statement.setInt(5, idPdf); // Establecer el ID del PDF si es diferente de 0
+        }
+        statement.setInt(6, idUsuario);
+        statement.execute();
+    }
+
+    // Método para buscar el ID de un PDF por su nombre
+    public static int buscarIDPDF(Connection connection, String nombrePDF) throws SQLException {
+        int idPDF = -1; // Valor predeterminado si el PDF no se encuentra
+
+        String sql = "SELECT idPdf FROM pdfs WHERE nombre = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, nombrePDF);
+            ResultSet resultSet = statement.executeQuery();
+
+            // Si se encuentra un resultado, obtener el ID del PDF
+            if (resultSet.next()) {
+                idPDF = resultSet.getInt("idPdf");
+            }
+        }
+
+        return idPDF;
+    }
 }

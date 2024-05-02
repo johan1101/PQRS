@@ -41,16 +41,12 @@
             <a href="#">API</a>
         </div>
         <div class="content-header">
-            <div class="content-header-intro">
-                <h2>Intergrations and connected apps</h2>
-                <p>Supercharge your workflow and connect the tool you use every day.</p>
-            </div>
             <div class="content-header-actions">
                 <a href="#" class="button">
                     <i class="ph-faders-bold"></i>
                     <span>Filters</span>
                 </a>
-                <a href="#" class="button">
+                <a href="#" class="button" data-bs-toggle="modal" data-bs-target="#agregarSolicitud">
                     <i class="ph-plus-bold"></i>
                     <span>Agregar solicitud</span>
                 </a>
@@ -108,6 +104,167 @@
         </div>
     </div>
 </main>
+
+<!-- Modal para agregar un tutorial -->
+<form action="SvAgregarSolicitud" method="POST" onsubmit="return validarFormulario()" enctype="multipart/form-data">
+    <div class="modal fade" id="agregarSolicitud" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalAgregarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered custom-modal-size">
+            <div class="modal-content">
+                <div class="popup">
+                    <div class="close-btn btn-close" data-bs-dismiss="modal">&times;</div>
+                    <div class="form">
+                        <h2>Agregar solicitud</h2>
+                        <hr>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-element">
+                                    <label for="nombre">Nombre</label>
+                                    <input type="text" id="nombre" name="nombre" placeholder="Ingresa el nombre de la solicitud" maxlength="50" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="No se permiten números">
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-element">
+                                    <label for="tipoSolicitud">Tipo de solicitud</label>
+                                    <select class="form-control" id="tipo" name="tipo" required>
+                                        <option value="" disabled selected>Seleccione el tipo de solicitud</option>
+                                        <option value="Peticion">Peticion</option>
+                                        <option value="Queja">Queja</option>
+                                        <option value="Reclamo">Reclamo</option>
+                                        <option value="Sugerencia">Sugerencia</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-element">
+                                    <label for="descripcion">Descripción</label>
+                                    <textarea id="descripcion" name="descripcion" rows="4" cols="50" placeholder="Ingresa la descripción de la solicitud"></textarea>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-element">
+                                    <label for="pdf">Subir archivo</label>
+                                    <input type="file" id="pdf" name="pdf" accept="application/pdf">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-element">
+                                    <button type="submit">Agregar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Agrega este script al final de tu archivo HTML -->
+<script>
+    // Función para validar el formulario antes de enviarlo
+    function validarFormulario() {
+        // Obtener los valores de la descripción y del archivo PDF
+        var descripcion = document.getElementById("descripcion").value;
+        var pdf = document.getElementById("pdf").value;
+
+        // Verificar si tanto la descripción como el archivo PDF están vacíos
+        if (descripcion.trim() === "" && pdf.trim() === "") {
+            // Mostrar un mensaje de error
+            
+            llenarInformacion();
+            // Detener el envío del formulario
+            return false;
+        }
+
+        // Si se ha ingresado información en la descripción y se ha seleccionado un archivo PDF
+        if (descripcion.trim() !== "" && pdf.trim() !== "") {
+            // Mostrar un mensaje de error
+            muchaInformacion();
+            // Detener el envío del formulario
+            return false;
+        }
+
+        // Si se ha ingresado información en la descripción o se ha seleccionado un archivo PDF
+        // Continuar con el envío del formulario
+        return true;
+    }
+    
+            function llenarInformacn() {
+            // Configurar opciones Toastr
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-top-center",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+            // Mostrar una notificación Toastr de éxito
+            toastr.success('Se ha editado exitosamente!', 'Editado');
+        }
+        
+               function llenarInformacion() {
+            // Configurar opciones Toastr
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-top-center",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+            // Mostrar una notificación Toastr de error
+            toastr.error('Debes llenar al menos uno de los campos: Descripción o Subir archivo', '!Ups¡');
+        }
+        
+              function muchaInformacion() {
+            // Configurar opciones Toastr
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-top-center",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+            // Mostrar una notificación Toastr de error
+            toastr.error('Solo puedes llenar uno de los campos: Descripción o Subir archivo', '!Ups¡');
+        }
+</script>
 
 
 <script>
