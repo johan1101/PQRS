@@ -2,6 +2,7 @@ Servlets\SvRegistrarUsuario.class
 Servlets\SvLoginCheck.class
 Clases\Metodos.class
 Clases\Solicitudes.class
+Servlets\SvBuscarResponder.class
 com\mundo\pqrs\resources\JavaEE8Resource.class
 Clases\Conexion.class
 Servlets\SvAgregarSolicitud.class

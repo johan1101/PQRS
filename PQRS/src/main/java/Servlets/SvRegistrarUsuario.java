@@ -60,8 +60,9 @@ public class SvRegistrarUsuario extends HttpServlet {
         } catch (SQLException ex) {
             Logger.getLogger(SvRegistrarUsuario.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        response.sendRedirect("index.jsp");
+        String redirigir="index";
+        if(request.getParameter("redireccion")!=null){redirigir="agregar";}
+        response.sendRedirect(redirigir+".jsp");
     }
 
     @Override

@@ -33,7 +33,7 @@
 
                 </nav>
                 <div class="header-navigation-actions">
-                    <a href="#" class="button">
+                    <a href="index.jsp" class="button">
                         <i class="ph-lightning-bold"></i>
                         <span>Cerrar Sesion</span>
                     </a>
@@ -58,14 +58,25 @@
         <div class="responsive-wrapper">
            <div class="main-header">
             <h1>Area de solicitudes</h1>
+            <div class="search">
+                <form action="SvBuscarResponder" method="GET">
+                <input type="text" name="buscar" placeholder="Buscar" />
+                <button type="submit">
+                    <i class="ph-magnifying-glass-bold"></i>
+                </button>
+                </form>
+            </div>
+        </div>
+            
             <%
             String res=request.getParameter("res");
+            String busqueda=request.getParameter("busqueda");
             %>
             <div class="horizontal-tabs">         
             <a href="solicitudes.jsp?res=no"<%if(res!=null && res.equals("no") ){%> class="active" <%}%>>Todas las Solicitudes</a>
             <a href="solicitudes.jsp?res=Por responder" <%if(res!=null && res.equals("Por responder") ){%> class="active" <%}%>>Sin Respuesta</a>
         </div>
-        </div>
+       
             
             <div class="content">
                 <div class="content-panel">
@@ -80,112 +91,43 @@
                 <div class="content-main">
                     
                      <% 
-                      
-                    for (Solicitudes sol: a) {
-                       if(sol.getEstado().equals(res)){
-                        if(request.getParameter("par")==null){
-                %>
-                 
-                <article class="card">
-                            <div class="card-header">
-                                <div>                                
-                                    <h3>Solicitud #<%= sol.getIdSolicitud() %></h3>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <h4>Nombre:  <%= sol.getNombreSol() %></h4>
-                                <h4>Tipo Solicitud:  <%= sol.getTipoSolicitud() %></h4>
-                                <h4>Fecha Registro:  <%= sol.getFechaRegistro() %></h4>
-                                <h4>Estado:  <%= sol.getEstado() %></h4>
-                                <h4>Descripcion:  <%= sol.getDescripcion() %></h4>
-                                <h4>Pdf: <%= sol.getPdf() %></h4>
-                                <h4>Usuario:  <%= sol.getUsuario() %></h4>
-                                
-                            </div>
-                            <div class="card-footer">
-                                <a href="#">Responder Solicitud</a>
-                            </div>
-                        </article>
-<% 
-        }else{
-            if(request.getParameter("par").equals(sol.getTipoSolicitud())){
-%>
-            <article class="card">
-                            <div class="card-header">
-                                <div>                                
-                                    <h3>Solicitud #<%= sol.getIdSolicitud() %></h3>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <h4>Nombre:  <%= sol.getNombreSol() %></h4>
-                                <h4>Tipo Solicitud:  <%= sol.getTipoSolicitud() %></h4>
-                                <h4>Fecha Registro:  <%= sol.getFechaRegistro() %></h4>
-                                <h4>Estado:  <%= sol.getEstado() %></h4>
-                                <h4>Descripcion:  <%= sol.getDescripcion() %></h4>
-                                <h4>Pdf: <%= sol.getPdf() %></h4>
-                                <h4>Usuario:  <%= sol.getUsuario() %></h4>
-                                
-                            </div>
-                            <div class="card-footer">
-                                <a href="#">Responder Solicitud</a>
-                            </div>
-                        </article>
-<%
-            }
-        } 
-    } else{
-        if( request.getParameter("par")==null){
+  
+                         for (Solicitudes sol : a) {
 
-%>
-    <article class="card">
-                            <div class="card-header">
-                                <div>                                
-                                    <h3>Solicitud #<%= sol.getIdSolicitud() %></h3>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <h4>Nombre:  <%= sol.getNombreSol() %></h4>
-                                <h4>Tipo Solicitud:  <%= sol.getTipoSolicitud() %></h4>
-                                <h4>Fecha Registro:  <%= sol.getFechaRegistro() %></h4>
-                                <h4>Estado:  <%= sol.getEstado() %></h4>
-                                <h4>Descripcion:  <%= sol.getDescripcion() %></h4>
-                                <h4>Pdf: <%= sol.getPdf() %></h4>
-                                <h4>Usuario:  <%= sol.getUsuario() %></h4>
-                                
-                            </div>
-                            <div class="card-footer">
-                                <a href="#">Responder Solicitud</a>
-                            </div>
-                        </article>
+                             if (busqueda == null) {
+                                 if (sol.getEstado().equals(res)) {
+                                        
+                         
+                                     if (request.getParameter("par") == null) {
+                                         %>
+                                             <%=Metodos.listarAdministradores(sol)%>
+                                         <%
 
-<% 
-    } else if( request.getParameter("par").equals(sol.getTipoSolicitud())){%>
+                                     } else {
+                                         if (request.getParameter("par").equals(sol.getTipoSolicitud())) {%>
+                                             <%=Metodos.listarAdministradores(sol)%>
+                                         <%}
+                                     }
+                                 } else {
+                                     if (request.getParameter("par") == null) {
 
-          <article class="card">
-                            <div class="card-header">
-                                <div>                                
-                                    <h3>Solicitud #<%= sol.getIdSolicitud() %></h3>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <h4>Nombre:  <%= sol.getNombreSol() %></h4>
-                                <h4>Tipo Solicitud:  <%= sol.getTipoSolicitud() %></h4>
-                                <h4>Fecha Registro:  <%= sol.getFechaRegistro() %></h4>
-                                <h4>Estado:  <%= sol.getEstado() %></h4>
-                                <h4>Descripcion:  <%= sol.getDescripcion() %></h4>
-                                <h4>Pdf: <%= sol.getPdf() %></h4>
-                                <h4>Usuario:  <%= sol.getUsuario() %></h4>
-                                
-                            </div>
-                            <div class="card-footer">
-                                <a href="#">Responder Solicitud</a>
-                            </div>
-                        </article>
-          
-   <%
-       }
-    }
-}
+                                        %>
+                                             <%=Metodos.listarAdministradores(sol)%>
+                                         <%
+                                     } else if (request.getParameter("par").equals(sol.getTipoSolicitud())) {
+                                         %>
+                                             <%=Metodos.listarAdministradores(sol)%>
+                                         <%
+                                     }
+                                 }
+                             } else if (busqueda.contains(sol.getNombreSol()) || busqueda.contains(sol.getDescripcion()) || busqueda.contains(sol.getUsuario())) {
+                                 %>
+                                             <%=Metodos.listarAdministradores(sol)%>
+                                         <%
+
+                             }
+                         }
+
 
 %>
                         

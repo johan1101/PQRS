@@ -199,13 +199,27 @@ public class Metodos {
         return array;
     }
      
-    public static ArrayList<Solicitudes> listarAdministradores(String par) throws ClassNotFoundException {
-        ArrayList<Solicitudes> array= getSolicitudes();  
-        //Caso hay parametro de busqueda
-        if(par!=null){
-          
-        } 
-
-        return array;
+    public static String listarAdministradores(Solicitudes sol) {
+        String HTML = "<article class=\"card\">\n" +
+                      "    <div class=\"card-header\">\n" +
+                      "        <div>                                \n" +
+                      "            <h3>Solicitud #" + sol.getIdSolicitud() + "</h3>\n" +
+                      "        </div>\n" +
+                      "    </div>\n" +
+                      "    <div class=\"card-body\">\n" +
+                      "        <h4>Nombre: " + sol.getNombreSol() + "</h4>\n" +
+                      "        <h4>Tipo Solicitud: " + sol.getTipoSolicitud() + "</h4>\n" +
+                      "        <h4>Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n" +
+                      "        <h4>Estado: " + sol.getEstado() + "</h4>\n" +
+                      "        <h4>Descripcion: " + sol.getDescripcion() + "</h4>\n" +
+                      "        <h4>Pdf: " + sol.getPdf() + "</h4>\n" +
+                      "        <h4>Usuario: " + sol.getUsuario() + "</h4>\n" +
+                      "    </div>\n" +
+                      "    <div class=\"card-footer\">\n" +
+                      "        <a href=\"#\">Responder Solicitud</a>\n" +
+                      "    </div>\n" +
+                      "</article>";
+        return HTML;
     }
+
 }

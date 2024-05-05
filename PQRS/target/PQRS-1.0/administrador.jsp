@@ -17,13 +17,13 @@
                 <div class="header-navigation">
                     <nav class="header-navigation-links">
                         <a href="administrador.jsp" > Home </a>
-                        <a href="solicitudes.jsp"> Solicitudes </a>
+                        <a href="solicitudes.jsp?res=no"> Solicitudes </a>
                         <a href="agregar.jsp"> Agregar </a>
                     </nav>
                     <div class="header-navigation-actions">
-                        <a href="#" class="button">
+                        <a href="index.jsp" class="button">
                             <i class="ph-lightning-bold"></i>
-                            <span>Upgrade now</span>
+                            <span>Cerrar Sesion</span>
                         </a>
                         <a href="#" class="icon-button">
                             <i class="ph-gear-bold"></i>
