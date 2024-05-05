@@ -9,6 +9,7 @@
 <%
    
     ArrayList<Solicitudes> a=Metodos.getSolicitudes();
+    
 %>
 <style>
     <%@include file= "styles/style.css" %>
@@ -27,14 +28,14 @@
             <div class="header-navigation">
                 <nav class="header-navigation-links">
                     <a href="administrador.jsp" > Home </a>
-                    <a href="solicitudes.jsp"> Solicitudes </a>
+                    <a href="solicitudes.jsp?res=no"> Solicitudes </a>
                     <a href="agregar.jsp"> Agregar </a>
 
                 </nav>
                 <div class="header-navigation-actions">
                     <a href="#" class="button">
                         <i class="ph-lightning-bold"></i>
-                        <span>Upgrade now</span>
+                        <span>Cerrar Sesion</span>
                     </a>
                     <a href="#" class="icon-button">
                         <i class="ph-gear-bold"></i>
@@ -55,24 +56,33 @@
     </header>
     <main class="main">
         <div class="responsive-wrapper">
-            <div class="main-header">
-                <h1>Settings</h1>                
-            </div>
+           <div class="main-header">
+            <h1>Area de solicitudes</h1>
+            <%
+            String res=request.getParameter("res");
+            %>
+            <div class="horizontal-tabs">         
+            <a href="solicitudes.jsp?res=no"<%if(res!=null && res.equals("no") ){%> class="active" <%}%>>Todas las Solicitudes</a>
+            <a href="solicitudes.jsp?res=Por responder" <%if(res!=null && res.equals("Por responder") ){%> class="active" <%}%>>Sin Respuesta</a>
+        </div>
+        </div>
+            
             <div class="content">
                 <div class="content-panel">
                     <div class="vertical-tabs">
-                        <a href="solicitudes.jsp" <%if(request.getParameter("par")==null ){%> class="active" <%}%>>Todas</a>
-                        <a href="solicitudes.jsp?par=Peticion" <%if(request.getParameter("par")!=null && request.getParameter("par").equals("Peticion")){%> class="active" <%}%>>Peticiones</a>
-                        <a href="solicitudes.jsp?par=Queja" <%if(request.getParameter("par")!=null && request.getParameter("par").equals("Queja")){%> class="active" <%}%>>Quejas</a>
-                        <a href="solicitudes.jsp?par=Reclamo" <%if(request.getParameter("par")!=null && request.getParameter("par").equals("Reclamo")){%> class="active" <%}%>>Reclamos</a>
-                        <a href="solicitudes.jsp?par=Sugerencia" <%if(request.getParameter("par")!=null && request.getParameter("par").equals("Sugerencia")){%> class="active" <%}%>>Sugerencias </a>
+                        <a href="solicitudes.jsp?res=<%=res%>" <%if(request.getParameter("par")==null ){%> class="active" <%}%>>Todas</a>
+                        <a href="solicitudes.jsp?par=Peticion&res=<%=res%>" <%if(request.getParameter("par")!=null && request.getParameter("par").equals("Peticion")){%> class="active" <%}%>>Peticiones</a>
+                        <a href="solicitudes.jsp?par=Queja&res=<%=res%>" <%if(request.getParameter("par")!=null && request.getParameter("par").equals("Queja")){%> class="active" <%}%>>Quejas</a>
+                        <a href="solicitudes.jsp?par=Reclamo&res=<%=res%>" <%if(request.getParameter("par")!=null && request.getParameter("par").equals("Reclamo")){%> class="active" <%}%>>Reclamos</a>
+                        <a href="solicitudes.jsp?par=Sugerencia&res=<%=res%>" <%if(request.getParameter("par")!=null && request.getParameter("par").equals("Sugerencia")){%> class="active" <%}%>>Sugerencias </a>
                     </div>
                 </div>
                 <div class="content-main">
+                    
                      <% 
                       
                     for (Solicitudes sol: a) {
-                       if(sol.getEstado().equals("Por responder")){
+                       if(sol.getEstado().equals(res)){
                         if(request.getParameter("par")==null){
                 %>
                  
@@ -123,8 +133,60 @@
 <%
             }
         } 
+    } else{
+        if( request.getParameter("par")==null){
+
+%>
+    <article class="card">
+                            <div class="card-header">
+                                <div>                                
+                                    <h3>Solicitud #<%= sol.getIdSolicitud() %></h3>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h4>Nombre:  <%= sol.getNombreSol() %></h4>
+                                <h4>Tipo Solicitud:  <%= sol.getTipoSolicitud() %></h4>
+                                <h4>Fecha Registro:  <%= sol.getFechaRegistro() %></h4>
+                                <h4>Estado:  <%= sol.getEstado() %></h4>
+                                <h4>Descripcion:  <%= sol.getDescripcion() %></h4>
+                                <h4>Pdf: <%= sol.getPdf() %></h4>
+                                <h4>Usuario:  <%= sol.getUsuario() %></h4>
+                                
+                            </div>
+                            <div class="card-footer">
+                                <a href="#">Responder Solicitud</a>
+                            </div>
+                        </article>
+
+<% 
+    } else if( request.getParameter("par").equals(sol.getTipoSolicitud())){%>
+
+          <article class="card">
+                            <div class="card-header">
+                                <div>                                
+                                    <h3>Solicitud #<%= sol.getIdSolicitud() %></h3>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h4>Nombre:  <%= sol.getNombreSol() %></h4>
+                                <h4>Tipo Solicitud:  <%= sol.getTipoSolicitud() %></h4>
+                                <h4>Fecha Registro:  <%= sol.getFechaRegistro() %></h4>
+                                <h4>Estado:  <%= sol.getEstado() %></h4>
+                                <h4>Descripcion:  <%= sol.getDescripcion() %></h4>
+                                <h4>Pdf: <%= sol.getPdf() %></h4>
+                                <h4>Usuario:  <%= sol.getUsuario() %></h4>
+                                
+                            </div>
+                            <div class="card-footer">
+                                <a href="#">Responder Solicitud</a>
+                            </div>
+                        </article>
+          
+   <%
+       }
     }
 }
+
 %>
                         
 
