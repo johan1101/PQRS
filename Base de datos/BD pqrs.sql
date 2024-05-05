@@ -69,7 +69,10 @@ BEGIN
 END //
 
 DELIMITER ;
-
+ INSERT INTO usuarios(nombre, apellido, cedula, contrasena, celular, correo, idRol)
+ VALUES('Maria', 'Casanova', '2222', '2222', '2222', 'Casanova', '2');
+INSERT INTO usuarios(nombre, apellido, cedula, contrasena, celular, correo, idRol)
+ VALUES('Maria', 'Casanova', '3333', '3333', '2222', 'Casanova', '1');
 DELIMITER //
 
 CREATE PROCEDURE AgregarPDF(
@@ -99,3 +102,5 @@ BEGIN
 END //
 
 DELIMITER ;
+
+SELECT * FROM solicitudes left join pdfs on pdfs.idPdf=solicitudes.idPdf

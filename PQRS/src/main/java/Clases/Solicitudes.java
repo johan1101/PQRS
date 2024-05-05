@@ -8,20 +8,30 @@ package Clases;
 public class Solicitudes {
 
     private int idSolicitud;
+    private String nombreSol;
     private String tipoSolicitud;
     private String fechaRegistro;
     private String estado;
     private String descripcion;
     private String pdf;
+    private String usuario;
 
-    public Solicitudes(int idSolicitud, String tipoSolicitud, String fechaRegistro, String estado, String descripcion, String pdf) {
+
+    public Solicitudes() {
+    }
+
+    public Solicitudes(int idSolicitud, String nombreSol, String tipoSolicitud, String fechaRegistro, String estado, String descripcion, String pdf, String usuario) {
         this.idSolicitud = idSolicitud;
+        this.nombreSol = nombreSol;
         this.tipoSolicitud = tipoSolicitud;
         this.fechaRegistro = fechaRegistro;
         this.estado = estado;
         this.descripcion = descripcion;
         this.pdf = pdf;
+        this.usuario = usuario;
     }
+    
+
 
     public int getIdSolicitud() {
         return idSolicitud;
@@ -71,4 +81,20 @@ public class Solicitudes {
         this.pdf = pdf;
     }
 
+    public String getNombreSol() {
+        return nombreSol;
+    }
+
+    public void setNombreSol(String nombreSol) {
+        this.nombreSol = nombreSol;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
+    
 }

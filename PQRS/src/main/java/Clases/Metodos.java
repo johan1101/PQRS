@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -151,5 +153,59 @@ public class Metodos {
         }
 
         return idPDF;
+    }
+    
+
+     public static ArrayList<Solicitudes> getSolicitudes( ) throws ClassNotFoundException {
+        ArrayList<Solicitudes> array= new ArrayList();
+         Conexion conexion = new Conexion();
+          Connection connection = conexion.establecerConexion();
+        try {
+
+            // Consulta SQL para obtener datos de la tabla tutorial
+            String sqlTutorial = "SELECT * FROM solicitudes left join pdfs on pdfs.idPdf=solicitudes.idPdf left join usuarios  on usuarios.idUsuario=solicitudes.idUsuario";
+
+
+            // Crear una declaración para la consulta de tutoriales
+            Statement statement = connection.createStatement();
+            ResultSet resultSetSolicitud = statement.executeQuery(sqlTutorial);
+            
+            // Iterar sobre los resultados de tutoriales y almacenarlos en el array
+            while (resultSetSolicitud.next()) {
+                Solicitudes sol= new Solicitudes ();
+                sol.setIdSolicitud(resultSetSolicitud.getInt("idSolicitud"));
+                sol.setNombreSol (resultSetSolicitud.getString("nombreSolicitud"));
+                sol.setTipoSolicitud(resultSetSolicitud.getString("tipoSolicitud"));
+                
+                sol.setFechaRegistro(resultSetSolicitud.getString("fechaRegistro"));
+                sol.setEstado(resultSetSolicitud.getString("estado"));
+                sol.setDescripcion(resultSetSolicitud.getString("descripcion"));
+                sol.setPdf(resultSetSolicitud.getString("nombre"));
+                sol.setUsuario(resultSetSolicitud.getString("cedula"));
+                array.add(sol);
+                //data.add(row);
+            }
+  
+            // Cerrar la conexión
+            resultSetSolicitud.close();
+            statement.close();
+            connection.close();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Manejo de excepciones
+        }
+
+        return array;
+    }
+     
+    public static ArrayList<Solicitudes> listarAdministradores(String par) throws ClassNotFoundException {
+        ArrayList<Solicitudes> array= getSolicitudes();  
+        //Caso hay parametro de busqueda
+        if(par!=null){
+          
+        } 
+
+        return array;
     }
 }

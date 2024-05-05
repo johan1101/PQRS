@@ -1,9 +1,19 @@
+<%@page import="java.util.ArrayList"%>
+<%@page import="Clases.Solicitudes"%>
+<%@page import="Clases.Metodos"%>
+<%@page import="Clases.Conexion"%>
+<%@page import="java.sql.Connection"%>
 <%@include file= "templates/header.jsp" %>
 
 <style>
     <%@include file= "styles/style.css" %>
 </style>
 <!-- partial:index.partial.html -->
+<%
+
+     ArrayList<Solicitudes> a=Metodos.getSolicitudes();
+     
+%>
 <header class="header">
     <div class="header-content responsive-wrapper">
         <div class="header-logo">
@@ -24,6 +34,39 @@
         </a>
     </div>
 </header>
+<table class="table table-striped table-hover datatable">
+                   <thead>
+                       <tr>
+                           <th scope="col">ID</th>
+                           <th scope="col">Nombre</th>
+                           <th scope="col">Tipo</th>
+                           <th scope="col">Fecha</th>
+                           <th scope="col">Estado</th>
+                           <th scope="col">Descripcion</th>
+                            <th scope="col">Nombre</th>
+                             <th scope="col">Cedula</th>
+                           <th scope="col">Acciones</th>
+                       </tr>
+                   </thead>
+                    <tbody>
+                <% 
+                  
+                    for (Solicitudes sol: a) {
+                %>
+                        <tr>
+                            <td><%= sol.getIdSolicitud() %></td>
+                            <td><%= sol.getNombreSol() %></td>
+                            <td><%= sol.getTipoSolicitud() %></td>
+                            <td><%= sol.getFechaRegistro() %></td>
+                            <td><%= sol.getEstado() %></td>
+                            <td><%= sol.getDescripcion() %></td>
+                            <td><%= sol.getPdf() %></td>
+                            <td><%= sol.getUsuario() %></td>
+
+                        </tr>
+                        <% } %>
+                    </tbody>
+                </table>
 <main class="main">
     <div class="responsive-wrapper">
         <div class="main-header">
