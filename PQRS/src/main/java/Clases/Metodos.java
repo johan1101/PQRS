@@ -60,7 +60,8 @@ public class Metodos {
 
             // Agregar el ID del usuario a la sesión
             session.setAttribute("idUsuario", idUsuario);
-
+          
+            session.setAttribute("cedula",cedula);
             // Redireccionar según el rol del usuario
             if (idRol == 1) { // Si es Usuario
                 response.sendRedirect("usuario.jsp");
@@ -223,5 +224,94 @@ public class Metodos {
                       "</article>";
         return HTML;
     }
+    public static ArrayList<Solicitudes> SolicitudesUsuario(String cedula ) throws ClassNotFoundException {
+        ArrayList<Solicitudes> array= getSolicitudes( );
+         ArrayList<Solicitudes> array2=  new ArrayList();
+            for (Solicitudes sol:array){
+                if(cedula.equals(sol.getUsuario())){
+                   array2.add(sol);
+                }
+            }
+        Collections.sort(array, new Fechas());
+        return array2;
+    }
+        public static String listarUsuario(Solicitudes sol) {
+        String HTML = "<article class=\"card\">\n" +
+                      "    <div class=\"card-header\">\n" +
+                      "        <div>                                \n" +
+                      "            <h3>Solicitud #" + sol.getIdSolicitud() + "</h3>\n" +
+                      "        </div>\n" +
+                      "    </div>\n" +
+                      "    <div class=\"card-body\">\n" +
+                      "        <h4>Nombre: " + sol.getNombreSol() + "</h4>\n" +
+                      "        <h4>Tipo Solicitud: " + sol.getTipoSolicitud() + "</h4>\n" +
+                      "        <h4>Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n" +
+                      "        <h4>Estado: " + sol.getEstado() + "</h4>\n" +
+                      "        <h4>Descripcion: " + sol.getDescripcion() + "</h4>\n" +
+                      "        <h4>Pdf: " + sol.getPdf() + "</h4>\n" +
+                      "        <h4>Usuario: " + sol.getUsuario() + "</h4>\n" +
+                      "    </div>\n" +
+                      "    <div class=\"card-footer\">\n" +
+                      "        <a href=\"#\">Editar</a>\n" +
+                      "        <a href=\"#\">Eliminar</a>\n" +
+                      "    </div>\n" +
+                      "</article>";
+        return HTML;
+    }
+        public static void editarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario) throws SQLException {
+            Conexion conexion = new Conexion();
+          Connection connection = conexion.establecerConexion();
+    
+    try {
 
+      
+        // Consulta SQL parametrizada para actualizar la fila
+        String sqlTutorial = "UPDATE tutorial SET nombre = ?, idCategoria = ?, URL = ?, prioridad = ?, estado = ? WHERE id = ?";
+        
+        // Crear una declaración preparada para la consulta de actualización
+        preparedStatement = connection.prepareStatement(sqlTutorial);
+        
+        // Establecer los parámetros de la consulta
+        preparedStatement.setString(1, nombre);
+        preparedStatement.setInt(2, idCat);
+        preparedStatement.setString(3, url);
+        preparedStatement.setInt(4, prioridad);
+        preparedStatement.setString(5, estado);
+        preparedStatement.setInt(6, id);
+        
+        // Ejecutar la consulta de actualización
+        int filasActualizadas = preparedStatement.executeUpdate();
+        
+        if (filasActualizadas > 0) {
+            System.out.println("La fila fue actualizada exitosamente.");
+        } else {
+            System.out.println("No se encontró la fila a actualizar.");
+        }
+    } finally {
+        // Cerrar los recursos en un bloque finally
+        if (preparedStatement != null) {
+            preparedStatement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+    }
+    }
+
+     public static void eliminarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario, Connection connection) throws SQLException {
+        
+        // Llamar al procedimiento almacenado
+        CallableStatement statement = connection.prepareCall("{CALL AgregarSolicitud(?, ?, ?, ?, ?, ?)}");
+        statement.setString(1, nombreSolicitud);
+        statement.setString(2, tipoSolicitud);
+        statement.setString(3, estado);
+        statement.setString(4, descripcion);
+        if (idPdf == 0) {
+            statement.setNull(5, java.sql.Types.INTEGER); // Establecer el parámetro como NULL
+        } else {
+            statement.setInt(5, idPdf); // Establecer el ID del PDF si es diferente de 0
+        }
+        statement.setInt(6, idUsuario);
+        statement.execute();
+    }
 }

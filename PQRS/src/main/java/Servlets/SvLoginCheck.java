@@ -46,6 +46,7 @@ public class SvLoginCheck extends HttpServlet {
          HttpSession session = request.getSession();
         
         try {
+            request.getSession().setAttribute("usuario", cedula);
             metodo.validarIngreso(cedula, contrasenia, connection, response, session);
         } catch (SQLException ex) {
             Logger.getLogger(SvLoginCheck.class.getName()).log(Level.SEVERE, null, ex);

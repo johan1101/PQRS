@@ -9,9 +9,9 @@
     <%@include file= "styles/style.css" %>
 </style>
 <!-- partial:index.partial.html -->
-<%
+<%  System.out.println((String) session.getAttribute("cedula"));
+     ArrayList<Solicitudes> a=Metodos.SolicitudesUsuario((String) session.getAttribute("cedula"));
 
-     ArrayList<Solicitudes> a=Metodos.getSolicitudes();
      
 %>
 <header class="header">
@@ -34,43 +34,11 @@
         </a>
     </div>
 </header>
-<table class="table table-striped table-hover datatable">
-                   <thead>
-                       <tr>
-                           <th scope="col">ID</th>
-                           <th scope="col">Nombre</th>
-                           <th scope="col">Tipo</th>
-                           <th scope="col">Fecha</th>
-                           <th scope="col">Estado</th>
-                           <th scope="col">Descripcion</th>
-                            <th scope="col">Nombre</th>
-                             <th scope="col">Cedula</th>
-                           <th scope="col">Acciones</th>
-                       </tr>
-                   </thead>
-                    <tbody>
-                <% 
-                  
-                    for (Solicitudes sol: a) {
-                %>
-                        <tr>
-                            <td><%= sol.getIdSolicitud() %></td>
-                            <td><%= sol.getNombreSol() %></td>
-                            <td><%= sol.getTipoSolicitud() %></td>
-                            <td><%= sol.getFechaRegistro() %></td>
-                            <td><%= sol.getEstado() %></td>
-                            <td><%= sol.getDescripcion() %></td>
-                            <td><%= sol.getPdf() %></td>
-                            <td><%= sol.getUsuario() %></td>
 
-                        </tr>
-                        <% } %>
-                    </tbody>
-                </table>
 <main class="main">
     <div class="responsive-wrapper">
         <div class="main-header">
-            <h1>Area de solicitudes</h1>
+            <h1>Tus solicitudes</h1>
             <div class="search">
                 <input type="text" placeholder="Buscar" />
                 <button type="submit">
@@ -106,42 +74,12 @@
             </div>
             <div class="content-main">
                 <div class="card-grid">
-                    <article class="card">
-                        <div class="card-header">
-                            <div>
-                                <span><img src="https://assets.codepen.io/285131/zeplin.svg" /></span>
-                                <h3>Zeplin</h3>
-                            </div>
-                            <label class="toggle">
-                                <input type="checkbox" checked>
-                                <span></span>
-                            </label>
-                        </div>
-                        <div class="card-body">
-                            <p>Collaboration between designers and developers.</p>
-                        </div>
-                        <div class="card-footer">
-                            <a href="#">View integration</a>
-                        </div>
-                    </article>
-                    <article class="card">
-                        <div class="card-header">
-                            <div>
-                                <span><img src="https://assets.codepen.io/285131/github.svg" /></span>
-                                <h3>GitHub</h3>
-                            </div>
-                            <label class="toggle">
-                                <input type="checkbox" checked>
-                                <span></span>
-                            </label>
-                        </div>
-                        <div class="card-body">
-                            <p>Link pull requests and automate workflows.</p>
-                        </div>
-                        <div class="card-footer">
-                            <a href="#">View integration</a>
-                        </div>
-                    </article>
+                     <% 
+                  
+                    for (Solicitudes sol: a) {
+                %>
+                     <%=Metodos.listarAdministradores(sol)%>
+                     <%}%>
                 </div>
             </div>
         </div>
