@@ -1,5 +1,7 @@
 package Clases;
 
+import java.sql.Date;
+
 
 /**
  *
@@ -10,7 +12,7 @@ public class Solicitudes {
     private int idSolicitud;
     private String nombreSol;
     private String tipoSolicitud;
-    private String fechaRegistro;
+    private Date fechaRegistro;
     private String estado;
     private String descripcion;
     private String pdf;
@@ -20,7 +22,7 @@ public class Solicitudes {
     public Solicitudes() {
     }
 
-    public Solicitudes(int idSolicitud, String nombreSol, String tipoSolicitud, String fechaRegistro, String estado, String descripcion, String pdf, String usuario) {
+    public Solicitudes(int idSolicitud, String nombreSol, String tipoSolicitud, Date fechaRegistro, String estado, String descripcion, String pdf, String usuario) {
         this.idSolicitud = idSolicitud;
         this.nombreSol = nombreSol;
         this.tipoSolicitud = tipoSolicitud;
@@ -30,6 +32,8 @@ public class Solicitudes {
         this.pdf = pdf;
         this.usuario = usuario;
     }
+
+
     
 
 
@@ -49,13 +53,15 @@ public class Solicitudes {
         this.tipoSolicitud = tipoSolicitud;
     }
 
-    public String getFechaRegistro() {
+    public Date getFechaRegistro() {
         return fechaRegistro;
     }
 
-    public void setFechaRegistro(String fechaRegistro) {
+    public void setFechaRegistro(Date fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
     }
+
+    
 
     public String getEstado() {
         return estado;

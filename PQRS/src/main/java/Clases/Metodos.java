@@ -7,11 +7,13 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -177,7 +179,7 @@ public class Metodos {
                 sol.setNombreSol (resultSetSolicitud.getString("nombreSolicitud"));
                 sol.setTipoSolicitud(resultSetSolicitud.getString("tipoSolicitud"));
                 
-                sol.setFechaRegistro(resultSetSolicitud.getString("fechaRegistro"));
+                sol.setFechaRegistro(resultSetSolicitud.getDate("fechaRegistro"));
                 sol.setEstado(resultSetSolicitud.getString("estado"));
                 sol.setDescripcion(resultSetSolicitud.getString("descripcion"));
                 sol.setPdf(resultSetSolicitud.getString("nombre"));
@@ -195,7 +197,7 @@ public class Metodos {
             e.printStackTrace();
             // Manejo de excepciones
         }
-
+        Collections.sort(array, new Fechas());
         return array;
     }
      
