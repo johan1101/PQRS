@@ -12,7 +12,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
@@ -60,8 +62,8 @@ public class Metodos {
 
             // Agregar el ID del usuario a la sesión
             session.setAttribute("idUsuario", idUsuario);
-          
-            session.setAttribute("cedula",cedula);
+
+            session.setAttribute("cedula", cedula);
             // Redireccionar según el rol del usuario
             if (idRol == 1) { // Si es Usuario
                 response.sendRedirect("usuario.jsp");
@@ -123,7 +125,7 @@ public class Metodos {
     }
 
     public static void agregarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario, Connection connection) throws SQLException {
-        
+
         // Llamar al procedimiento almacenado
         CallableStatement statement = connection.prepareCall("{CALL AgregarSolicitud(?, ?, ?, ?, ?, ?)}");
         statement.setString(1, nombreSolicitud);
@@ -157,29 +159,27 @@ public class Metodos {
 
         return idPDF;
     }
-    
 
-     public static ArrayList<Solicitudes> getSolicitudes( ) throws ClassNotFoundException {
-        ArrayList<Solicitudes> array= new ArrayList();
-         Conexion conexion = new Conexion();
-          Connection connection = conexion.establecerConexion();
+    public static ArrayList<Solicitudes> getSolicitudes() throws ClassNotFoundException {
+        ArrayList<Solicitudes> array = new ArrayList();
+        Conexion conexion = new Conexion();
+        Connection connection = conexion.establecerConexion();
         try {
 
             // Consulta SQL para obtener datos de la tabla tutorial
             String sqlTutorial = "SELECT * FROM solicitudes left join pdfs on pdfs.idPdf=solicitudes.idPdf left join usuarios  on usuarios.idUsuario=solicitudes.idUsuario";
 
-
             // Crear una declaración para la consulta de tutoriales
             Statement statement = connection.createStatement();
             ResultSet resultSetSolicitud = statement.executeQuery(sqlTutorial);
-            
+
             // Iterar sobre los resultados de tutoriales y almacenarlos en el array
             while (resultSetSolicitud.next()) {
-                Solicitudes sol= new Solicitudes ();
+                Solicitudes sol = new Solicitudes();
                 sol.setIdSolicitud(resultSetSolicitud.getInt("idSolicitud"));
-                sol.setNombreSol (resultSetSolicitud.getString("nombreSolicitud"));
+                sol.setNombreSol(resultSetSolicitud.getString("nombreSolicitud"));
                 sol.setTipoSolicitud(resultSetSolicitud.getString("tipoSolicitud"));
-                
+
                 sol.setFechaRegistro(resultSetSolicitud.getDate("fechaRegistro"));
                 sol.setEstado(resultSetSolicitud.getString("estado"));
                 sol.setDescripcion(resultSetSolicitud.getString("descripcion"));
@@ -188,12 +188,12 @@ public class Metodos {
                 array.add(sol);
                 //data.add(row);
             }
-  
+
             // Cerrar la conexión
             resultSetSolicitud.close();
             statement.close();
             connection.close();
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             // Manejo de excepciones
@@ -201,105 +201,124 @@ public class Metodos {
         Collections.sort(array, new Fechas());
         return array;
     }
-     
-    public static String listarAdministradores(Solicitudes sol) {
-        String HTML = "<article class=\"card\">\n" +
-                      "    <div class=\"card-header\">\n" +
-                      "        <div>                                \n" +
-                      "            <h3>Solicitud #" + sol.getIdSolicitud() + "</h3>\n" +
-                      "        </div>\n" +
-                      "    </div>\n" +
-                      "    <div class=\"card-body\">\n" +
-                      "        <h4>Nombre: " + sol.getNombreSol() + "</h4>\n" +
-                      "        <h4>Tipo Solicitud: " + sol.getTipoSolicitud() + "</h4>\n" +
-                      "        <h4>Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n" +
-                      "        <h4>Estado: " + sol.getEstado() + "</h4>\n" +
-                      "        <h4>Descripcion: " + sol.getDescripcion() + "</h4>\n" +
-                      "        <h4>Pdf: " + sol.getPdf() + "</h4>\n" +
-                      "        <h4>Usuario: " + sol.getUsuario() + "</h4>\n" +
-                      "    </div>\n" +
-                      "    <div class=\"card-footer\">\n" +
-                      "        <a href=\"#\">Responder Solicitud</a>\n" +
-                      "    </div>\n" +
-                      "</article>";
-        return HTML;
+
+public static String listarAdministradores(Solicitudes sol) {
+    String HTML = "<article class=\"card\">\n"
+            + "    <div class=\"card-header\">\n"
+            + "        <div>                                \n"
+            + "            <h3>Solicitud #" + sol.getIdSolicitud() + "</h3>\n"
+            + "        </div>\n"
+            + "    </div>\n"
+            + "    <div class=\"card-body\">\n"
+            + "        <h4>Nombre: " + sol.getNombreSol() + "</h4>\n"
+            + "        <h4>Tipo Solicitud: " + sol.getTipoSolicitud() + "</h4>\n"
+            + "        <h4>Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n"
+            + "        <h4>Estado: " + sol.getEstado() + "</h4>\n"
+            + "        <h4>Descripcion: " + sol.getDescripcion() + "</h4>\n";
+
+    // Verificar si se necesita calcular la fecha límite
+    if (sol.getTipoSolicitud().equals("Peticion")) {
+        Date fechaActual = sol.getFechaRegistro();
+        // Crear una instancia de Calendar
+        Calendar calendar = Calendar.getInstance();
+        // Establecer la fecha actual en el Calendar
+        calendar.setTime(fechaActual);
+        // Sumar 15 días a la fecha actual
+        calendar.add(Calendar.DAY_OF_MONTH, 15);
+        
+        // Formatear la fecha límite
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String fechaLimiteFormateada = dateFormat.format(calendar.getTime());
+        
+        HTML += "        <h4>Fecha limite de respuesta: " + fechaLimiteFormateada + "</h4>\n";
     }
-    public static ArrayList<Solicitudes> SolicitudesUsuario(String cedula ) throws ClassNotFoundException {
-        ArrayList<Solicitudes> array= getSolicitudes( );
-         ArrayList<Solicitudes> array2=  new ArrayList();
-            for (Solicitudes sol:array){
-                if(cedula.equals(sol.getUsuario())){
-                   array2.add(sol);
-                }
+
+    HTML += "        <h4>Usuario: " + sol.getUsuario() + "</h4>\n"
+            + "    </div>\n"
+            + "    <div class=\"card-footer\">\n"
+            + "        <a href=\"#\">Responder Solicitud</a>\n"
+            + "    </div>\n"
+            + "</article>";
+    return HTML;
+}
+
+    public static ArrayList<Solicitudes> SolicitudesUsuario(String cedula) throws ClassNotFoundException {
+        ArrayList<Solicitudes> array = getSolicitudes();
+        ArrayList<Solicitudes> array2 = new ArrayList();
+        for (Solicitudes sol : array) {
+            if (cedula.equals(sol.getUsuario())) {
+                array2.add(sol);
             }
+        }
         Collections.sort(array, new Fechas());
         return array2;
     }
-        public static String listarUsuario(Solicitudes sol) {
-        String HTML = "<article class=\"card\">\n" +
-                      "    <div class=\"card-header\">\n" +
-                      "        <div>                                \n" +
-                      "            <h3>Solicitud #" + sol.getIdSolicitud() + "</h3>\n" +
-                      "        </div>\n" +
-                      "    </div>\n" +
-                      "    <div class=\"card-body\">\n" +
-                      "        <h4>Nombre: " + sol.getNombreSol() + "</h4>\n" +
-                      "        <h4>Tipo Solicitud: " + sol.getTipoSolicitud() + "</h4>\n" +
-                      "        <h4>Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n" +
-                      "        <h4>Estado: " + sol.getEstado() + "</h4>\n" +
-                      "        <h4>Descripcion: " + sol.getDescripcion() + "</h4>\n" +
-                      "        <h4>Pdf: " + sol.getPdf() + "</h4>\n" +
-                      "        <h4>Usuario: " + sol.getUsuario() + "</h4>\n" +
-                      "    </div>\n" +
-                      "    <div class=\"card-footer\">\n" +
-                      "        <a href=\"#\">Editar</a>\n" +
-                      "        <a href=\"#\">Eliminar</a>\n" +
-                      "    </div>\n" +
-                      "</article>";
+
+    public static String listarUsuario(Solicitudes sol) {
+        String HTML = "<article class=\"card\">\n"
+                + "    <div class=\"card-header\">\n"
+                + "        <div>                                \n"
+                + "            <h3>Solicitud #" + sol.getIdSolicitud() + "</h3>\n"
+                + "        </div>\n"
+                + "    </div>\n"
+                + "    <div class=\"card-body\">\n"
+                + "        <h4>Nombre: " + sol.getNombreSol() + "</h4>\n"
+                + "        <h4>Tipo Solicitud: " + sol.getTipoSolicitud() + "</h4>\n"
+                + "        <h4>Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n"
+                + "        <h4>Estado: " + sol.getEstado() + "</h4>\n"
+                + "        <h4>Descripcion: " + sol.getDescripcion() + "</h4>\n"
+                + "        <h4>Pdf: " + sol.getPdf() + "</h4>\n"
+                + "        <h4>Usuario: " + sol.getUsuario() + "</h4>\n"
+                + "    </div>\n"
+                + "    <div class=\"card-footer\">\n"
+                + "        <a href=\"#\">Editar</a>\n"
+                + "        <a href=\"#\">Eliminar</a>\n"
+                + "    </div>\n"
+                + "</article>";
         return HTML;
     }
-        public static void editarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario) throws SQLException {
-            Conexion conexion = new Conexion();
-          Connection connection = conexion.establecerConexion();
-    
-    try {
 
-      
-        // Consulta SQL parametrizada para actualizar la fila
-        String sqlTutorial = "UPDATE tutorial SET nombre = ?, idCategoria = ?, URL = ?, prioridad = ?, estado = ? WHERE id = ?";
-        
-        // Crear una declaración preparada para la consulta de actualización
-        preparedStatement = connection.prepareStatement(sqlTutorial);
-        
-        // Establecer los parámetros de la consulta
-        preparedStatement.setString(1, nombre);
-        preparedStatement.setInt(2, idCat);
-        preparedStatement.setString(3, url);
-        preparedStatement.setInt(4, prioridad);
-        preparedStatement.setString(5, estado);
-        preparedStatement.setInt(6, id);
-        
-        // Ejecutar la consulta de actualización
-        int filasActualizadas = preparedStatement.executeUpdate();
-        
-        if (filasActualizadas > 0) {
-            System.out.println("La fila fue actualizada exitosamente.");
-        } else {
-            System.out.println("No se encontró la fila a actualizar.");
-        }
-    } finally {
-        // Cerrar los recursos en un bloque finally
-        if (preparedStatement != null) {
-            preparedStatement.close();
-        }
-        if (connection != null) {
-            connection.close();
-        }
-    }
-    }
+//        public static void editarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario) throws SQLException {
+//            Conexion conexion = new Conexion();
+//          Connection connection = conexion.establecerConexion();
+//          CallableStatement preparedStatement = null;
+//    try {
+//
+//      
+//        // Consulta SQL parametrizada para actualizar la fila
+//        String sqlTutorial = "UPDATE tutorial SET nombre = ?, idCategoria = ?, URL = ?, prioridad = ?, estado = ? WHERE id = ?";
+//        
+//        // Crear una declaración preparada para la consulta de actualización
+//        preparedStatement = connection.prepareStatement(sqlTutorial);
+//        
+//        // Establecer los parámetros de la consulta
+//        preparedStatement.setString(1, nombre);
+//        preparedStatement.setInt(2, idCat);
+//        preparedStatement.setString(3, url);
+//        preparedStatement.setInt(4, prioridad);
+//        preparedStatement.setString(5, estado);
+//        preparedStatement.setInt(6, id);
+//        
+//        // Ejecutar la consulta de actualización
+//        int filasActualizadas = preparedStatement.executeUpdate();
+//        
+//        if (filasActualizadas > 0) {
+//            System.out.println("La fila fue actualizada exitosamente.");
+//        } else {
+//            System.out.println("No se encontró la fila a actualizar.");
+//        }
+//    } finally {
+//        // Cerrar los recursos en un bloque finally
+//        if (preparedStatement != null) {
+//            preparedStatement.close();
+//        }
+//        if (connection != null) {
+//            connection.close();
+//        }
+//    }
+//    }
+    public static void eliminarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario, Connection connection) throws SQLException {
 
-     public static void eliminarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario, Connection connection) throws SQLException {
-        
         // Llamar al procedimiento almacenado
         CallableStatement statement = connection.prepareCall("{CALL AgregarSolicitud(?, ?, ?, ?, ?, ?)}");
         statement.setString(1, nombreSolicitud);

@@ -87,7 +87,6 @@
                                     <a href="#">View integration</a>
                                 </div>
                             </article>
-
                         </div>
                     </div>
                 </div>

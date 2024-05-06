@@ -102,5 +102,3 @@ BEGIN
 END //
 
 DELIMITER ;
-
-SELECT * FROM solicitudes left join pdfs on pdfs.idPdf=solicitudes.idPdf
