@@ -135,7 +135,7 @@
 <!-- partial -->
 
 <!-- Modal para responder una solicitud -->
-<form action="Sv" method="POST" onsubmit="return validarFormulario()" enctype="multipart/form-data">
+<form action="SvResponderSolicitud" method="POST" onsubmit="return validarFormulario()" enctype="multipart/form-data">
     <div class="modal fade" id="visualizar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalVisualizar" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered custom-modal-size">
             <div class="modal-content">

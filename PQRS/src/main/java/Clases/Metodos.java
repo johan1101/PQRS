@@ -346,13 +346,13 @@ public class Metodos {
                 + "                            <div class=\"col\">\n"
                 + "                                <div class=\"form-element\">\n"
                 + "                                    <label for=\"nombre\">Nombre</label>\n"
-                + "                                    <input type=\"text\" value=\"" + sol.getNombreSol() + "\" id=\"nombre\" name=\"nombre\">\n"
+                + "                                    <input type=\"text\" value=\"" + sol.getNombreSol() + "\" id=\"nombre\" name=\"nombre\" readonly>\n"
                 + "                                </div>\n"
                 + "                            </div>\n"
                 + "                            <div class=\"col\">\n"
                 + "                                <div class=\"form-element\">\n"
                 + "                                    <label for=\"correo\">Correo</label>\n"
-                + "                                    <input type=\"text\" value=\"" + correo + "\" id=\"correo\" name=\"correo\">\n"
+                + "                                    <input type=\"text\" value=\"" + correo + "\" id=\"correo\" name=\"correo\" readonly>\n"
                 + "                                </div>\n"
                 + "                            </div>\n"
                 + "                        </div>\n"
@@ -360,7 +360,7 @@ public class Metodos {
                 + "                            <div class=\"col\">\n"
                 + "                                <div class=\"form-element\">\n"
                 + "                                    <label for=\"descripcion\">Descripción</label>\n"
-                + "                                    <textarea id=\"descripcion\" name=\"descripcion\" rows=\"4\" cols=\"50\">" + sol.getDescripcion() + "</textarea>\n"
+                + "                                    <textarea id=\"descripcion\" name=\"descripcion\" rows=\"4\" cols=\"50\" readonly>" + sol.getDescripcion() + "</textarea>\n"
                 + "                                </div>\n"
                 + "                            </div>\n"
                 + "                            <div class=\"col\">\n"
@@ -412,14 +412,13 @@ public class Metodos {
             return solicitud;
         }
     }
-    
-        public static Usuarios obtenerUsuarioPorId(int idUsuario, Connection conn) throws SQLException {
+
+    public static Usuarios obtenerUsuarioPorId(int idUsuario, Connection conn) throws SQLException {
         // Inicializar el usuario como nulo
         Usuarios usuario = new Usuarios();
 
         // Declarar el PreparedStatement y el ResultSet como variables locales
-        try (PreparedStatement consulta = conn.prepareStatement("SELECT * FROM usuarios WHERE idUsuario = ?");
-        ) {
+        try (PreparedStatement consulta = conn.prepareStatement("SELECT * FROM usuarios WHERE idUsuario = ?");) {
             // Establecer el parámetro en la consulta preparada
             consulta.setInt(1, idUsuario);
 
