@@ -35,12 +35,12 @@ public class SvResponderSolicitud extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-        System.out.println("Corriendo metodo para responder solicitud");
+          System.out.println("Corriendo metodo para responder solicitud");
         String emailFrom = "pqrsresponse@gmail.com"; // Cambia esto por tu dirección de correo electrónico
         String passwordFrom = "wkro wbtv mnoi gsjy"; // Cambia esto por tu contraseña
-        String emailTo = "johanrealpelibro@gmail.com"; // Cambia esto por la dirección de correo electrónico del destinatario
-        String subject = "Asunto del correo";
-        String content = "Contenido del correo electrónico.";
+        String emailTo = "Mariacasanova2346@gmail.com"; // Cambia esto por la dirección de correo electrónico del destinatario
+        String subject = "Señorita Maria como se encuentra?";
+        String content = "Para informarle que es hora del almuerzo, por favor coma.";
 
         // Crear instancia de EnvioCorreos y configurar detalles del correo
         EnvioCorreo envioCorreos = new EnvioCorreo();
