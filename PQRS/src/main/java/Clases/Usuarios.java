@@ -14,6 +14,10 @@ public class Usuarios {
     private String celular;
     private String correo;
     private String rol;
+    
+    public Usuarios(){
+        
+    }
 
     public Usuarios(int idUsuario, String nombre, String apellido, String cedula, String contrasena, String celular, String correo, String rol) {
         this.idUsuario = idUsuario;

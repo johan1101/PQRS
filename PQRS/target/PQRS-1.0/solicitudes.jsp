@@ -101,8 +101,8 @@
                 <%=Metodos.listarAdministradores(sol)%>
                 <%
 
-                                         } else {
-                                             if (request.getParameter("par").equals(sol.getTipoSolicitud())) {%>
+                } else {
+                    if (request.getParameter("par").equals(sol.getTipoSolicitud())) {%>
                 <%=Metodos.listarAdministradores(sol)%>
                 <%}
                     }
@@ -133,6 +133,39 @@
     </div>
 </main>
 <!-- partial -->
+
+<!-- Modal para responder una solicitud -->
+<form action="Sv" method="POST" onsubmit="return validarFormulario()" enctype="multipart/form-data">
+    <div class="modal fade" id="visualizar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalVisualizar" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered custom-modal-size">
+            <div class="modal-content">
+                <div class="popup">
+                    <div class="close-btn btn-close" data-bs-dismiss="modal">&times;</div>
+                    <div class="tuto-details" id="tuto-details">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    $(document).on('click', '#btnVisualizar', function () {
+        var idMostrado = $(this).attr('data-nombre'); // Obtiene el valor del atributo data-nombre del botón
+        $.ajax({
+            url: 'SvVisualizar?idTutorial=' + idMostrado,
+            method: 'POST',
+            success: function (data) {
+                $('#tuto-details').html(data);
+                $('#visualizar').modal('show'); // Muestra el modal después de obtener los datos
+            },
+            error: function () {
+                console.log('Error al realizar la solicitud de visualización.');
+            }
+        });
+    });
+</script>
 
 <script>
     <%@include file= "scripts/script.js" %>

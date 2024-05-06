@@ -53,7 +53,7 @@ public class SvRegistrarUsuario extends HttpServlet {
         String celular = request.getParameter("celular");
         String correo = request.getParameter("correo");
         String contrasena = request.getParameter("contrasenia");
-        int idRol = Integer.parseInt(request.getParameter("rol"));
+        int idRol = (1);
         
         try {
             metodo.agregarUsuario(cedula, nombre, apellido, celular, correo, contrasena, idRol, conectarBD);

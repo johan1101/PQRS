@@ -5,6 +5,7 @@ com\mundo\pqrs\resources\JavaEE8Resource.class
 Servlets\SvAgregarSolicitud.class
 Servlets\SvFiltrar.class
 com\mundo\pqrs\JAXRSConfiguration.class
+Servlets\SvVisualizar.class
 Servlets\SvLoginCheck.class
 Clases\Solicitudes.class
 Servlets\SvBuscarResponder.class

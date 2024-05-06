@@ -202,45 +202,45 @@ public class Metodos {
         return array;
     }
 
-public static String listarAdministradores(Solicitudes sol) {
-    String HTML = "<article class=\"card\">\n"
-            + "    <div class=\"card-header\">\n"
-            + "        <div>                                \n"
-            + "            <h3>Solicitud #" + sol.getIdSolicitud() + "</h3>\n"
-            + "        </div>\n"
-            + "    </div>\n"
-            + "    <div class=\"card-body\">\n"
-            + "        <h4>Nombre: " + sol.getNombreSol() + "</h4>\n"
-            + "        <h4>Tipo Solicitud: " + sol.getTipoSolicitud() + "</h4>\n"
-            + "        <h4>Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n"
-            + "        <h4>Estado: " + sol.getEstado() + "</h4>\n"
-            + "        <h4>Descripcion: " + sol.getDescripcion() + "</h4>\n";
+    public static String listarAdministradores(Solicitudes sol) {
+        String HTML = "<article class=\"card\">\n"
+                + "    <div class=\"card-header\">\n"
+                + "        <div>                                \n"
+                + "            <h3>Solicitud #" + sol.getIdSolicitud() + "</h3>\n"
+                + "        </div>\n"
+                + "    </div>\n"
+                + "    <div class=\"card-body\">\n"
+                + "        <h4>Nombre: " + sol.getNombreSol() + "</h4>\n"
+                + "        <h4>Tipo Solicitud: " + sol.getTipoSolicitud() + "</h4>\n"
+                + "        <h4>Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n"
+                + "        <h4>Estado: " + sol.getEstado() + "</h4>\n"
+                + "        <h4>Descripcion: " + sol.getDescripcion() + "</h4>\n";
 
-    // Verificar si se necesita calcular la fecha límite
-    if (sol.getTipoSolicitud().equals("Peticion")) {
-        Date fechaActual = sol.getFechaRegistro();
-        // Crear una instancia de Calendar
-        Calendar calendar = Calendar.getInstance();
-        // Establecer la fecha actual en el Calendar
-        calendar.setTime(fechaActual);
-        // Sumar 15 días a la fecha actual
-        calendar.add(Calendar.DAY_OF_MONTH, 15);
-        
-        // Formatear la fecha límite
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String fechaLimiteFormateada = dateFormat.format(calendar.getTime());
-        
-        HTML += "        <h4>Fecha limite de respuesta: " + fechaLimiteFormateada + "</h4>\n";
+        // Verificar si se necesita calcular la fecha límite
+        if (sol.getTipoSolicitud().equals("Peticion")) {
+            Date fechaActual = sol.getFechaRegistro();
+            // Crear una instancia de Calendar
+            Calendar calendar = Calendar.getInstance();
+            // Establecer la fecha actual en el Calendar
+            calendar.setTime(fechaActual);
+            // Sumar 15 días a la fecha actual
+            calendar.add(Calendar.DAY_OF_MONTH, 15);
+
+            // Formatear la fecha límite
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String fechaLimiteFormateada = dateFormat.format(calendar.getTime());
+
+            HTML += "        <h4>Fecha limite de respuesta: " + fechaLimiteFormateada + "</h4>\n";
+        }
+
+        HTML += "        <h4>Usuario: " + sol.getUsuario() + "</h4>\n"
+                + "    </div>\n"
+                + "    <div class=\"card-footer\">\n"
+                + "        <a id='btnVisualizar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Responder Solicitud</a>\n"
+                + "    </div>\n"
+                + "</article>";
+        return HTML;
     }
-
-    HTML += "        <h4>Usuario: " + sol.getUsuario() + "</h4>\n"
-            + "    </div>\n"
-            + "    <div class=\"card-footer\">\n"
-            + "        <a href=\"#\">Responder Solicitud</a>\n"
-            + "    </div>\n"
-            + "</article>";
-    return HTML;
-}
 
     public static ArrayList<Solicitudes> SolicitudesUsuario(String cedula) throws ClassNotFoundException {
         ArrayList<Solicitudes> array = getSolicitudes();
@@ -332,5 +332,117 @@ public static String listarAdministradores(Solicitudes sol) {
         }
         statement.setInt(6, idUsuario);
         statement.execute();
+    }
+
+    public static String mostrarInfoSolicitud(Solicitudes sol, String correo) {
+        if (sol == null) {
+            throw new IllegalArgumentException("La solicitud no puede ser nula.");
+        }
+
+        String HTML = "<div class=\"form\">\n"
+                + "                        <h2>Responder solicitud</h2>\n"
+                + "                        <hr>\n"
+                + "                        <div class=\"row\">\n"
+                + "                            <div class=\"col\">\n"
+                + "                                <div class=\"form-element\">\n"
+                + "                                    <label for=\"nombre\">Nombre</label>\n"
+                + "                                    <input type=\"text\" value=\"" + sol.getNombreSol() + "\" id=\"nombre\" name=\"nombre\">\n"
+                + "                                </div>\n"
+                + "                            </div>\n"
+                + "                            <div class=\"col\">\n"
+                + "                                <div class=\"form-element\">\n"
+                + "                                    <label for=\"correo\">Correo</label>\n"
+                + "                                    <input type=\"text\" value=\"" + correo + "\" id=\"correo\" name=\"correo\">\n"
+                + "                                </div>\n"
+                + "                            </div>\n"
+                + "                        </div>\n"
+                + "                        <div class=\"row\">\n"
+                + "                            <div class=\"col\">\n"
+                + "                                <div class=\"form-element\">\n"
+                + "                                    <label for=\"descripcion\">Descripción</label>\n"
+                + "                                    <textarea id=\"descripcion\" name=\"descripcion\" rows=\"4\" cols=\"50\">" + sol.getDescripcion() + "</textarea>\n"
+                + "                                </div>\n"
+                + "                            </div>\n"
+                + "                            <div class=\"col\">\n"
+                + "                                <div class=\"form-element\">\n"
+                + "                                    <label for=\"respuesta\">Respuesta</label>\n"
+                + "                                    <textarea id=\"respuesta\" name=\"respuesta\" rows=\"4\" cols=\"50\" placeholder=\"Ingrese la respuesta a la solicitud\"></textarea>\n"
+                + "                                </div>\n"
+                + "                            </div>\n"
+                + "                        </div>\n"
+                + "                        <div class=\"row\">\n"
+                + "                            <div class=\"col\">\n"
+                + "                                <div class=\"form-element\">\n"
+                + "                                    <button type=\"submit\">Enviar</button>\n"
+                + "                                </div>\n"
+                + "                            </div>\n"
+                + "                        </div>\n"
+                + "                    </div>";
+        return HTML;
+    }
+
+    public static Solicitudes obtenerSolicitudPorId(int idSolicitud, Connection conn) throws SQLException {
+
+        // Inicializar la solicitud como nula
+        Solicitudes solicitud = new Solicitudes();
+
+        // Declarar la conexión, el PreparedStatement y el ResultSet como variables locales
+        PreparedStatement consulta = conn.prepareStatement("SELECT * FROM solicitudes WHERE idSolicitud = ?");
+        {
+            // Establecer el parámetro en la consulta preparada
+            consulta.setInt(1, idSolicitud);
+
+            // Ejecutar la consulta
+            ResultSet resultado = consulta.executeQuery();
+
+            // Verificar si se encontró una solicitud con el ID proporcionado
+            if (resultado.next()) {
+                // Crear un objeto de solicitud con los datos obtenidos de la base de datos
+                solicitud.setIdSolicitud(resultado.getInt("idSolicitud"));
+                solicitud.setNombreSol(resultado.getString("nombreSolicitud"));
+                solicitud.setFechaRegistro(resultado.getDate("fechaRegistro"));
+                solicitud.setEstado(resultado.getString("estado"));
+                solicitud.setDescripcion(resultado.getString("descripcion"));
+                solicitud.setPdf(resultado.getString("idPdf"));
+                solicitud.setUsuario(resultado.getString("idUsuario"));
+                // Agregar más atributos según sea necesario
+            }
+
+            // Devolver la solicitud (puede ser nula si no se encontró ninguna solicitud con el ID proporcionado)
+            return solicitud;
+        }
+    }
+    
+        public static Usuarios obtenerUsuarioPorId(int idUsuario, Connection conn) throws SQLException {
+        // Inicializar el usuario como nulo
+        Usuarios usuario = new Usuarios();
+
+        // Declarar el PreparedStatement y el ResultSet como variables locales
+        try (PreparedStatement consulta = conn.prepareStatement("SELECT * FROM usuarios WHERE idUsuario = ?");
+        ) {
+            // Establecer el parámetro en la consulta preparada
+            consulta.setInt(1, idUsuario);
+
+            // Ejecutar la consulta
+            try (ResultSet resultado = consulta.executeQuery()) {
+                // Verificar si se encontró un usuario con el ID proporcionado
+                if (resultado.next()) {
+                    // Crear un objeto de usuario con los datos obtenidos de la base de datos
+
+                    usuario.setIdUsuario(resultado.getInt("idUsuario"));
+                    usuario.setNombre(resultado.getString("nombre"));
+                    usuario.setApellido(resultado.getString("apellido"));
+                    usuario.setCedula(resultado.getString("cedula"));
+                    usuario.setContrasena(resultado.getString("contrasena"));
+                    usuario.setCelular(resultado.getString("celular"));
+                    usuario.setCorreo(resultado.getString("correo"));
+                    usuario.setRol(resultado.getString("idRol"));
+                    // Agregar más atributos según sea necesario
+                }
+            }
+        }
+
+        // Devolver el usuario (puede ser nulo si no se encontró ningún usuario con el ID proporcionado)
+        return usuario;
     }
 }

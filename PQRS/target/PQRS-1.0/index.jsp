@@ -20,10 +20,6 @@
             <input type="text" class="form-control" id="floatingInputValue" name="celular" placeholder="Ingrese su número celular" value="" maxlength="10" required pattern="[0-9]+" title="Solo se permiten números">
             <input type="email" class="form-control" id="floatingInputValue" name="correo" placeholder="Ingrese su correo electrónico" value="" required>
             <input type="password" class="form-control" id="floatingPassword" name="contrasenia" placeholder="Ingrese su contraseña" required>
-            <select name="rol" class="form-control" >
-                <option value="1" selected>Usuario</option>
-                <option value="2">Administrador</option>
-            </select>
             <button type="submit" class="btn btn-primary">Registrar</button>
         </form>
     </div>
