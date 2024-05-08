@@ -41,7 +41,14 @@ public class SvEliminarEditarSolicitud extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+       Connection connection = conexion.establecerConexion();
+       int id = Integer.parseInt( request.getParameter("id"));
+        try {
+            Metodos.eliminarSolicitud(id, connection);
+        } catch (SQLException ex) {
+            Logger.getLogger(SvEliminarEditarSolicitud.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        response.sendRedirect("usuario.jsp?alert=eliminado");
     }
 
 
@@ -86,7 +93,7 @@ public class SvEliminarEditarSolicitud extends HttpServlet {
             Logger.getLogger(SvAgregarSolicitud.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        response.sendRedirect("usuario.jsp");
+        response.sendRedirect("usuario.jsp?alert=editado");
     }
 
     

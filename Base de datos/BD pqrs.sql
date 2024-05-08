@@ -124,7 +124,7 @@ DELIMITER ;
 DELIMITER //
 
 CREATE PROCEDURE EditarSolicitud(
-    IN p_idSolicitud INT,
+    IN p_idSolicitud INT,EditarSolicitud,
     IN p_nombreSolicitud VARCHAR(100),
     IN p_tipoSolicitud VARCHAR(20),
     IN p_estado VARCHAR(20),

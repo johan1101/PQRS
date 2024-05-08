@@ -285,7 +285,7 @@ public class Metodos {
                 + "        <h4>Estado: " + sol.getEstado() + "</h4>\n"
                 + "        <h4>Descripcion: " + sol.getDescripcion() + "</h4>\n"
                 + "        <a id='btnEditar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\"><i class=\"fa-solid fa-user-pen\"></i></a>"
-                + "        <a href=\"#\"> Editar </a>\n";
+                + "        <a href=\"SvEliminarEditarSolicitud?id="+sol.getIdSolicitud()+"\"> Eliminar </a>\n";
 
         HTML += "    </div>\n"
                 + "</article>"
@@ -333,6 +333,7 @@ public class Metodos {
 
         // Llamar al procedimiento almacenado
         CallableStatement statement = connection.prepareCall("{CALL editarSolicitud(?,?, ?, ?, ?, ?, ?, ?)}");
+        statement.setInt(1, id);
         statement.setString(2, nombreSolicitud);
         statement.setString(3, tipoSolicitud);
         statement.setString(4, estado);
@@ -348,7 +349,6 @@ public class Metodos {
         } else {
             statement.setString(8, respuesta); // Establecer la respuesta como cadena de texto si no está vacía
         }
-        statement.setInt(1, id);
         statement.execute();
         
     }
@@ -554,6 +554,37 @@ public class Metodos {
             "</div>";
     return HTML;
 }
+ public static void eliminarSolicitud(int id, Connection connection) throws SQLException {
 
+    PreparedStatement preparedStatement = null;
+ 
+    try {
+        // Consulta SQL parametrizada para eliminar la fila
+        String sqlTutorial = "DELETE FROM solicitudes WHERE idSolicitud = ?";
+        
+        // Crear una declaración preparada para la consulta de eliminación
+        preparedStatement = connection.prepareStatement(sqlTutorial);
+        
+        // Establecer el parámetro de la consulta
+        preparedStatement.setInt(1, id);
+        
+        // Ejecutar la consulta de eliminación
+        int filasEliminadas = preparedStatement.executeUpdate();
+        
+        if (filasEliminadas > 0) {
+            System.out.println("La fila fue eliminada exitosamente.");
+        } else {
+            System.out.println("No se encontró la fila a eliminar.");
+        }
+    } finally {
+        // Cerrar los recursos en un bloque finally
+        if (preparedStatement != null) {
+            preparedStatement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+    }
+}
 
 }
