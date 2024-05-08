@@ -271,6 +271,27 @@ public class Metodos {
                 + "<br>";
         return HTML;
     }
+     public static String listarUsuario(Solicitudes sol, HttpServletRequest request) {
+        String tipoUsuario = (String) request.getSession().getAttribute("tipoUsuario");
+        String HTML = "<article class=\"card\">\n"
+                + "    <div class=\"card-header\">\n"
+                + "        <div>                                \n"
+                + "            <h3>Nombre: " + sol.getNombreSol() + "</h3>\n"
+                + "        </div>\n"
+                + "    </div>\n"
+                + "    <div class=\"card-body\">\n"
+                + "        <h4>Tipo Solicitud: " + sol.getTipoSolicitud() + "</h4>\n"
+                + "        <h4>Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n"
+                + "        <h4>Estado: " + sol.getEstado() + "</h4>\n"
+                + "        <h4>Descripcion: " + sol.getDescripcion() + "</h4>\n"
+                + "        <a id='btnEditar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\"><i class=\"fa-solid fa-user-pen\"></i></a>"
+                + "        <a href=\"#\"> Editar </a>\n";
+
+        HTML += "    </div>\n"
+                + "</article>"
+                + "<br>";
+        return HTML;
+    }
 
     public static ArrayList<Solicitudes> SolicitudesUsuario(String cedula) throws ClassNotFoundException {
         ArrayList<Solicitudes> array = getSolicitudes();
@@ -308,45 +329,29 @@ public class Metodos {
         return HTML;
     }
 
-//        public static void editarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario) throws SQLException {
-//            Conexion conexion = new Conexion();
-//          Connection connection = conexion.establecerConexion();
-//          CallableStatement preparedStatement = null;
-//    try {
-//
-//      
-//        // Consulta SQL parametrizada para actualizar la fila
-//        String sqlTutorial = "UPDATE tutorial SET nombre = ?, idCategoria = ?, URL = ?, prioridad = ?, estado = ? WHERE id = ?";
-//        
-//        // Crear una declaración preparada para la consulta de actualización
-//        preparedStatement = connection.prepareStatement(sqlTutorial);
-//        
-//        // Establecer los parámetros de la consulta
-//        preparedStatement.setString(1, nombre);
-//        preparedStatement.setInt(2, idCat);
-//        preparedStatement.setString(3, url);
-//        preparedStatement.setInt(4, prioridad);
-//        preparedStatement.setString(5, estado);
-//        preparedStatement.setInt(6, id);
-//        
-//        // Ejecutar la consulta de actualización
-//        int filasActualizadas = preparedStatement.executeUpdate();
-//        
-//        if (filasActualizadas > 0) {
-//            System.out.println("La fila fue actualizada exitosamente.");
-//        } else {
-//            System.out.println("No se encontró la fila a actualizar.");
-//        }
-//    } finally {
-//        // Cerrar los recursos en un bloque finally
-//        if (preparedStatement != null) {
-//            preparedStatement.close();
-//        }
-//        if (connection != null) {
-//            connection.close();
-//        }
-//    }
-//    }
+    public static void EditarSolicitud(int id,String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario,String respuesta, Connection connection) throws SQLException {
+
+        // Llamar al procedimiento almacenado
+        CallableStatement statement = connection.prepareCall("{CALL editarSolicitud(?,?, ?, ?, ?, ?, ?, ?)}");
+        statement.setString(2, nombreSolicitud);
+        statement.setString(3, tipoSolicitud);
+        statement.setString(4, estado);
+        statement.setString(5, descripcion);
+        if (idPdf == 0) {
+            statement.setNull(6, java.sql.Types.INTEGER); // Establecer el parámetro como NULL
+        } else {
+            statement.setInt(6, idPdf); // Establecer el ID del PDF si es diferente de 0
+        }
+        statement.setInt(7, idUsuario);
+        if (respuesta.equals("")) {
+            statement.setNull(8, java.sql.Types.VARCHAR); // Establecer el parámetro como NULL
+        } else {
+            statement.setString(8, respuesta); // Establecer la respuesta como cadena de texto si no está vacía
+        }
+        statement.setInt(1, id);
+        statement.execute();
+        
+    }
     public static void eliminarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario, Connection connection) throws SQLException {
 
         // Llamar al procedimiento almacenado
@@ -440,7 +445,7 @@ public class Metodos {
                 solicitud.setPdf(resultado.getString("idPdf"));
                 solicitud.setUsuario(resultado.getString("idUsuario"));
                 solicitud.setRespuesta(resultado.getString("respuesta"));
-                // Agregar más atributos según sea necesario
+                solicitud.setTipoSolicitud(resultado.getString("tipoSolicitud"));
             }
 
             // Devolver la solicitud (puede ser nula si no se encontró ninguna solicitud con el ID proporcionado)
@@ -496,5 +501,59 @@ public class Metodos {
             cs.executeUpdate();
         }
     }
+   public static String editarInfoSolicitud(Solicitudes sol) {
+    if (sol == null) {
+        throw new IllegalArgumentException("La solicitud no puede ser nula.");
+    }
+       System.out.println(sol.getTipoSolicitud());
+    String HTML = "<div class=\"form\">\n" +
+            "    <h2>Editar solicitud</h2>\n" +
+            "    <hr>\n" +
+            "    <div class=\"row\">\n" +
+            "        <div class=\"col\">\n" +
+            "            <div class=\"form-element\">\n" +
+            "                <label for=\"nombre\">Nombre</label>\n" +
+               "                <input type=\"text\" id=\"id\" name=\"id\" required  value=\"" + sol.getIdSolicitud() + "\">\n" +
+            "                <input type=\"text\" id=\"nombre\" name=\"nombre\" placeholder=\"Ingresa el nombre de la solicitud\" maxlength=\"50\" required pattern=\"[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+\" title=\"No se permiten números\" value=\"" + sol.getNombreSol() + "\">\n" +
+            "            </div>\n" +
+            "        </div>\n" +
+            "        <div class=\"col\">\n" +
+            "            <div class=\"form-element\">\n" +
+            "                <label for=\"tipoSolicitud\">Tipo de solicitud</label>\n" +
+            "                <select class=\"form-control\" id=\"tipo\" name=\"tipo\" required>\n" +
+            "                    <option value=\"\" disabled>Seleccione el tipo de solicitud</option>\n" +
+            "                    <option value=\"Peticion\"" + (sol.getTipoSolicitud().equals("Peticion") ? " selected" : "") + ">Peticion</option>\n" +
+            "                    <option value=\"Queja\"" + (sol.getTipoSolicitud().equals("Queja") ? " selected" : "") + ">Queja</option>\n" +
+            "                    <option value=\"Reclamo\"" + (sol.getTipoSolicitud().equals("Reclamo") ? " selected" : "") + ">Reclamo</option>\n" +
+            "                    <option value=\"Sugerencia\"" + (sol.getTipoSolicitud().equals("Sugerencia") ? " selected" : "") + ">Sugerencia</option>\n" +
+            "                </select>\n" +
+            "            </div>\n" +
+            "        </div>\n" +
+            "    </div>\n" +
+            "    <div class=\"row\">\n" +
+            "        <div class=\"col\">\n" +
+            "            <div class=\"form-element\">\n" +
+            "                <label for=\"descripcion\">Descripción</label>\n" +
+            "                <textarea id=\"descripcion\" name=\"descripcion\" rows=\"4\" cols=\"50\" placeholder=\"Ingresa la descripción de la solicitud\">" + sol.getDescripcion() + "</textarea>\n" +
+            "            </div>\n" +
+            "        </div>\n" +
+            "        <div class=\"col\">\n" +
+            "            <div class=\"form-element\">\n" +
+            "                <label for=\"pdf\">Subir archivo</label>\n" +
+            "                <input type=\"file\" id=\"pdf\" name=\"pdf\" accept=\"application/pdf\">\n" +
+            "            </div>\n" +
+            "        </div>\n" +
+            "    </div>\n" +
+            "    <div class=\"row\">\n" +
+            "        <div class=\"col\">\n" +
+            "            <div class=\"form-element\">\n" +
+            "                <button type=\"submit\">Agregar</button>\n" +
+            "            </div>\n" +
+            "        </div>\n" +
+            "    </div>\n" +
+            "</div>";
+    return HTML;
+}
+
 
 }

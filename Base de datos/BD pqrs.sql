@@ -120,3 +120,30 @@ BEGIN
     WHERE idSolicitud = p_idSolicitud;
 END //
 DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE EditarSolicitud(
+    IN p_idSolicitud INT,
+    IN p_nombreSolicitud VARCHAR(100),
+    IN p_tipoSolicitud VARCHAR(20),
+    IN p_estado VARCHAR(20),
+    IN p_descripcion TEXT,
+    IN p_idPdf INT,
+    IN p_idUsuario INT,
+    IN p_respuesta TEXT
+)
+BEGIN
+    UPDATE solicitudes
+    SET 
+        nombreSolicitud = p_nombreSolicitud,
+        tipoSolicitud = p_tipoSolicitud,
+        estado = p_estado,
+        descripcion = p_descripcion,
+        idPdf = p_idPdf,
+        idUsuario = p_idUsuario,
+        respuesta = p_respuesta
+    WHERE idSolicitud = p_idSolicitud;
+END //
+
+DELIMITER ;

@@ -76,7 +76,7 @@
                      <% 
                     for (Solicitudes sol: a) {
                 %>
-                     <%=Metodos.listarAdministradores(sol, request)%>
+                     <%=Metodos.listarUsuario(sol, request)%>
                      <%}%>
             </div>
         </div>
@@ -140,10 +140,34 @@
         </div>
     </div>
 </form>
+ <!-- Modal Editar -->
+    <div class="modal fade" id="editarModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered custom-modal-size">
+            <div class="modal-content">
+                <div class="popup">
+                    <div class="close-btn btn-close" data-bs-dismiss="modal">&times;</div>
+          <div class="modal-body">
+              <form class="row g-3 needs-validation"  action="SvEliminarEditarSolicitud" method="POST"  enctype="multipart/form-data" novalidate>
+                  
+                    <div id="editar-details">
+                            <!-- Contenido dinámico: Aquí se mostrarán los detalles a editar -->
+                    </div>
+              </form>         
+                </div>
+          <div class="modal-footer">
 
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <a href="#" id="btnEditar" data-bs-toggle="modal" data-bs-target="#editarModal">
+                    <i class="ph-plus-bold"></i>
+                    <span>Agregar solicitud</span>
+                </a>
 <!-- Agrega este script al final de tu archivo HTML -->
 <script>
-    // Función para validar el formulario antes de enviarlo
+  // Función para validar el formulario antes de enviarlo
     function validarFormulario() {
         // Obtener los valores de la descripción y del archivo PDF
         var descripcion = document.getElementById("descripcion").value;
@@ -170,6 +194,24 @@
         // Continuar con el envío del formulario
         return true;
     }
+    
+     /**
+    * Funcion editar
+    */
+    $(document).on('click', '#btnEditar', function () {
+        var idMostrado = $(this).attr('data-nombre'); // Obtiene el valor del atributo data-nombre del botón
+        $.ajax({
+            url: 'SvVisualizar?idTutorial=' + idMostrado,
+            method: 'GET',
+            success: function (data) {
+                $('#editar-details').html(data);
+                $('#editarModal').modal('show'); // Muestra el modal después de obtener los datos
+            },
+            error: function () {
+                console.log('Error al realizar la solicitud de visualización.');
+            }
+        });
+    });
     
             function llenarInformacn() {
             // Configurar opciones Toastr

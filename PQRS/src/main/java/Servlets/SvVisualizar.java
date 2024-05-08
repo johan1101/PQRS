@@ -26,7 +26,10 @@ import javax.servlet.http.HttpSession;
  */
 @WebServlet(name = "SvVisualizar", urlPatterns = {"/SvVisualizar"})
 public class SvVisualizar extends HttpServlet {
-
+    Metodos metodo = new Metodos();
+    Conexion conexion = new Conexion();
+    Solicitudes sol = new Solicitudes();
+    Usuarios usuario = new Usuarios();
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -35,12 +38,39 @@ public class SvVisualizar extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+         Connection conn = conexion.establecerConexion();
+        // Obtener la sesión
+        HttpSession session = request.getSession();
+
+        // Obtener el valor del atributo "idUsuario" de la sesión
+        int idUsuario = (int) session.getAttribute("idUsuario");
+        int idSolicitud = Integer.parseInt(request.getParameter("idTutorial"));// Obtener el atributo "idUsuario" de la solicitud
+
+        try {
+            System.out.println("corriendo metodo para obtener el usuario");
+            usuario = metodo.obtenerUsuarioPorId(idUsuario, conn);
+            System.out.println("Usuario obtenido con exito");
+        } catch (SQLException ex) {
+            Logger.getLogger(SvVisualizar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try {
+            System.out.println("Metodo para obtener la solicitud");
+            sol = metodo.obtenerSolicitudPorId(idSolicitud, conn);
+            System.out.println("Solicitud obrenida con exito");
+        } catch (SQLException ex) {
+            Logger.getLogger(SvVisualizar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        String respuesta = Metodos.editarInfoSolicitud(sol);
+
+        // Se configura el tipo de contenido de la respuesta como "text/html"
+        response.setContentType("text/html");
+        // Se escribe la información del contacto en el cuerpo de la respuesta
+        response.getWriter().write(respuesta);
+
     }
-    Metodos metodo = new Metodos();
-    Conexion conexion = new Conexion();
-    Solicitudes sol = new Solicitudes();
-    Usuarios usuario = new Usuarios();
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
