@@ -227,6 +227,7 @@ public class Metodos {
                 + "        <h4>Tipo Solicitud: " + sol.getTipoSolicitud() + "</h4>\n"
                 + "        <h4>Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n"
                 + "        <h4>Estado: " + sol.getEstado() + "</h4>\n"
+                + "        <h4>PDF: " + sol.getPdf() + "</h4>\n"
                 + "        <h4>Descripcion: " + sol.getDescripcion() + "</h4>\n";
 
         // Verificar si se necesita calcular la fecha límite
@@ -283,6 +284,7 @@ public class Metodos {
                 + "        <h4>Tipo Solicitud: " + sol.getTipoSolicitud() + "</h4>\n"
                 + "        <h4>Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n"
                 + "        <h4>Estado: " + sol.getEstado() + "</h4>\n"
+                + "        <h4>PDF: " + sol.getPdf() + "</h4>\n"
                 + "        <h4>Descripcion: " + sol.getDescripcion() + "</h4>\n"
                 + "        <a id='btnEditar' class=\"btn btn-warning\" data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\"><i class=\"fa-solid fa-user-pen\"></i></a>"
                 + "        <a href=\"#\" class=\"btn btn-danger deleteButton\" id=\"deleteButton\" data-titulo='" + sol.getIdSolicitud() + "' > <i class=\"fas fa-trash\"></i> </a>\n";
@@ -305,29 +307,6 @@ public class Metodos {
         return array2;
     }
 
-    public static String listarUsuario(Solicitudes sol) {
-        String HTML = "<article class=\"card\">\n"
-                + "    <div class=\"card-header\">\n"
-                + "        <div>                                \n"
-                + "            <h3>Solicitud #" + sol.getIdSolicitud() + "</h3>\n"
-                + "        </div>\n"
-                + "    </div>\n"
-                + "    <div class=\"card-body\">\n"
-                + "        <h4>Nombre: " + sol.getNombreSol() + "</h4>\n"
-                + "        <h4>Tipo Solicitud: " + sol.getTipoSolicitud() + "</h4>\n"
-                + "        <h4>Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n"
-                + "        <h4>Estado: " + sol.getEstado() + "</h4>\n"
-                + "        <h4>Descripcion: " + sol.getDescripcion() + "</h4>\n"
-                + "        <h4>Pdf: " + sol.getPdf() + "</h4>\n"
-                + "        <h4>Usuario: " + sol.getUsuario() + "</h4>\n"
-                + "    </div>\n"
-                + "    <div class=\"card-footer\">\n"
-                + "        <a href=\"#\">Editar</a>\n"
-                + "        <a href=\"#\">Eliminar</a>\n"
-                + "    </div>\n"
-                + "</article>";
-        return HTML;
-    }
 
     public static void EditarSolicitud(int id,String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario,String respuesta, Connection connection) throws SQLException {
 
@@ -513,7 +492,7 @@ public class Metodos {
             "        <div class=\"col\">\n" +
             "            <div class=\"form-element\">\n" +
             "                <label for=\"nombre\">Nombre</label>\n" +
-               "                <input type=\"text\" id=\"id\" name=\"id\" required  value=\"" + sol.getIdSolicitud() + "\">\n" +
+               "                <input type=\"hidden\" id=\"id\" name=\"id\" required  value=\"" + sol.getIdSolicitud() + "\">\n" +
             "                <input type=\"text\" id=\"nombre\" name=\"nombre\" placeholder=\"Ingresa el nombre de la solicitud\" maxlength=\"50\" required pattern=\"[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+\" title=\"No se permiten números\" value=\"" + sol.getNombreSol() + "\">\n" +
             "            </div>\n" +
             "        </div>\n" +
@@ -586,5 +565,43 @@ public class Metodos {
         }
     }
 }
+public static Solicitudes obtenerSolicitud(int id) throws ClassNotFoundException {
+        Conexion conexion = new Conexion();
+        Connection connection = conexion.establecerConexion();
+        Solicitudes sol = new Solicitudes();
+        try {
 
+            // Consulta SQL para obtener datos de la tabla tutorial
+            String sqlTutorial = "SELECT * FROM solicitudes left join pdfs on pdfs.idPdf=solicitudes.idPdf left join usuarios  on usuarios.idUsuario=solicitudes.idUsuario WHERE idSolicitud="+id;
+
+            // Crear una declaración para la consulta de tutoriales
+            Statement statement = connection.createStatement();
+            ResultSet resultSetSolicitud = statement.executeQuery(sqlTutorial);
+            
+            // Iterar sobre los resultados de tutoriales y almacenarlos en el array
+            while (resultSetSolicitud.next()) {
+                
+                sol.setIdSolicitud(resultSetSolicitud.getInt("idSolicitud"));
+                sol.setNombreSol(resultSetSolicitud.getString("nombreSolicitud"));
+                sol.setTipoSolicitud(resultSetSolicitud.getString("tipoSolicitud"));
+
+                sol.setFechaRegistro(resultSetSolicitud.getDate("fechaRegistro"));
+                sol.setEstado(resultSetSolicitud.getString("estado"));
+                sol.setDescripcion(resultSetSolicitud.getString("descripcion"));
+                sol.setPdf(resultSetSolicitud.getString("nombre"));
+                sol.setUsuario(resultSetSolicitud.getString("cedula"));
+                sol.setRespuesta(resultSetSolicitud.getString("respuesta"));
+            }
+
+            // Cerrar la conexión
+            resultSetSolicitud.close();
+            statement.close();
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Manejo de excepciones
+        }
+        return sol;
+    }
 }

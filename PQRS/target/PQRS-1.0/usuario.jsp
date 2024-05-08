@@ -144,18 +144,18 @@
     </div>
 </form>
  <!-- Modal Editar -->
+<form class="row g-3 needs-validation"  action="SvEliminarEditarSolicitud" method="POST"  enctype="multipart/form-data" " novalidate>
     <div class="modal fade" id="editarModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered custom-modal-size">
             <div class="modal-content">
                 <div class="popup">
                     <div class="close-btn btn-close" data-bs-dismiss="modal">&times;</div>
           <div class="modal-body">
-              <form class="row g-3 needs-validation"  action="SvEliminarEditarSolicitud" method="POST"  enctype="multipart/form-data" novalidate>
                   
                     <div id="editar-details">
                             <!-- Contenido dinámico: Aquí se mostrarán los detalles a editar -->
                     </div>
-              </form>         
+                       
                 </div>
           <div class="modal-footer">
 
@@ -163,7 +163,7 @@
         </div>
       </div>
     </div>
-
+</form>
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 

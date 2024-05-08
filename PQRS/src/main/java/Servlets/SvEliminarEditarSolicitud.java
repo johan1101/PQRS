@@ -78,15 +78,28 @@ public class SvEliminarEditarSolicitud extends HttpServlet {
         // Verifica si se recibió un archivo
         if (filePart != null && filePart.getSize() > 0) {
             try {
-                descripcion = metodo.agregarPdf(filePart, context, connection);
+                if(request.getParameter("descripcion").isBlank()){
+                descripcion = metodo.agregarPdf(filePart, context, connection);}
                 // Obtener el nombre del archivo PDF enviado
                 String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
                 idPdf = metodo.buscarIDPDF(connection, fileName);
             } catch (SQLException ex) {
                 Logger.getLogger(SvAgregarSolicitud.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+        } else{
+                String fileName;
+            try {   
+                 idPdf = metodo.buscarIDPDF(connection, Metodos.obtenerSolicitud(id).getPdf());
+                  System.out.println(idPdf);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(SvEliminarEditarSolicitud.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex) {
+                Logger.getLogger(SvEliminarEditarSolicitud.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                
 
+        }
+        System.out.println("DESSSS "+ descripcion);
         try {
             metodo.EditarSolicitud(id,nombre, tipoSolicitud, estado, descripcion, idPdf, idUsuario, respuesta, connection);
         } catch (SQLException ex) {
