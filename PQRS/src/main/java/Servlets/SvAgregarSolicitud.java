@@ -51,6 +51,7 @@ public class SvAgregarSolicitud extends HttpServlet {
         Connection connection = conexion.establecerConexion();
         // Obtén el archivo enviado desde el formulario
         int idPdf = 0;
+        String respuesta = "";
         String descripcion;
         Part filePart = request.getPart("pdf"); // "pdf" debe coincidir con el nombre del campo del formulario
         System.out.println(filePart);
@@ -77,7 +78,7 @@ public class SvAgregarSolicitud extends HttpServlet {
         }
 
         try {
-            metodo.agregarSolicitud(nombre, tipoSolicitud, estado, descripcion, idPdf, idUsuario, connection);
+            metodo.agregarSolicitud(nombre, tipoSolicitud, estado, descripcion, idPdf, idUsuario, respuesta, connection);
         } catch (SQLException ex) {
             Logger.getLogger(SvAgregarSolicitud.class.getName()).log(Level.SEVERE, null, ex);
         }

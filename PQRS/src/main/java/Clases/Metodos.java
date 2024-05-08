@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
@@ -60,14 +61,20 @@ public class Metodos {
             int idUsuario = resultSet.getInt("idUsuario");
             int idRol = resultSet.getInt("idRol");
 
+            String tipoUsuario = "";
+
             // Agregar el ID del usuario a la sesión
             session.setAttribute("idUsuario", idUsuario);
 
             session.setAttribute("cedula", cedula);
             // Redireccionar según el rol del usuario
             if (idRol == 1) { // Si es Usuario
+                tipoUsuario = "usuario";
+                session.setAttribute("tipoUsuario", tipoUsuario);
                 response.sendRedirect("usuario.jsp");
             } else if (idRol == 2) { // Si es Administrador
+                tipoUsuario = "administrador";
+                session.setAttribute("tipoUsuario", tipoUsuario);
                 response.sendRedirect("administrador.jsp");
             }
 
@@ -124,10 +131,10 @@ public class Metodos {
         }
     }
 
-    public static void agregarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario, Connection connection) throws SQLException {
+    public static void agregarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario, String respuesta, Connection connection) throws SQLException {
 
         // Llamar al procedimiento almacenado
-        CallableStatement statement = connection.prepareCall("{CALL AgregarSolicitud(?, ?, ?, ?, ?, ?)}");
+        CallableStatement statement = connection.prepareCall("{CALL AgregarSolicitud(?, ?, ?, ?, ?, ?, ?)}");
         statement.setString(1, nombreSolicitud);
         statement.setString(2, tipoSolicitud);
         statement.setString(3, estado);
@@ -138,6 +145,11 @@ public class Metodos {
             statement.setInt(5, idPdf); // Establecer el ID del PDF si es diferente de 0
         }
         statement.setInt(6, idUsuario);
+        if (respuesta.equals("")) {
+            statement.setNull(7, java.sql.Types.VARCHAR); // Establecer el parámetro como NULL
+        } else {
+            statement.setString(7, respuesta); // Establecer la respuesta como cadena de texto si no está vacía
+        }
         statement.execute();
     }
 
@@ -202,15 +214,15 @@ public class Metodos {
         return array;
     }
 
-    public static String listarAdministradores(Solicitudes sol) {
+    public static String listarAdministradores(Solicitudes sol, HttpServletRequest request) {
+        String tipoUsuario = (String) request.getSession().getAttribute("tipoUsuario");
         String HTML = "<article class=\"card\">\n"
                 + "    <div class=\"card-header\">\n"
                 + "        <div>                                \n"
-                + "            <h3>Solicitud #" + sol.getIdSolicitud() + "</h3>\n"
+                + "            <h3>Nombre: " + sol.getNombreSol() + "</h3>\n"
                 + "        </div>\n"
                 + "    </div>\n"
                 + "    <div class=\"card-body\">\n"
-                + "        <h4>Nombre: " + sol.getNombreSol() + "</h4>\n"
                 + "        <h4>Tipo Solicitud: " + sol.getTipoSolicitud() + "</h4>\n"
                 + "        <h4>Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n"
                 + "        <h4>Estado: " + sol.getEstado() + "</h4>\n"
@@ -233,12 +245,18 @@ public class Metodos {
             HTML += "        <h4>Fecha limite de respuesta: " + fechaLimiteFormateada + "</h4>\n";
         }
 
-        HTML += "        <h4>Usuario: " + sol.getUsuario() + "</h4>\n"
-                + "    </div>\n"
-                + "    <div class=\"card-footer\">\n"
-                + "        <a id='btnVisualizar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Responder Solicitud</a>\n"
-                + "    </div>\n"
-                + "</article>";
+        if (tipoUsuario.equals("administrador")) {
+            HTML += "        <h4>Usuario: " + sol.getUsuario() + "</h4>\n";
+        }
+
+        HTML += "    </div>\n"
+                + "    <div class=\"card-footer\">\n";
+        if (tipoUsuario.equals("administrador")) {
+            HTML += "        <a id='btnVisualizar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Responder Solicitud</a>\n";
+        }
+        HTML += "    </div>\n"
+                + "</article>"
+                + "<br>";
         return HTML;
     }
 
@@ -348,6 +366,10 @@ public class Metodos {
                 + "                                    <label for=\"nombre\">Nombre</label>\n"
                 + "                                    <input type=\"text\" value=\"" + sol.getNombreSol() + "\" id=\"nombre\" name=\"nombre\" readonly>\n"
                 + "                                </div>\n"
+                + "                                <div class=\"idOculto\">\n"
+                + "                                    <label for=\"nombre\">Nombre</label>\n"
+                + "                                    <input type=\"text\" value=\"" + sol.getIdSolicitud()+ "\" id=\"idOculto\" name=\"idOculto\" readonly>\n"
+                + "                                </div>\n"
                 + "                            </div>\n"
                 + "                            <div class=\"col\">\n"
                 + "                                <div class=\"form-element\">\n"
@@ -366,7 +388,7 @@ public class Metodos {
                 + "                            <div class=\"col\">\n"
                 + "                                <div class=\"form-element\">\n"
                 + "                                    <label for=\"respuesta\">Respuesta</label>\n"
-                + "                                    <textarea id=\"respuesta\" name=\"respuesta\" rows=\"4\" cols=\"50\" placeholder=\"Ingrese la respuesta a la solicitud\"></textarea>\n"
+                + "                                    <textarea id=\"respuesta\" name=\"respuesta\" rows=\"4\" cols=\"50\" placeholder=\"Ingrese la respuesta a la solicitud\" required></textarea>\n"
                 + "                                </div>\n"
                 + "                            </div>\n"
                 + "                        </div>\n"
@@ -444,4 +466,22 @@ public class Metodos {
         // Devolver el usuario (puede ser nulo si no se encontró ningún usuario con el ID proporcionado)
         return usuario;
     }
+
+    // Método para editar la respuesta de una solicitud en la base de datos
+    public static void editarRespuestaEstado(int idSolicitud, String respuesta, String estado, Connection conn) throws SQLException {
+        // Definir la llamada al procedimiento almacenado
+        String sql = "{CALL editarRespuesta(?, ?, ?)}";
+        
+        // Crear el objeto CallableStatement
+        try (CallableStatement cs = conn.prepareCall(sql)) {
+            // Establecer los parámetros del procedimiento almacenado
+            cs.setInt(1, idSolicitud);
+            cs.setString(2, respuesta);
+            cs.setString(3, estado);
+            
+            // Ejecutar el procedimiento almacenado
+            cs.executeUpdate();
+        }
+    }
+
 }

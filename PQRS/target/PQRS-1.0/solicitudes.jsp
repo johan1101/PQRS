@@ -13,6 +13,10 @@
 %>
 <style>
     <%@include file= "styles/style.css" %>
+    
+        .idOculto {
+        display: none; /* Esto ocultará el elemento con la clase 'idOculto' */
+    }
 </style>
 <!-- partial:index.partial.html -->
 <header class="header">
@@ -98,36 +102,34 @@
 
                                 if (request.getParameter("par") == null) {
                 %>
-                <%=Metodos.listarAdministradores(sol)%>
+                <%=Metodos.listarAdministradores(sol, request)%>
                 <%
 
                 } else {
                     if (request.getParameter("par").equals(sol.getTipoSolicitud())) {%>
-                <%=Metodos.listarAdministradores(sol)%>
+                <%=Metodos.listarAdministradores(sol, request)%>
                 <%}
                     }
                 } else {
                     if (request.getParameter("par") == null) {
 
                 %>
-                <%=Metodos.listarAdministradores(sol)%>
+                <%=Metodos.listarAdministradores(sol, request)%>
                 <%
                 } else if (request.getParameter("par").equals(sol.getTipoSolicitud())) {
                 %>
-                <%=Metodos.listarAdministradores(sol)%>
+                <%=Metodos.listarAdministradores(sol, request)%>
                 <%
                         }
                     }
                 } else if (busqueda.contains(sol.getNombreSol()) || busqueda.contains(sol.getDescripcion()) || busqueda.contains(sol.getUsuario())) {
                 %>
-                <%=Metodos.listarAdministradores(sol)%>
+                <%=Metodos.listarAdministradores(sol, request)%>
                 <%
 
                         }
                     }
                 %>
-
-
             </div>
         </div>
     </div>
@@ -135,7 +137,7 @@
 <!-- partial -->
 
 <!-- Modal para responder una solicitud -->
-<form action="SvResponderSolicitud" method="POST" onsubmit="return validarFormulario()" enctype="multipart/form-data">
+<form action="SvResponderSolicitud" method="POST">
     <div class="modal fade" id="visualizar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalVisualizar" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered custom-modal-size">
             <div class="modal-content">

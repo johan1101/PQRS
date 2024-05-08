@@ -43,6 +43,7 @@ CREATE TABLE solicitudes(
     descripcion TEXT,
     idPdf INT DEFAULT NULL,
     idUsuario INT,
+	respuesta TEXT DEFAULT NULL,
     FOREIGN KEY (idPdf) REFERENCES pdfs(idPdf),
     FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
 );
@@ -73,6 +74,8 @@ DELIMITER ;
  VALUES('Maria', 'Casanova', '2222', '2222', '2222', 'Casanova', '2');
 INSERT INTO usuarios(nombre, apellido, cedula, contrasena, celular, correo, idRol)
  VALUES('Maria', 'Casanova', '3333', '3333', '2222', 'Casanova', '1');
+ INSERT INTO usuarios(nombre, apellido, cedula, contrasena, celular, correo, idRol)
+ VALUES('Johan', 'Ordoñez', '0000', '0000', '0000', 'johanrealpelibro@gmail.com', '2');
 DELIMITER //
 
 CREATE PROCEDURE AgregarPDF(
@@ -94,11 +97,26 @@ CREATE PROCEDURE AgregarSolicitud(
     IN p_estado VARCHAR(20),
     IN p_descripcion TEXT,
     IN p_idPdf INT,
-    IN p_idUsuario INT
+    IN p_idUsuario INT,
+    IN p_respuesta TEXT
 )
 BEGIN
-    INSERT INTO solicitudes(nombreSolicitud, tipoSolicitud, estado, descripcion, idPdf, idUsuario)
-    VALUES(p_nombreSolicitud, p_tipoSolicitud, p_estado, p_descripcion, p_idPdf, p_idUsuario);
+    INSERT INTO solicitudes(nombreSolicitud, tipoSolicitud, estado, descripcion, idPdf, idUsuario, respuesta)
+    VALUES(p_nombreSolicitud, p_tipoSolicitud, p_estado, p_descripcion, p_idPdf, p_idUsuario, p_respuesta);
 END //
 
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE editarRespuesta(
+    IN p_idSolicitud INT,
+    IN p_respuesta TEXT,
+    IN p_estado VARCHAR(20)
+)
+BEGIN
+    UPDATE solicitudes
+    SET respuesta = p_respuesta,
+        estado = p_estado
+    WHERE idSolicitud = p_idSolicitud;
+END //
 DELIMITER ;

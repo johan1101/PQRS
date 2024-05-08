@@ -49,7 +49,7 @@
         <div class="horizontal-tabs">
             <a href="perfilUsuario.jsp">Perfil</a>
             <a href="usuario.jsp" class="active">Solicitudes</a>
-            <a href="#">API</a>
+            <a href="#">Respuestas</a>
         </div>
         <div class="content-header">
             <div class="content-header-actions">
@@ -73,14 +73,11 @@
                 </div>
             </div>
             <div class="content-main">
-                <div class="card-grid">
                      <% 
-                  
                     for (Solicitudes sol: a) {
                 %>
-                     <%=Metodos.listarAdministradores(sol)%>
+                     <%=Metodos.listarAdministradores(sol, request)%>
                      <%}%>
-                </div>
             </div>
         </div>
     </div>
