@@ -2,7 +2,6 @@ package Clases;
 
 import java.sql.Date;
 
-
 /**
  *
  * @author Johan Ordoñez
@@ -17,12 +16,9 @@ public class Solicitudes {
     private String descripcion;
     private String pdf;
     private String usuario;
+    private String respuesta;
 
-
-    public Solicitudes() {
-    }
-
-    public Solicitudes(int idSolicitud, String nombreSol, String tipoSolicitud, Date fechaRegistro, String estado, String descripcion, String pdf, String usuario) {
+    public Solicitudes(int idSolicitud, String nombreSol, String tipoSolicitud, Date fechaRegistro, String estado, String descripcion, String pdf, String usuario, String respuesta) {
         this.idSolicitud = idSolicitud;
         this.nombreSol = nombreSol;
         this.tipoSolicitud = tipoSolicitud;
@@ -31,11 +27,11 @@ public class Solicitudes {
         this.descripcion = descripcion;
         this.pdf = pdf;
         this.usuario = usuario;
+        this.respuesta = respuesta;
     }
 
-
-    
-
+    public Solicitudes() {
+    }
 
     public int getIdSolicitud() {
         return idSolicitud;
@@ -43,6 +39,14 @@ public class Solicitudes {
 
     public void setIdSolicitud(int idSolicitud) {
         this.idSolicitud = idSolicitud;
+    }
+
+    public String getNombreSol() {
+        return nombreSol;
+    }
+
+    public void setNombreSol(String nombreSol) {
+        this.nombreSol = nombreSol;
     }
 
     public String getTipoSolicitud() {
@@ -60,8 +64,6 @@ public class Solicitudes {
     public void setFechaRegistro(Date fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
     }
-
-    
 
     public String getEstado() {
         return estado;
@@ -87,14 +89,6 @@ public class Solicitudes {
         this.pdf = pdf;
     }
 
-    public String getNombreSol() {
-        return nombreSol;
-    }
-
-    public void setNombreSol(String nombreSol) {
-        this.nombreSol = nombreSol;
-    }
-
     public String getUsuario() {
         return usuario;
     }
@@ -102,5 +96,13 @@ public class Solicitudes {
     public void setUsuario(String usuario) {
         this.usuario = usuario;
     }
-    
+
+    public String getRespuesta() {
+        return respuesta;
+    }
+
+    public void setRespuesta(String respuesta) {
+        this.respuesta = respuesta;
+    }
+
 }

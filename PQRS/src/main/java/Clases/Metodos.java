@@ -197,6 +197,7 @@ public class Metodos {
                 sol.setDescripcion(resultSetSolicitud.getString("descripcion"));
                 sol.setPdf(resultSetSolicitud.getString("nombre"));
                 sol.setUsuario(resultSetSolicitud.getString("cedula"));
+                sol.setRespuesta(resultSetSolicitud.getString("respuesta"));
                 array.add(sol);
                 //data.add(row);
             }
@@ -244,14 +245,25 @@ public class Metodos {
 
             HTML += "        <h4>Fecha limite de respuesta: " + fechaLimiteFormateada + "</h4>\n";
         }
-
         if (tipoUsuario.equals("administrador")) {
             HTML += "        <h4>Usuario: " + sol.getUsuario() + "</h4>\n";
         }
 
+        HTML += "    <div class=\"card-body\">\n";
+
+        if (sol.getEstado().equals("Respondido")) {
+            HTML += "        <div>    "
+                    + "            <h3>Respuesta</h3>\n"
+                    + "        </div>\n"
+                    + "        <div>    ";
+            HTML += "            <h4>Descripcion: " + sol.getRespuesta() + "</h4>\n";
+            HTML += "        </div>\n";
+        }
+        HTML += "    </div>\n";
+
         HTML += "    </div>\n"
                 + "    <div class=\"card-footer\">\n";
-        if (tipoUsuario.equals("administrador")) {
+        if (tipoUsuario.equals("administrador") && (sol.getEstado().equals("Por responder"))) {
             HTML += "        <a id='btnVisualizar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Responder Solicitud</a>\n";
         }
         HTML += "    </div>\n"
@@ -368,7 +380,7 @@ public class Metodos {
                 + "                                </div>\n"
                 + "                                <div class=\"idOculto\">\n"
                 + "                                    <label for=\"nombre\">Nombre</label>\n"
-                + "                                    <input type=\"text\" value=\"" + sol.getIdSolicitud()+ "\" id=\"idOculto\" name=\"idOculto\" readonly>\n"
+                + "                                    <input type=\"text\" value=\"" + sol.getIdSolicitud() + "\" id=\"idOculto\" name=\"idOculto\" readonly>\n"
                 + "                                </div>\n"
                 + "                            </div>\n"
                 + "                            <div class=\"col\">\n"
@@ -427,6 +439,7 @@ public class Metodos {
                 solicitud.setDescripcion(resultado.getString("descripcion"));
                 solicitud.setPdf(resultado.getString("idPdf"));
                 solicitud.setUsuario(resultado.getString("idUsuario"));
+                solicitud.setRespuesta(resultado.getString("respuesta"));
                 // Agregar más atributos según sea necesario
             }
 
@@ -471,14 +484,14 @@ public class Metodos {
     public static void editarRespuestaEstado(int idSolicitud, String respuesta, String estado, Connection conn) throws SQLException {
         // Definir la llamada al procedimiento almacenado
         String sql = "{CALL editarRespuesta(?, ?, ?)}";
-        
+
         // Crear el objeto CallableStatement
         try (CallableStatement cs = conn.prepareCall(sql)) {
             // Establecer los parámetros del procedimiento almacenado
             cs.setInt(1, idSolicitud);
             cs.setString(2, respuesta);
             cs.setString(3, estado);
-            
+
             // Ejecutar el procedimiento almacenado
             cs.executeUpdate();
         }
