@@ -81,6 +81,9 @@
             </div>
         </div>
     </div>
+            <a href="#" class="btn btn-danger deleteButton" id="deleteButton" data-titulo="1" >
+  <i class="fas fa-trash"></i>
+</a>
 </main>
 
 <!-- Modal para agregar un tutorial -->
@@ -161,10 +164,9 @@
       </div>
     </div>
 
-  <a href="#" id="btnEditar" data-bs-toggle="modal" data-bs-target="#editarModal">
-                    <i class="ph-plus-bold"></i>
-                    <span>Agregar solicitud</span>
-                </a>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
 <!-- Agrega este script al final de tu archivo HTML -->
 <script>
   // Función para validar el formulario antes de enviarlo
@@ -212,7 +214,44 @@
             }
         });
     });
-    
+    // Seleccionar todos los elementos con la clase "deleteButton" y agregar un event listener a cada uno
+    document.querySelectorAll(".deleteButton").forEach(function (button) {
+        button.addEventListener("click", function () {
+            // Obtener el título del libro desde el atributo "data-titulo"
+            const id = this.getAttribute("data-titulo");
+
+            // Crear un diálogo de confirmación personalizado con SweetAlert2
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+            });
+            // Mostrar el diálogo de confirmación
+            swalWithBootstrapButtons.fire({
+                title: '¿Estás seguro?',
+                text: '¡No podrás revertir esto!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, borrarlo',
+                cancelButtonText: 'No, cancelar ',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirige al servlet con el título como parámetro en la URL
+                    window.location.href = "SvEliminarEditarSolicitud?id=" + encodeURIComponent(id);
+                    // Mostrar un mensaje de cancelación si el usuario decide no eliminar
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    swalWithBootstrapButtons.fire(
+                            'Cancelado',
+                            'Tu libro imaginario está a salvo :)',
+                            'error'
+                            );
+                }
+            });
+        });
+    });
             function llenarInformacn() {
             // Configurar opciones Toastr
             toastr.options = {
@@ -284,6 +323,8 @@
             // Mostrar una notificación Toastr de error
             toastr.error('Solo puedes llenar uno de los campos: Descripción o Subir archivo', '!Ups¡');
         }
+        
+   
 </script>
 
 

@@ -284,8 +284,8 @@ public class Metodos {
                 + "        <h4>Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n"
                 + "        <h4>Estado: " + sol.getEstado() + "</h4>\n"
                 + "        <h4>Descripcion: " + sol.getDescripcion() + "</h4>\n"
-                + "        <a id='btnEditar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\"><i class=\"fa-solid fa-user-pen\"></i></a>"
-                + "        <a href=\"SvEliminarEditarSolicitud?id="+sol.getIdSolicitud()+"\"> Eliminar </a>\n";
+                + "        <a id='btnEditar' class=\"btn btn-warning\" data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\"><i class=\"fa-solid fa-user-pen\"></i></a>"
+                + "        <a href=\"#\" class=\"btn btn-danger deleteButton\" id=\"deleteButton\" data-titulo='" + sol.getIdSolicitud() + "' > <i class=\"fas fa-trash\"></i> </a>\n";
 
         HTML += "    </div>\n"
                 + "</article>"
