@@ -105,36 +105,40 @@
                             if (sol.getEstado().equals(res)) {
 
                                 if (request.getParameter("par") == null && sol.getEstado().equals("Por responder")) {
-                                mensaje = mensaje + 1;
+                                    mensaje = mensaje + 1;
                 %>
                 <%=Metodos.listarAdministradores(sol, request)%>
                 <%
 
                 } else {
                     if (request.getParameter("par").equals(sol.getTipoSolicitud()) && sol.getEstado().equals("Por responder")) {%>
-                    
+
                 <%=Metodos.listarAdministradores(sol, request)%>
-                <% mensaje = mensaje + 1;}
+                <% mensaje = mensaje + 1;
+                        }
                     }
                 } else {
                     if (request.getParameter("par") == null) {
-mensaje = mensaje + 1;
+                        mensaje = mensaje + 1;
                 %>
                 <%=Metodos.listarAdministradores(sol, request)%>
                 <%
-                } else if (request.getParameter("par").equals(sol.getTipoSolicitud())) {mensaje = mensaje + 1;
+                } else if (request.getParameter("par").equals(sol.getTipoSolicitud())) {
+                    mensaje = mensaje + 1;
                 %>
                 <%=Metodos.listarAdministradores(sol, request)%>
                 <%
                         }
                     }
-                } else if (busqueda.contains(sol.getNombreSol()) || busqueda.contains(sol.getDescripcion()) || busqueda.contains(sol.getUsuario())) {mensaje = mensaje + 1;
+                } else if (busqueda.contains(sol.getNombreSol()) || busqueda.contains(sol.getDescripcion()) || busqueda.contains(sol.getUsuario())) {
+                    mensaje = mensaje + 1;
                 %>
                 <%=Metodos.listarAdministradores(sol, request)%>
                 <%
 
                         }
-                    } if (mensaje == 0) {
+                    }
+                    if (mensaje == 0) {
                 %>
 
                 <%= Metodos.mensaje(request)%>

@@ -451,7 +451,7 @@ public class Metodos {
         statement.execute();
     }
 
-    public static String mostrarInfoSolicitud(Solicitudes sol, String correo) {
+    public static String mostrarInfoSolicitud(Solicitudes sol, Usuarios usuario) {
         if (sol == null) {
             throw new IllegalArgumentException("La solicitud no puede ser nula.");
         }
@@ -473,7 +473,7 @@ public class Metodos {
                 + "                            <div class=\"col\">\n"
                 + "                                <div class=\"form-element\">\n"
                 + "                                    <label for=\"correo\">Correo</label>\n"
-                + "                                    <input type=\"text\" value=\"" + correo + "\" id=\"correo\" name=\"correo\" readonly>\n"
+                + "                                    <input type=\"text\" value=\"" + usuario.getCorreo() + "\" id=\"correo\" name=\"correo\" readonly>\n"
                 + "                                </div>\n"
                 + "                            </div>\n"
                 + "                        </div>\n"
@@ -566,6 +566,33 @@ public class Metodos {
         // Devolver el usuario (puede ser nulo si no se encontró ningún usuario con el ID proporcionado)
         return usuario;
     }
+    
+    public static int obtenerUsuarioPorIdSolicitud(int idSolicitud, Connection conn) throws SQLException {
+    // Inicializar el usuario como nulo
+    int usuario = 0;
+
+    // Declarar el PreparedStatement y el ResultSet como variables locales
+    try (PreparedStatement consulta = conn.prepareStatement("SELECT * FROM solicitudes WHERE idSolicitud = ?");) {
+        // Establecer el parámetro en la consulta preparada
+        consulta.setInt(1, idSolicitud);
+
+        // Ejecutar la consulta
+        try (ResultSet resultado = consulta.executeQuery()) {
+            // Verificar si se encontró un usuario con el nombre proporcionado
+            if (resultado.next()) {
+                // Crear un objeto de usuario con los datos obtenidos de la base de datos
+
+                usuario = (resultado.getInt("idUsuario"));
+
+                // Agregar más atributos según sea necesario
+            }
+        }
+    }
+
+    // Devolver el usuario (puede ser nulo si no se encontró ningún usuario con el nombre proporcionado)
+    return usuario;
+}
+
 
     // Método para editar la respuesta de una solicitud en la base de datos
     public static void editarRespuestaEstado(int idSolicitud, String respuesta, String estado, Connection conn) throws SQLException {
