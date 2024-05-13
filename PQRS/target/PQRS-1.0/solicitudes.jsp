@@ -11,6 +11,22 @@
     ArrayList<Solicitudes> a = Metodos.getSolicitudes();
 
 %>
+
+<% 
+    String toastr;
+    toastr = (String) request.getAttribute("toastr");
+    System.out.println(toastr);
+    if(toastr != null && toastr.equals("siPasa")){
+    %>
+    <script>
+    $(document).ready(function () {
+        bienvenida();
+    });
+</script>
+    <%
+    }
+%>
+
 <style>
     <%@include file= "styles/style.css" %>
 
@@ -193,6 +209,31 @@
             });
         });
     });
+    
+            function bienvenida() {
+        // Configurar opciones Toastr
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
+        // Mostrar una notificación Toastr de éxito
+        toastr.success('Bienvenido!', '!Hola¡');
+    }
+    
 </script>
 
 <script>

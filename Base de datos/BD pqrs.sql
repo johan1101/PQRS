@@ -2,7 +2,7 @@
 SELECT IF(EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'pqrs'), 'exists', 'not_exists') AS db_status;
 
 -- Si la base de datos no existe, créala
-CREATE DATABASE IF NOT EXISTS pqrs;
+CREATE DATABASE IF NOT EXISTS pqrs CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Selecciona la base de datos recién creada para realizar operaciones en ella
 USE pqrs;
@@ -41,10 +41,9 @@ CREATE TABLE solicitudes(
     fechaRegistro TIMESTAMP DEFAULT current_timestamp,
     estado VARCHAR(20),
     descripcion TEXT,
-    idPdf INT DEFAULT NULL,
+    pdf TEXT DEFAULT NULL,
     idUsuario INT,
 	respuesta TEXT DEFAULT NULL,
-    FOREIGN KEY (idPdf) REFERENCES pdfs(idPdf),
     FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
 );
 
@@ -78,13 +77,7 @@ INSERT INTO usuarios(nombre, apellido, cedula, contrasena, celular, correo, idRo
  VALUES('Johan', 'Ordoñez', '0000', '0000', '0000', 'johanrealpelibro@gmail.com', '2');
 DELIMITER //
 
-CREATE PROCEDURE AgregarPDF(
-    IN p_nombre VARCHAR(250)
-)
-BEGIN
-    INSERT INTO pdfs(nombre)
-    VALUES (p_nombre);
-END //
+
 
 DELIMITER ;
 
@@ -96,13 +89,13 @@ CREATE PROCEDURE AgregarSolicitud(
     IN p_tipoSolicitud VARCHAR(20),
     IN p_estado VARCHAR(20),
     IN p_descripcion TEXT,
-    IN p_idPdf INT,
+    IN p_pdf TEXT,
     IN p_idUsuario INT,
     IN p_respuesta TEXT
 )
 BEGIN
-    INSERT INTO solicitudes(nombreSolicitud, tipoSolicitud, estado, descripcion, idPdf, idUsuario, respuesta)
-    VALUES(p_nombreSolicitud, p_tipoSolicitud, p_estado, p_descripcion, p_idPdf, p_idUsuario, p_respuesta);
+    INSERT INTO solicitudes(nombreSolicitud, tipoSolicitud, estado, descripcion, pdf, idUsuario, respuesta)
+    VALUES(p_nombreSolicitud, p_tipoSolicitud, p_estado, p_descripcion, p_pdf, p_idUsuario, p_respuesta);
 END //
 
 DELIMITER ;
@@ -124,12 +117,12 @@ DELIMITER ;
 DELIMITER //
 
 CREATE PROCEDURE EditarSolicitud(
-    IN p_idSolicitud INT,EditarSolicitud,
+    IN p_idSolicitud INT,
     IN p_nombreSolicitud VARCHAR(100),
     IN p_tipoSolicitud VARCHAR(20),
     IN p_estado VARCHAR(20),
     IN p_descripcion TEXT,
-    IN p_idPdf INT,
+    IN p_pdf TEXT,
     IN p_idUsuario INT,
     IN p_respuesta TEXT
 )
@@ -140,10 +133,33 @@ BEGIN
         tipoSolicitud = p_tipoSolicitud,
         estado = p_estado,
         descripcion = p_descripcion,
-        idPdf = p_idPdf,
+        pdf = p_pdf,
         idUsuario = p_idUsuario,
         respuesta = p_respuesta
     WHERE idSolicitud = p_idSolicitud;
 END //
 
 DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE editarUsuario(
+    IN p_idUsuario INT,
+    IN p_nombre VARCHAR(100),
+    IN p_apellido VARCHAR(100),
+    IN p_cedula VARCHAR(20),
+    IN p_celular VARCHAR(20),
+    IN p_correo VARCHAR(200)
+)
+BEGIN
+    UPDATE usuarios
+    SET nombre = p_nombre,
+        apellido = p_apellido,
+        cedula = p_cedula,
+        celular = p_celular,
+        correo = p_correo
+    WHERE idUsuario = p_idUsuario;
+END //
+
+DELIMITER ;
+

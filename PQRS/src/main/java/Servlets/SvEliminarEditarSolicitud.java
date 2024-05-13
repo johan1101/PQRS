@@ -7,7 +7,6 @@ package Servlets;
 import Clases.Conexion;
 import Clases.Metodos;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -59,7 +58,6 @@ public class SvEliminarEditarSolicitud extends HttpServlet {
 
         Connection connection = conexion.establecerConexion();
         // Obtén el archivo enviado desde el formulario
-        int idPdf = 0;
         String respuesta = "";
         String descripcion;
         Part filePart = request.getPart("pdf"); // "pdf" debe coincidir con el nombre del campo del formulario
@@ -71,6 +69,7 @@ public class SvEliminarEditarSolicitud extends HttpServlet {
         String estado = "Por responder";
         int idUsuario = (Integer) request.getSession().getAttribute("idUsuario");
         System.out.println(idUsuario);
+        String fileName = "";
 
         //Obtener el contexto del servlet
         ServletContext context = getServletContext();
@@ -78,32 +77,18 @@ public class SvEliminarEditarSolicitud extends HttpServlet {
         // Verifica si se recibió un archivo
         if (filePart != null && filePart.getSize() > 0) {
             try {
-                if(request.getParameter("descripcion").isBlank()){
-                descripcion = metodo.agregarPdf(filePart, context, connection);}
+                descripcion = metodo.agregarPdf(filePart, context, connection);
                 // Obtener el nombre del archivo PDF enviado
-                String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-                idPdf = metodo.buscarIDPDF(connection, fileName);
+                fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+
             } catch (SQLException ex) {
                 Logger.getLogger(SvAgregarSolicitud.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else{
-                String fileName;
-            try {   
-                 idPdf = metodo.buscarIDPDF(connection, Metodos.obtenerSolicitud(id).getPdf());
-                  System.out.println(idPdf);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(SvEliminarEditarSolicitud.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SQLException ex) {
-                Logger.getLogger(SvEliminarEditarSolicitud.class.getName()).log(Level.SEVERE, null, ex);
-            }
-                
-
         }
-        System.out.println("DESSSS "+ descripcion);
         try {
-            metodo.EditarSolicitud(id,nombre, tipoSolicitud, estado, descripcion, idPdf, idUsuario, respuesta, connection);
+            metodo.EditarSolicitud(id,nombre, tipoSolicitud, estado, descripcion, fileName, idUsuario, respuesta, connection);
         } catch (SQLException ex) {
-            Logger.getLogger(SvAgregarSolicitud.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SvEliminarEditarSolicitud.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         response.sendRedirect("usuario.jsp?alert=editado");

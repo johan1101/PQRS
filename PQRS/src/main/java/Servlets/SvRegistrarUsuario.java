@@ -43,6 +43,7 @@ public class SvRegistrarUsuario extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
+        boolean cedulaExistente = false;
 
         Connection conectarBD = conexion.establecerConexion();
 
@@ -54,15 +55,42 @@ public class SvRegistrarUsuario extends HttpServlet {
         String correo = request.getParameter("correo");
         String contrasena = request.getParameter("contrasenia");
         int idRol = (1);
-        
+
         try {
-            metodo.agregarUsuario(cedula, nombre, apellido, celular, correo, contrasena, idRol, conectarBD);
+            cedulaExistente = metodo.verificarExistenciaCedula(cedula, conectarBD);
         } catch (SQLException ex) {
             Logger.getLogger(SvRegistrarUsuario.class.getName()).log(Level.SEVERE, null, ex);
         }
-        String redirigir="index";
-        if(request.getParameter("redireccion")!=null){redirigir="agregar";}
-        response.sendRedirect(redirigir+".jsp");
+
+        if (cedulaExistente == false) {
+            try {
+                metodo.agregarUsuario(cedula, nombre, apellido, celular, correo, contrasena, idRol, conectarBD);
+            } catch (SQLException ex) {
+                Logger.getLogger(SvRegistrarUsuario.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            String redirigir = "index";
+            if (request.getParameter("redireccion") != null) {
+                redirigir = "agregar";
+            }
+
+            String toastr = "registrado";
+            // Establecer el atributo en el objeto HttpServletRequest
+            request.setAttribute("toastr", toastr);
+
+            // Redirigir a la página JSP
+            request.getRequestDispatcher(redirigir + ".jsp").forward(request, response);
+        } else {
+            String redirigir = "index";
+            if (request.getParameter("redireccion") != null) {
+                redirigir = "agregar";
+            }
+            String toastr = "noRegistrado";
+            // Establecer el atributo en el objeto HttpServletRequest
+            request.setAttribute("toastr", toastr);
+
+            // Redirigir a la página JSP
+            request.getRequestDispatcher(redirigir + ".jsp").forward(request, response);
+        }
     }
 
     @Override

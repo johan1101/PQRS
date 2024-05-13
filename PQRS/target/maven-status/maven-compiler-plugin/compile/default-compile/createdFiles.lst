@@ -13,4 +13,5 @@ Servlets\SvEliminarEditarSolicitud.class
 Clases\Solicitudes.class
 Servlets\SvBuscarResponder.class
 Clases\Conexion.class
+Servlets\SvEditarUsuario.class
 Clases\Usuarios.class

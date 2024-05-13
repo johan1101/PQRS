@@ -8,6 +8,39 @@
     <%@include file= "styles/styleLogin.css" %>
 </style>
 
+<% 
+    String toastr;
+    toastr = (String) request.getAttribute("toastr");
+    System.out.println(toastr);
+
+    if(toastr != null && toastr.equals("registrado")){
+    %>
+    <script>
+    $(document).ready(function () {
+        registrado();
+    });
+</script>
+    <%
+    }else if(toastr != null && toastr.equals("noRegistrado")){
+    %>
+    <script>
+    $(document).ready(function () {
+        noRegistrado();
+    });
+</script>
+    <%
+    }else if(toastr != null && toastr.equals("noPasa")){
+    %>
+    <script>
+    $(document).ready(function () {
+        noPasa();
+    });
+</script>
+    <%
+    }
+%>
+
+
 <!--Formulario que se envia por POST -->
 <div class="container" id="container">
     <div class="form-container sign-up">
@@ -15,8 +48,8 @@
             <h1>Crear Cuenta</h1>
             <span>Ingresa tus datos</span>
             <input type="text" class="form-control" id="floatingInputValue" name="cedula" placeholder="Ingrese su cédula" value="" maxlength="10" required pattern="[0-9]+" title="Solo se permiten números">
-            <input type="text" class="form-control" id="floatingInputValue" name="nombre" placeholder="Ingrese su nombre" value="" required>
-            <input type="text" class="form-control" id="floatingInputValue" name="apellido" placeholder="Ingrese su apellido" value="" required>
+            <input type="text" class="form-control" id="floatingInputValue" name="nombre" placeholder="Ingrese su nombre" value="" maxlength="50" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+" title="No se permiten números" required>
+            <input type="text" class="form-control" id="floatingInputValue" name="apellido" placeholder="Ingrese su apellido" value="" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+" title="No se permiten números" required>
             <input type="text" class="form-control" id="floatingInputValue" name="celular" placeholder="Ingrese su número celular" value="" maxlength="10" required pattern="[0-9]+" title="Solo se permiten números">
             <input type="email" class="form-control" id="floatingInputValue" name="correo" placeholder="Ingrese su correo electrónico" value="" required>
             <input type="password" class="form-control" id="floatingPassword" name="contrasenia" placeholder="Ingrese su contraseña" required>
@@ -68,6 +101,77 @@
         container.classList.remove("active");
     });
 
+    function registrado() {
+        // Configurar opciones Toastr
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
+        // Mostrar una notificación Toastr de éxito
+        toastr.success('Se ha registrado exitosamente!', 'Registrado');
+    }
+    
+        function noRegistrado() {
+        // Configurar opciones Toastr
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
+        // Mostrar una notificación Toastr de error
+        toastr.error('Ya existe un usuario con esa cedula', '!Ups¡');
+    }
+    
+            function noPasa() {
+        // Configurar opciones Toastr
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
+        // Mostrar una notificación Toastr de error
+        toastr.error('cedula o contraseña incorrectas', '!Ups¡');
+    }
 </script>
 
 

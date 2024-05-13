@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -44,7 +45,7 @@ public class Metodos {
         statement.executeUpdate();
     }
 
-    public static void validarIngreso(String cedula, String contrasena, Connection connection, HttpServletResponse response, HttpSession session) throws SQLException, IOException {
+    public static void validarIngreso(String cedula, String contrasena, Connection connection, HttpServletResponse response, HttpSession session, HttpServletRequest request) throws SQLException, IOException, ServletException {
         // Consulta SQL para buscar un usuario con la cédula y contraseña proporcionadas
         String sql = "SELECT idUsuario, idRol FROM usuarios WHERE cedula = ? AND contrasena = ?";
 
@@ -71,18 +72,29 @@ public class Metodos {
             if (idRol == 1) { // Si es Usuario
                 tipoUsuario = "usuario";
                 session.setAttribute("tipoUsuario", tipoUsuario);
-                response.sendRedirect("usuario.jsp");
+                String toastr = "siPasa";
+                // Establecer el atributo en el objeto HttpServletRequest
+                request.setAttribute("toastr", toastr);
+                request.getRequestDispatcher("usuario.jsp").forward(request, response);
             } else if (idRol == 2) { // Si es Administrador
                 tipoUsuario = "administrador";
                 session.setAttribute("tipoUsuario", tipoUsuario);
-                response.sendRedirect("solicitudes.jsp");
+                // Redirigir a la página JSP
+                String toastr = "siPasa";
+                // Establecer el atributo en el objeto HttpServletRequest
+                request.setAttribute("toastr", toastr);
+                request.getRequestDispatcher("solicitudes.jsp").forward(request, response);
             }
 
         } else {
             // Credenciales incorrectas
-            // Aquí puedes redirigir a otra página o realizar otras acciones según tu lógica de negocio
-            // Por ejemplo, redirigir a una página de inicio de sesión fallida
-            response.sendRedirect("index.jsp");
+            String toastr = "noPasa";
+            // Establecer el atributo en el objeto HttpServletRequest
+            request.setAttribute("toastr", toastr);
+
+            // Redirigir a la página JSP
+            request.getRequestDispatcher("index.jsp").forward(request, response);
+
         }
     }
 
@@ -119,19 +131,10 @@ public class Metodos {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        agregarPdfBD(connection, fileName);
         return pdfText;
     }
 
-    public static void agregarPdfBD(Connection connection, String fileName) throws SQLException, IOException {
-        // Llamar al procedimiento almacenado para agregar el nombre del PDF a la base de datos
-        try (PreparedStatement statement = connection.prepareStatement("CALL AgregarPDF(?)")) {
-            statement.setString(1, fileName);
-            statement.executeUpdate();
-        }
-    }
-
-    public static void agregarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario, String respuesta, Connection connection) throws SQLException {
+    public static void agregarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, String pdf, int idUsuario, String respuesta, Connection connection) throws SQLException {
 
         // Llamar al procedimiento almacenado
         CallableStatement statement = connection.prepareCall("{CALL AgregarSolicitud(?, ?, ?, ?, ?, ?, ?)}");
@@ -139,10 +142,10 @@ public class Metodos {
         statement.setString(2, tipoSolicitud);
         statement.setString(3, estado);
         statement.setString(4, descripcion);
-        if (idPdf == 0) {
-            statement.setNull(5, java.sql.Types.INTEGER); // Establecer el parámetro como NULL
+        if (pdf.equals("")) {
+            statement.setNull(5, java.sql.Types.VARCHAR); // Establecer el parámetro como NULL
         } else {
-            statement.setInt(5, idPdf); // Establecer el ID del PDF si es diferente de 0
+            statement.setString(5, pdf); // Establecer el ID del PDF si es diferente de 0
         }
         statement.setInt(6, idUsuario);
         if (respuesta.equals("")) {
@@ -153,24 +156,6 @@ public class Metodos {
         statement.execute();
     }
 
-    // Método para buscar el ID de un PDF por su nombre
-    public static int buscarIDPDF(Connection connection, String nombrePDF) throws SQLException {
-        int idPDF = -1; // Valor predeterminado si el PDF no se encuentra
-
-        String sql = "SELECT idPdf FROM pdfs WHERE nombre = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, nombrePDF);
-            ResultSet resultSet = statement.executeQuery();
-
-            // Si se encuentra un resultado, obtener el ID del PDF
-            if (resultSet.next()) {
-                idPDF = resultSet.getInt("idPdf");
-            }
-        }
-
-        return idPDF;
-    }
 
     public static ArrayList<Solicitudes> getSolicitudes() throws ClassNotFoundException {
         ArrayList<Solicitudes> array = new ArrayList();
@@ -179,7 +164,7 @@ public class Metodos {
         try {
 
             // Consulta SQL para obtener datos de la tabla tutorial
-            String sqlTutorial = "SELECT * FROM solicitudes left join pdfs on pdfs.idPdf=solicitudes.idPdf left join usuarios  on usuarios.idUsuario=solicitudes.idUsuario";
+            String sqlTutorial = "SELECT * FROM solicitudes left join usuarios  on usuarios.idUsuario=solicitudes.idUsuario";
 
             // Crear una declaración para la consulta de tutoriales
             Statement statement = connection.createStatement();
@@ -195,7 +180,7 @@ public class Metodos {
                 sol.setFechaRegistro(resultSetSolicitud.getDate("fechaRegistro"));
                 sol.setEstado(resultSetSolicitud.getString("estado"));
                 sol.setDescripcion(resultSetSolicitud.getString("descripcion"));
-                sol.setPdf(resultSetSolicitud.getString("nombre"));
+                sol.setPdf(resultSetSolicitud.getString("pdf"));
                 sol.setUsuario(resultSetSolicitud.getString("cedula"));
                 sol.setRespuesta(resultSetSolicitud.getString("respuesta"));
                 array.add(sol);
@@ -388,9 +373,9 @@ public class Metodos {
         String HTML = "<article class=\"card\">\n"
                 + "    <div class=\"card-footer\">\n"
                 + "</div>"
-        + "<br>";
+                + "<br>";
         HTML += "        <h4 style=\"text-align: center;\"><span class=\"short-description\">No se han registrado solicitudes</span></h4>\n"
-                 + "<br>"
+                + "<br>"
                 + "    <div class=\"card-footer\">\n";
         HTML += "    </div>\n"
                 + "</article>"
@@ -410,7 +395,7 @@ public class Metodos {
         return array2;
     }
 
-    public static void EditarSolicitud(int id, String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario, String respuesta, Connection connection) throws SQLException {
+    public static void EditarSolicitud(int id, String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, String pdf, int idUsuario, String respuesta, Connection connection) throws SQLException {
 
         // Llamar al procedimiento almacenado
         CallableStatement statement = connection.prepareCall("{CALL editarSolicitud(?,?, ?, ?, ?, ?, ?, ?)}");
@@ -419,10 +404,10 @@ public class Metodos {
         statement.setString(3, tipoSolicitud);
         statement.setString(4, estado);
         statement.setString(5, descripcion);
-        if (idPdf == 0) {
-            statement.setNull(6, java.sql.Types.INTEGER); // Establecer el parámetro como NULL
+        if (pdf.equals("")) {
+            statement.setNull(6, java.sql.Types.VARCHAR); // Establecer el parámetro como NULL
         } else {
-            statement.setInt(6, idPdf); // Establecer el ID del PDF si es diferente de 0
+            statement.setString(6, pdf); // Establecer el ID del PDF si es diferente de 0
         }
         statement.setInt(7, idUsuario);
         if (respuesta.equals("")) {
@@ -434,7 +419,7 @@ public class Metodos {
 
     }
 
-    public static void eliminarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario, Connection connection) throws SQLException {
+    public static void eliminarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, String pdf, int idUsuario, Connection connection) throws SQLException {
 
         // Llamar al procedimiento almacenado
         CallableStatement statement = connection.prepareCall("{CALL AgregarSolicitud(?, ?, ?, ?, ?, ?)}");
@@ -442,10 +427,10 @@ public class Metodos {
         statement.setString(2, tipoSolicitud);
         statement.setString(3, estado);
         statement.setString(4, descripcion);
-        if (idPdf == 0) {
-            statement.setNull(5, java.sql.Types.INTEGER); // Establecer el parámetro como NULL
+        if (pdf == null) {
+            statement.setNull(5, java.sql.Types.VARCHAR); // Establecer el parámetro como NULL
         } else {
-            statement.setInt(5, idPdf); // Establecer el ID del PDF si es diferente de 0
+            statement.setString(5, pdf); // Establecer el ID del PDF si es diferente de 0
         }
         statement.setInt(6, idUsuario);
         statement.execute();
@@ -524,7 +509,7 @@ public class Metodos {
                 solicitud.setFechaRegistro(resultado.getDate("fechaRegistro"));
                 solicitud.setEstado(resultado.getString("estado"));
                 solicitud.setDescripcion(resultado.getString("descripcion"));
-                solicitud.setPdf(resultado.getString("idPdf"));
+                solicitud.setPdf(resultado.getString("pdf"));
                 solicitud.setUsuario(resultado.getString("idUsuario"));
                 solicitud.setRespuesta(resultado.getString("respuesta"));
                 solicitud.setTipoSolicitud(resultado.getString("tipoSolicitud"));
@@ -566,33 +551,32 @@ public class Metodos {
         // Devolver el usuario (puede ser nulo si no se encontró ningún usuario con el ID proporcionado)
         return usuario;
     }
-    
+
     public static int obtenerUsuarioPorIdSolicitud(int idSolicitud, Connection conn) throws SQLException {
-    // Inicializar el usuario como nulo
-    int usuario = 0;
+        // Inicializar el usuario como nulo
+        int usuario = 0;
 
-    // Declarar el PreparedStatement y el ResultSet como variables locales
-    try (PreparedStatement consulta = conn.prepareStatement("SELECT * FROM solicitudes WHERE idSolicitud = ?");) {
-        // Establecer el parámetro en la consulta preparada
-        consulta.setInt(1, idSolicitud);
+        // Declarar el PreparedStatement y el ResultSet como variables locales
+        try (PreparedStatement consulta = conn.prepareStatement("SELECT * FROM solicitudes WHERE idSolicitud = ?");) {
+            // Establecer el parámetro en la consulta preparada
+            consulta.setInt(1, idSolicitud);
 
-        // Ejecutar la consulta
-        try (ResultSet resultado = consulta.executeQuery()) {
-            // Verificar si se encontró un usuario con el nombre proporcionado
-            if (resultado.next()) {
-                // Crear un objeto de usuario con los datos obtenidos de la base de datos
+            // Ejecutar la consulta
+            try (ResultSet resultado = consulta.executeQuery()) {
+                // Verificar si se encontró un usuario con el nombre proporcionado
+                if (resultado.next()) {
+                    // Crear un objeto de usuario con los datos obtenidos de la base de datos
 
-                usuario = (resultado.getInt("idUsuario"));
+                    usuario = (resultado.getInt("idUsuario"));
 
-                // Agregar más atributos según sea necesario
+                    // Agregar más atributos según sea necesario
+                }
             }
         }
+
+        // Devolver el usuario (puede ser nulo si no se encontró ningún usuario con el nombre proporcionado)
+        return usuario;
     }
-
-    // Devolver el usuario (puede ser nulo si no se encontró ningún usuario con el nombre proporcionado)
-    return usuario;
-}
-
 
     // Método para editar la respuesta de una solicitud en la base de datos
     public static void editarRespuestaEstado(int idSolicitud, String respuesta, String estado, Connection conn) throws SQLException {
@@ -705,7 +689,7 @@ public class Metodos {
         try {
 
             // Consulta SQL para obtener datos de la tabla tutorial
-            String sqlTutorial = "SELECT * FROM solicitudes left join pdfs on pdfs.idPdf=solicitudes.idPdf left join usuarios  on usuarios.idUsuario=solicitudes.idUsuario WHERE idSolicitud=" + id;
+            String sqlTutorial = "SELECT * FROM solicitudes left join usuarios  on usuarios.idUsuario=solicitudes.idUsuario WHERE idSolicitud=" + id;
 
             // Crear una declaración para la consulta de tutoriales
             Statement statement = connection.createStatement();
@@ -721,7 +705,7 @@ public class Metodos {
                 sol.setFechaRegistro(resultSetSolicitud.getDate("fechaRegistro"));
                 sol.setEstado(resultSetSolicitud.getString("estado"));
                 sol.setDescripcion(resultSetSolicitud.getString("descripcion"));
-                sol.setPdf(resultSetSolicitud.getString("nombre"));
+                sol.setPdf(resultSetSolicitud.getString("pdf"));
                 sol.setUsuario(resultSetSolicitud.getString("cedula"));
                 sol.setRespuesta(resultSetSolicitud.getString("respuesta"));
             }
@@ -736,5 +720,101 @@ public class Metodos {
             // Manejo de excepciones
         }
         return sol;
+    }
+
+    public static String mostrarInformacionUsuario(Usuarios usuario) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("<div class=\"form\">");
+        sb.append("<div>");
+        sb.append("<span><img src=\"img/icono.png\" /></span>");
+        sb.append("<h3>Editar información</h3>");
+        sb.append("</div>");
+        sb.append("<hr>");
+        sb.append("<div class=\"row\">");
+        sb.append("<div class=\"col\">");
+        sb.append("<div class=\"form-element\">");
+        sb.append("<label for=\"nombre\">Nombre</label>");
+        sb.append("<input type=\"text\" id=\"nombre\" value=\"").append(usuario.getNombre()).append("\" name=\"nombre\" placeholder=\"Ingresa el nuevo nombre\" maxlength=\"50\" required pattern=\"[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+\" title=\"No se permiten números\" required>");
+        sb.append("</div>");
+        sb.append("</div>");
+        sb.append("<div class=\"col\">");
+        sb.append("<div class=\"form-element\">");
+        sb.append("<label for=\"apellido\">Apellido</label>");
+        sb.append("<input type=\"text\" id=\"apellido\" value=\"").append(usuario.getApellido()).append("\" name=\"apellido\" placeholder=\"Ingresa el nuevo apellido\" maxlength=\"50\" required pattern=\"[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+\" title=\"No se permiten números\" required>");
+        sb.append("</div>");
+        sb.append("</div>");
+        sb.append("</div>");
+        sb.append("<div class=\"row\">");
+        sb.append("<div class=\"col\">");
+        sb.append("<div class=\"form-element\">");
+        sb.append("<label for=\"cedula\">Cédula</label>");
+        sb.append("<input type=\"text\" id=\"cedula\" value=\"").append(usuario.getCedula()).append("\" name=\"cedula\" placeholder=\"Ingresa la nueva cedula\" maxlength=\"10\" required pattern=\"[0-9]+\" title=\"Solo se permiten números\" required>");
+        sb.append("</div>");
+        sb.append("</div>");
+        sb.append("<div class=\"col\">");
+        sb.append("<div class=\"form-element\">");
+        sb.append("<label for=\"celular\">Celular</label>");
+        sb.append("<input type=\"text\" id=\"celular\" value=\"").append(usuario.getCelular()).append("\" name=\"celular\" placeholder=\"Ingresa el nuevo número celular\" maxlength=\"50\" required pattern=\"[0-9]+\" title=\"Solo se permiten números\" required>");
+        sb.append("</div>");
+        sb.append("</div>");
+        sb.append("</div>");
+        sb.append("<div class=\"row\">");
+        sb.append("<div class=\"col\">");
+        sb.append("<div class=\"form-element\">");
+        sb.append("<label for=\"correo\">Correo</label>");
+        sb.append("<input type=\"text\" id=\"correo\" value=\"").append(usuario.getCorreo()).append("\" name=\"correo\" placeholder=\"Ingresa el nuevo correo\" maxlength=\"50\" required required>");
+        sb.append("</div>");
+        sb.append("</div>");
+        sb.append("</div>");
+        sb.append("<div class=\"row\">");
+        sb.append("<div class=\"col\">");
+        sb.append("<div class=\"form-element\">");
+        sb.append("<button type=\"submit\">Editar</button>");
+        sb.append("</div>");
+        sb.append("</div>");
+        sb.append("</div>");
+        sb.append("</div>");
+
+        return sb.toString();
+    }
+
+    public void editarUsuario(int idUsuario, String nombre, String apellido, String cedula, String celular, String correo, Connection conn) throws SQLException {
+
+        String sql = "CALL editarUsuario(?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idUsuario);
+            stmt.setString(2, nombre);
+            stmt.setString(3, apellido);
+            stmt.setString(4, cedula);
+            stmt.setString(5, celular);
+            stmt.setString(6, correo);
+            stmt.executeUpdate();
+        }
+
+    }
+
+    public static boolean verificarExistenciaCedula(String cedula, Connection conn) throws SQLException {
+        boolean cedulaExistente = false;
+
+        // Consulta SQL para verificar si la cédula ya existe en la base de datos
+        String consultaSQL = "SELECT * FROM usuarios WHERE cedula = ?";
+
+        // Declarar el PreparedStatement y el ResultSet como variables locales
+        try (PreparedStatement consulta = conn.prepareStatement(consultaSQL)) {
+            // Establecer el parámetro en la consulta preparada
+            consulta.setString(1, cedula);
+
+            // Ejecutar la consulta
+            try (ResultSet resultado = consulta.executeQuery()) {
+                // Verificar si se encontró alguna fila en el resultado
+                if (resultado.next()) {
+                    // La cédula ya existe en la base de datos
+                    cedulaExistente = true;
+                }
+            }
+        }
+
+        return cedulaExistente;
     }
 }

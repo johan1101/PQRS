@@ -9,6 +9,22 @@
     <%@include file= "styles/style.css" %>
 </style>
 <!-- partial:index.partial.html -->
+
+<% 
+    String toastr;
+    toastr = (String) request.getAttribute("toastr");
+
+    if(toastr != null && toastr.equals("siPasa")){
+    %>
+    <script>
+    $(document).ready(function () {
+        bienvenida();
+    });
+</script>
+    <%
+    }
+%>
+
 <%
     ArrayList<Solicitudes> a = Metodos.SolicitudesUsuario((String) session.getAttribute("cedula"));
 %>
@@ -187,6 +203,7 @@
         </div>
     </div>
 </form>
+
 <!-- Modal Editar -->
 <form class="row g-3 needs-validation"  action="SvEliminarEditarSolicitud" method="POST"  enctype="multipart/form-data" " novalidate>
     <div class="modal fade" id="editarModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -372,6 +389,30 @@
             });
         });
     });
+    
+        function bienvenida() {
+        // Configurar opciones Toastr
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
+        // Mostrar una notificación Toastr de éxito
+        toastr.success('Bienvenido!', '!Hola¡');
+    }
 
 </script>
 
