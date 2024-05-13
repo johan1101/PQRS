@@ -8,7 +8,7 @@ public class Conexion {
     public Connection establecerConexion() {
         String url = "jdbc:mysql://localhost:3306/pqrs?serverTimeZone=utc";
         String user = "root";
-        String password = "admin";
+        String password = "18131707";
         Connection conn = null;
 
         try {

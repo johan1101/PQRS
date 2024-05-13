@@ -68,7 +68,6 @@
             </div>
             <div class="header-navigation">
                 <nav class="header-navigation-links">
-                    <a href="administrador.jsp" > Home </a>
                     <a href="solicitudes.jsp?res=no"> Solicitudes </a>
                     <a href="agregar.jsp"> Agregar </a>
 

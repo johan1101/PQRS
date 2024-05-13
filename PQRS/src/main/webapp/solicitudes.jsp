@@ -13,9 +13,14 @@
 %>
 <style>
     <%@include file= "styles/style.css" %>
-    
-        .idOculto {
+
+    .idOculto {
         display: none; /* Esto ocultará el elemento con la clase 'idOculto' */
+
+        .article-container {
+            max-width: 400px; /* Puedes ajustar este valor según tu preferencia */
+            margin: 0 auto; /* Para centrar el artículo horizontalmente en la página */
+        }
     }
 </style>
 <!-- partial:index.partial.html -->
@@ -31,7 +36,6 @@
         </div>
         <div class="header-navigation">
             <nav class="header-navigation-links">
-                <a href="administrador.jsp" > Home </a>
                 <a href="solicitudes.jsp?res=no"> Solicitudes </a>
                 <a href="agregar.jsp"> Agregar </a>
 
@@ -94,42 +98,47 @@
             <div class="content-main">
 
                 <%
-
+                    int mensaje = 0;
                     for (Solicitudes sol : a) {
 
                         if (busqueda == null) {
                             if (sol.getEstado().equals(res)) {
 
-                                if (request.getParameter("par") == null) {
+                                if (request.getParameter("par") == null && sol.getEstado().equals("Por responder")) {
+                                mensaje = mensaje + 1;
                 %>
                 <%=Metodos.listarAdministradores(sol, request)%>
                 <%
 
                 } else {
-                    if (request.getParameter("par").equals(sol.getTipoSolicitud())) {%>
+                    if (request.getParameter("par").equals(sol.getTipoSolicitud()) && sol.getEstado().equals("Por responder")) {%>
+                    
                 <%=Metodos.listarAdministradores(sol, request)%>
-                <%}
+                <% mensaje = mensaje + 1;}
                     }
                 } else {
                     if (request.getParameter("par") == null) {
-
+mensaje = mensaje + 1;
                 %>
                 <%=Metodos.listarAdministradores(sol, request)%>
                 <%
-                } else if (request.getParameter("par").equals(sol.getTipoSolicitud())) {
+                } else if (request.getParameter("par").equals(sol.getTipoSolicitud())) {mensaje = mensaje + 1;
                 %>
                 <%=Metodos.listarAdministradores(sol, request)%>
                 <%
                         }
                     }
-                } else if (busqueda.contains(sol.getNombreSol()) || busqueda.contains(sol.getDescripcion()) || busqueda.contains(sol.getUsuario())) {
+                } else if (busqueda.contains(sol.getNombreSol()) || busqueda.contains(sol.getDescripcion()) || busqueda.contains(sol.getUsuario())) {mensaje = mensaje + 1;
                 %>
                 <%=Metodos.listarAdministradores(sol, request)%>
                 <%
 
                         }
-                    }
+                    } if (mensaje == 0) {
                 %>
+
+                <%= Metodos.mensaje(request)%>
+                <% }%>
             </div>
         </div>
     </div>
@@ -144,7 +153,7 @@
                 <div class="popup">
                     <div class="close-btn btn-close" data-bs-dismiss="modal">&times;</div>
                     <div class="tuto-details" id="tuto-details">
-                        
+
                     </div>
                 </div>
             </div>
@@ -165,6 +174,19 @@
             error: function () {
                 console.log('Error al realizar la solicitud de visualización.');
             }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var expandirEnlaces = document.querySelectorAll('.expandir-descripcion');
+        expandirEnlaces.forEach(function (enlace) {
+            enlace.addEventListener('click', function (event) {
+                event.preventDefault();
+                var targetId = this.getAttribute('data-target');
+                var descripcionCompleta = this.getAttribute('data-full-description');
+                document.getElementById(targetId).innerHTML = 'Descripcion: <span class="full-description">' + descripcionCompleta + '</span>';
+                this.style.display = 'none';
+            });
         });
     });
 </script>

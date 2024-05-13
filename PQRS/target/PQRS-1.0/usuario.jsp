@@ -9,10 +9,8 @@
     <%@include file= "styles/style.css" %>
 </style>
 <!-- partial:index.partial.html -->
-<%  System.out.println((String) session.getAttribute("cedula"));
-     ArrayList<Solicitudes> a=Metodos.SolicitudesUsuario((String) session.getAttribute("cedula"));
-
-     
+<%
+    ArrayList<Solicitudes> a = Metodos.SolicitudesUsuario((String) session.getAttribute("cedula"));
 %>
 <header class="header">
     <div class="header-content responsive-wrapper">
@@ -26,6 +24,10 @@
         </div>
         <div class="header-navigation">
             <div class="header-navigation-actions">
+                <a href="index.jsp" class="button">
+                    <i class="ph-lightning-bold"></i>
+                    <span>Cerrar Sesion</span>
+                </a>
             </div>
         </div>
         <a href="#" class="button">
@@ -48,7 +50,7 @@
         </div>
         <div class="horizontal-tabs">
             <a href="perfilUsuario.jsp">Perfil</a>
-            <a href="usuario.jsp" class="active">Solicitudes</a>
+            <a href="usuario.jsp?res=no"> Solicitudes </a>
             <a href="#">Respuestas</a>
         </div>
         <div class="content-header">
@@ -63,27 +65,69 @@
                 </a>
             </div>
         </div>
+
+        <%                String res = request.getParameter("res");
+            String busqueda = request.getParameter("busqueda");
+        %>
         <div class="content">
             <div class="content-panel">
                 <div class="vertical-tabs">
-                    <a href="#" class="active">Peticiones</a>
-                    <a href="#">Quejas</a>
-                    <a href="#">Reclamos</a>
-                    <a href="#">Sugerencias</a>
+                    <a href="usuario.jsp?res=<%=res%>" <%if (request.getParameter("par") == null) {%> class="active" <%}%>>Todas</a>
+                    <a href="usuario.jsp?par=Peticion&res=<%=res%>" <%if (request.getParameter("par") != null && request.getParameter("par").equals("Peticion")) {%> class="active" <%}%>>Peticiones</a>
+                    <a href="usuario.jsp?par=Queja&res=<%=res%>" <%if (request.getParameter("par") != null && request.getParameter("par").equals("Queja")) {%> class="active" <%}%>>Quejas</a>
+                    <a href="usuario.jsp?par=Reclamo&res=<%=res%>" <%if (request.getParameter("par") != null && request.getParameter("par").equals("Reclamo")) {%> class="active" <%}%>>Reclamos</a>
+                    <a href="usuario.jsp?par=Sugerencia&res=<%=res%>" <%if (request.getParameter("par") != null && request.getParameter("par").equals("Sugerencia")) {%> class="active" <%}%>>Sugerencias </a>
                 </div>
             </div>
             <div class="content-main">
-                     <% 
-                    for (Solicitudes sol: a) {
+
+                <%
+                    int mensaje = 0;
+                    Metodos.mensaje(request);
+                    for (Solicitudes sol : a) {
+
+                        if (busqueda == null) {
+                            if (sol.getEstado().equals(res)) {
+
+                                if (request.getParameter("par") == null) {
                 %>
-                     <%=Metodos.listarUsuario(sol, request)%>
-                     <%}%>
+                <%=Metodos.listarUsuario(sol, request)%>
+                <%
+                    mensaje = mensaje + 1;
+                } else {
+                    if (request.getParameter("par").equals(sol.getTipoSolicitud())) {%>
+                <%=Metodos.listarUsuario(sol, request)%>
+                <%
+                            mensaje = mensaje + 1;
+                        }
+                    }
+                } else {
+                    if (request.getParameter("par") == null) {
+                        mensaje = mensaje + 1;
+                %>
+                <%=Metodos.listarUsuario(sol, request)%>
+                <%
+                } else if (request.getParameter("par").equals(sol.getTipoSolicitud())) {
+                %>
+                <%=Metodos.listarUsuario(sol, request)%>
+                <%                    mensaje = mensaje + 1;
+                        }
+                    }
+                } else if (busqueda.contains(sol.getNombreSol()) || busqueda.contains(sol.getDescripcion()) || busqueda.contains(sol.getUsuario())) {
+                %>
+                <%=Metodos.listarUsuario(sol, request)%>
+                <%                    mensaje = mensaje + 1;
+
+                        }
+                    }
+                    if (mensaje == 0) {
+                %>
+
+                <%= Metodos.mensaje(request)%>
+                <% }%>
             </div>
         </div>
     </div>
-            <a href="#" class="btn btn-danger deleteButton" id="deleteButton" data-titulo="1" >
-  <i class="fas fa-trash"></i>
-</a>
 </main>
 
 <!-- Modal para agregar un tutorial -->
@@ -143,33 +187,33 @@
         </div>
     </div>
 </form>
- <!-- Modal Editar -->
+<!-- Modal Editar -->
 <form class="row g-3 needs-validation"  action="SvEliminarEditarSolicitud" method="POST"  enctype="multipart/form-data" " novalidate>
     <div class="modal fade" id="editarModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered custom-modal-size">
             <div class="modal-content">
                 <div class="popup">
                     <div class="close-btn btn-close" data-bs-dismiss="modal">&times;</div>
-          <div class="modal-body">
-                  
-                    <div id="editar-details">
-                            <!-- Contenido dinámico: Aquí se mostrarán los detalles a editar -->
-                    </div>
-                       
-                </div>
-          <div class="modal-footer">
+                    <div class="modal-body">
 
-          </div>
+                        <div id="editar-details">
+                            <!-- Contenido dinámico: Aquí se mostrarán los detalles a editar -->
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 </form>
 
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 <!-- Agrega este script al final de tu archivo HTML -->
 <script>
-  // Función para validar el formulario antes de enviarlo
+    // Función para validar el formulario antes de enviarlo
     function validarFormulario() {
         // Obtener los valores de la descripción y del archivo PDF
         var descripcion = document.getElementById("descripcion").value;
@@ -178,16 +222,8 @@
         // Verificar si tanto la descripción como el archivo PDF están vacíos
         if (descripcion.trim() === "" && pdf.trim() === "") {
             // Mostrar un mensaje de error
-            
-            llenarInformacion();
-            // Detener el envío del formulario
-            return false;
-        }
 
-        // Si se ha ingresado información en la descripción y se ha seleccionado un archivo PDF
-        if (descripcion.trim() !== "" && pdf.trim() !== "") {
-            // Mostrar un mensaje de error
-            muchaInformacion();
+            llenarInformacion();
             // Detener el envío del formulario
             return false;
         }
@@ -196,10 +232,10 @@
         // Continuar con el envío del formulario
         return true;
     }
-    
-     /**
-    * Funcion editar
-    */
+
+    /**
+     * Funcion editar
+     */
     $(document).on('click', '#btnEditar', function () {
         var idMostrado = $(this).attr('data-nombre'); // Obtiene el valor del atributo data-nombre del botón
         $.ajax({
@@ -252,79 +288,91 @@
             });
         });
     });
-            function llenarInformacn() {
-            // Configurar opciones Toastr
-            toastr.options = {
-                "closeButton": false,
-                "debug": false,
-                "newestOnTop": false,
-                "progressBar": false,
-                "positionClass": "toast-top-center",
-                "preventDuplicates": false,
-                "onclick": null,
-                "showDuration": "300",
-                "hideDuration": "1000",
-                "timeOut": "5000",
-                "extendedTimeOut": "1000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            };
+    function llenarInformacn() {
+        // Configurar opciones Toastr
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
 
-            // Mostrar una notificación Toastr de éxito
-            toastr.success('Se ha editado exitosamente!', 'Editado');
-        }
-        
-               function llenarInformacion() {
-            // Configurar opciones Toastr
-            toastr.options = {
-                "closeButton": false,
-                "debug": false,
-                "newestOnTop": false,
-                "progressBar": false,
-                "positionClass": "toast-top-center",
-                "preventDuplicates": false,
-                "onclick": null,
-                "showDuration": "300",
-                "hideDuration": "1000",
-                "timeOut": "5000",
-                "extendedTimeOut": "1000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            };
+        // Mostrar una notificación Toastr de éxito
+        toastr.success('Se ha editado exitosamente!', 'Editado');
+    }
 
-            // Mostrar una notificación Toastr de error
-            toastr.error('Debes llenar al menos uno de los campos: Descripción o Subir archivo', '!Ups¡');
-        }
-        
-              function muchaInformacion() {
-            // Configurar opciones Toastr
-            toastr.options = {
-                "closeButton": false,
-                "debug": false,
-                "newestOnTop": false,
-                "progressBar": false,
-                "positionClass": "toast-top-center",
-                "preventDuplicates": false,
-                "onclick": null,
-                "showDuration": "300",
-                "hideDuration": "1000",
-                "timeOut": "5000",
-                "extendedTimeOut": "1000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            };
+    function llenarInformacion() {
+        // Configurar opciones Toastr
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
 
-            // Mostrar una notificación Toastr de error
-            toastr.error('Solo puedes llenar uno de los campos: Descripción o Subir archivo', '!Ups¡');
-        }
-        
-   
+        // Mostrar una notificación Toastr de error
+        toastr.error('Debes llenar al menos uno de los campos: Descripción o Subir archivo', '!Ups¡');
+    }
+
+    function muchaInformacion() {
+        // Configurar opciones Toastr
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
+        // Mostrar una notificación Toastr de error
+        toastr.error('Solo puedes llenar uno de los campos: Descripción o Subir archivo', '!Ups¡');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var expandirEnlaces = document.querySelectorAll('.expandir-descripcion');
+        expandirEnlaces.forEach(function (enlace) {
+            enlace.addEventListener('click', function (event) {
+                event.preventDefault();
+                var targetId = this.getAttribute('data-target');
+                var descripcionCompleta = this.getAttribute('data-full-description');
+                document.getElementById(targetId).innerHTML = 'Descripcion: <span class="full-description">' + descripcionCompleta + '</span>';
+                this.style.display = 'none';
+            });
+        });
+    });
+
 </script>
 
 

@@ -75,7 +75,7 @@ public class Metodos {
             } else if (idRol == 2) { // Si es Administrador
                 tipoUsuario = "administrador";
                 session.setAttribute("tipoUsuario", tipoUsuario);
-                response.sendRedirect("administrador.jsp");
+                response.sendRedirect("solicitudes.jsp");
             }
 
         } else {
@@ -216,20 +216,132 @@ public class Metodos {
     }
 
     public static String listarAdministradores(Solicitudes sol, HttpServletRequest request) {
+
+        // Inicializar fechaLimite como null
+        Calendar fechaLimite = null;
+
+        String tipoUsuario = (String) request.getSession().getAttribute("tipoUsuario");
+        String HTML = "<article class=\"card article-container\">\n"
+                + "    <div class=\"card-header\">\n"
+                + "        <div>                                \n"
+                + "            <h3 style=\"text-align: justify;\">Nombre: " + sol.getNombreSol() + "</h3>\n"
+                + "        </div>\n"
+                + "    </div>\n"
+                + "    <div class=\"card-body\">\n"
+                + "        <h4 style=\"text-align: justify;\">Tipo Solicitud: " + sol.getTipoSolicitud() + "</h4>\n"
+                + "        <h4 style=\"text-align: justify;\">Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n"
+                + "        <h4 style=\"text-align: justify;\">Estado: " + sol.getEstado() + "</h4>\n";
+        if (sol.getPdf() != null) {
+            HTML += "        <h4 style=\"text-align: justify;\">PDF:</h4>\n";
+            // Mostrar el PDF como una imagen y proporcionar un enlace de descarga
+            HTML += "    <div class=\"pdf-container\" style=\"width: 100px; height: 120px; margin-left: 80px; margin-top: -30px;\">\n";
+            HTML += "        <a href=\"pdfs/" + sol.getPdf() + "\" download>\n";
+            HTML += "            <img src=\"img/pdf.png\" alt=\"PDF\">\n";
+            HTML += "        </a>\n";
+            HTML += "    </div>\n";
+        }
+        String descripcion = sol.getDescripcion();
+        String idDescripcion = "descripcion-" + sol.getIdSolicitud(); // Genera un ID único para cada descripción
+        String descripcionAbreviada = descripcion.length() > 300 ? descripcion.substring(0, 300) + "..." : descripcion;
+
+        HTML += "        <h4 id=\"" + idDescripcion + "\" style=\"text-align: justify;\">Descripcion: <span class=\"short-description\">" + descripcionAbreviada + "</span></h4>\n";
+        if (descripcion.length() > 300) {
+            HTML += "        <h6><a href=\"#\" class=\"expandir-descripcion\" data-target=\"" + idDescripcion + "\" data-full-description=\"" + descripcion + "\">Leer más</a></h6>\n"
+                    + "<br>";
+        }
+
+        // Verificar si se necesita calcular la fecha límite
+        if (sol.getTipoSolicitud().equals("Peticion")) {
+            Date fechaActual = sol.getFechaRegistro();
+            // Crear una instancia de Calendar
+            fechaLimite = Calendar.getInstance();
+            // Establecer la fecha actual en el Calendar
+            fechaLimite.setTime(fechaActual);
+            // Sumar 15 días a la fecha actual
+            fechaLimite.add(Calendar.DAY_OF_MONTH, 15);
+
+            // Formatear la fecha límite
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String fechaLimiteFormateada = dateFormat.format(fechaLimite.getTime());
+
+            HTML += "        <h4 style=\"text-align: justify;\">Fecha limite de respuesta: " + fechaLimiteFormateada + "</h4>\n";
+        }
+
+        if (tipoUsuario.equals("administrador")) {
+            HTML += "        <h4 style=\"text-align: justify;\">Usuario: " + sol.getUsuario() + "</h4>\n"
+                    + "<hr>";
+        }
+
+        HTML += "    <div class=\"card-body\">\n";
+
+        if (sol.getEstado().equals("Respondido")) {
+            HTML += "        <div>    "
+                    + "            <h3>Respuesta</h3>\n"
+                    + "        </div>\n"
+                    + "        <div>    ";
+            HTML += "            <h4 style=\"text-align: justify;\">Descripcion: " + sol.getRespuesta() + "</h4>\n";
+            HTML += "        </div>\n";
+        }
+        HTML += "    </div>\n";
+
+        HTML += "    </div>\n"
+                + "    <div class=\"card-footer\">\n";
+
+        if (tipoUsuario.equals("administrador") && (sol.getEstado().equals("Por responder"))) {
+            // Verificar si la fecha límite no es nula y si la fecha de registro es anterior a la fecha límite
+            HTML += "        <a id='btnVisualizar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Responder Solicitud</a>\n";
+
+        }
+        HTML += "    </div>\n"
+                + "</article>"
+                + "<br>";
+        return HTML;
+    }
+
+    public static String listarUsuario(Solicitudes sol, HttpServletRequest request) {
         String tipoUsuario = (String) request.getSession().getAttribute("tipoUsuario");
         String HTML = "<article class=\"card\">\n"
                 + "    <div class=\"card-header\">\n"
                 + "        <div>                                \n"
                 + "            <h3>Nombre: " + sol.getNombreSol() + "</h3>\n"
                 + "        </div>\n"
+                + "        <label class=\"toggle\">\n"
+                + "            <div class='btn-group'>\n"
+                + "                <button type='button' class='btn btn-secondary dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>\n"
+                + "                    Opciones\n"
+                + "                </button>\n"
+                + "                <ul class='dropdown-menu'>\n";
+        if (!sol.getEstado().equals("Respondido")) {
+            HTML += "                    <li><a id='btnEditar' class=\"btn btn-success\" data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Editar</a></li>\n"
+                    + "                    <li><hr class='dropdown-divider'></li>\n";
+        }
+        HTML += "                    <li><a href=\"#\" class=\"btn btn-danger deleteButton\" id=\"deleteButton\" data-titulo='" + sol.getIdSolicitud() + "' >Eliminar</a></li>\n"
+                + "                </ul>\n"
+                + "            </div>\n"
+                + "        </label>\n"
                 + "    </div>\n"
                 + "    <div class=\"card-body\">\n"
                 + "        <h4>Tipo Solicitud: " + sol.getTipoSolicitud() + "</h4>\n"
                 + "        <h4>Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n"
-                + "        <h4>Estado: " + sol.getEstado() + "</h4>\n"
-                + "        <h4>PDF: " + sol.getPdf() + "</h4>\n"
-                + "        <h4>Descripcion: " + sol.getDescripcion() + "</h4>\n";
+                + "        <h4>Estado: " + sol.getEstado() + "</h4>\n";
+        if (sol.getPdf() != null) {
+            HTML += "        <h4>PDF:</h4>\n";
+            // Mostrar el PDF como una imagen y proporcionar un enlace de descarga
+            HTML += "    <div class=\"pdf-container\" style=\"width: 100px; height: 120px; margin-left: 80px; margin-top: -30px;\">\n";
+            HTML += "        <a href=\"pdfs/" + sol.getPdf() + "\" download>\n";
+            HTML += "            <img src=\"img/pdf.png\" alt=\"PDF\">\n";
+            HTML += "        </a>\n";
+            HTML += "    </div>\n";
+        }
+        String descripcion = sol.getDescripcion();
+        String idDescripcion = "descripcion-" + sol.getIdSolicitud(); // Genera un ID único para cada descripción
+        String descripcionAbreviada = descripcion.length() > 300 ? descripcion.substring(0, 300) + "..." : descripcion;
 
+        HTML += "        <h4 id=\"" + idDescripcion + "\" style=\"text-align: justify;\">Descripcion: <span class=\"short-description\">" + descripcionAbreviada + "</span></h4>\n";
+        if (descripcion.length() > 300) {
+            HTML += "        <h6><a href=\"#\" class=\"expandir-descripcion\" data-target=\"" + idDescripcion + "\" data-full-description=\"" + descripcion + "\">Leer más</a></h6>\n"
+                    + "<br>";
+        }
         // Verificar si se necesita calcular la fecha límite
         if (sol.getTipoSolicitud().equals("Peticion")) {
             Date fechaActual = sol.getFechaRegistro();
@@ -246,9 +358,8 @@ public class Metodos {
 
             HTML += "        <h4>Fecha limite de respuesta: " + fechaLimiteFormateada + "</h4>\n";
         }
-        if (tipoUsuario.equals("administrador")) {
-            HTML += "        <h4>Usuario: " + sol.getUsuario() + "</h4>\n";
-        }
+
+        HTML += "<hr>\n";
 
         HTML += "    <div class=\"card-body\">\n";
 
@@ -272,23 +383,15 @@ public class Metodos {
                 + "<br>";
         return HTML;
     }
-     public static String listarUsuario(Solicitudes sol, HttpServletRequest request) {
-        String tipoUsuario = (String) request.getSession().getAttribute("tipoUsuario");
-        String HTML = "<article class=\"card\">\n"
-                + "    <div class=\"card-header\">\n"
-                + "        <div>                                \n"
-                + "            <h3>Nombre: " + sol.getNombreSol() + "</h3>\n"
-                + "        </div>\n"
-                + "    </div>\n"
-                + "    <div class=\"card-body\">\n"
-                + "        <h4>Tipo Solicitud: " + sol.getTipoSolicitud() + "</h4>\n"
-                + "        <h4>Fecha Registro: " + sol.getFechaRegistro() + "</h4>\n"
-                + "        <h4>Estado: " + sol.getEstado() + "</h4>\n"
-                + "        <h4>PDF: " + sol.getPdf() + "</h4>\n"
-                + "        <h4>Descripcion: " + sol.getDescripcion() + "</h4>\n"
-                + "        <a id='btnEditar' class=\"btn btn-warning\" data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\"><i class=\"fa-solid fa-user-pen\"></i></a>"
-                + "        <a href=\"#\" class=\"btn btn-danger deleteButton\" id=\"deleteButton\" data-titulo='" + sol.getIdSolicitud() + "' > <i class=\"fas fa-trash\"></i> </a>\n";
 
+    public static String mensaje(HttpServletRequest request) {
+        String HTML = "<article class=\"card\">\n"
+                + "    <div class=\"card-footer\">\n"
+                + "</div>"
+        + "<br>";
+        HTML += "        <h4 style=\"text-align: center;\"><span class=\"short-description\">No se han registrado solicitudes</span></h4>\n"
+                 + "<br>"
+                + "    <div class=\"card-footer\">\n";
         HTML += "    </div>\n"
                 + "</article>"
                 + "<br>";
@@ -307,8 +410,7 @@ public class Metodos {
         return array2;
     }
 
-
-    public static void EditarSolicitud(int id,String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario,String respuesta, Connection connection) throws SQLException {
+    public static void EditarSolicitud(int id, String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario, String respuesta, Connection connection) throws SQLException {
 
         // Llamar al procedimiento almacenado
         CallableStatement statement = connection.prepareCall("{CALL editarSolicitud(?,?, ?, ?, ?, ?, ?, ?)}");
@@ -329,8 +431,9 @@ public class Metodos {
             statement.setString(8, respuesta); // Establecer la respuesta como cadena de texto si no está vacía
         }
         statement.execute();
-        
+
     }
+
     public static void eliminarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, int idPdf, int idUsuario, Connection connection) throws SQLException {
 
         // Llamar al procedimiento almacenado
@@ -480,107 +583,110 @@ public class Metodos {
             cs.executeUpdate();
         }
     }
-   public static String editarInfoSolicitud(Solicitudes sol) {
-    if (sol == null) {
-        throw new IllegalArgumentException("La solicitud no puede ser nula.");
-    }
-       System.out.println(sol.getTipoSolicitud());
-    String HTML = "<div class=\"form\">\n" +
-            "    <h2>Editar solicitud</h2>\n" +
-            "    <hr>\n" +
-            "    <div class=\"row\">\n" +
-            "        <div class=\"col\">\n" +
-            "            <div class=\"form-element\">\n" +
-            "                <label for=\"nombre\">Nombre</label>\n" +
-               "                <input type=\"hidden\" id=\"id\" name=\"id\" required  value=\"" + sol.getIdSolicitud() + "\">\n" +
-            "                <input type=\"text\" id=\"nombre\" name=\"nombre\" placeholder=\"Ingresa el nombre de la solicitud\" maxlength=\"50\" required pattern=\"[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+\" title=\"No se permiten números\" value=\"" + sol.getNombreSol() + "\">\n" +
-            "            </div>\n" +
-            "        </div>\n" +
-            "        <div class=\"col\">\n" +
-            "            <div class=\"form-element\">\n" +
-            "                <label for=\"tipoSolicitud\">Tipo de solicitud</label>\n" +
-            "                <select class=\"form-control\" id=\"tipo\" name=\"tipo\" required>\n" +
-            "                    <option value=\"\" disabled>Seleccione el tipo de solicitud</option>\n" +
-            "                    <option value=\"Peticion\"" + (sol.getTipoSolicitud().equals("Peticion") ? " selected" : "") + ">Peticion</option>\n" +
-            "                    <option value=\"Queja\"" + (sol.getTipoSolicitud().equals("Queja") ? " selected" : "") + ">Queja</option>\n" +
-            "                    <option value=\"Reclamo\"" + (sol.getTipoSolicitud().equals("Reclamo") ? " selected" : "") + ">Reclamo</option>\n" +
-            "                    <option value=\"Sugerencia\"" + (sol.getTipoSolicitud().equals("Sugerencia") ? " selected" : "") + ">Sugerencia</option>\n" +
-            "                </select>\n" +
-            "            </div>\n" +
-            "        </div>\n" +
-            "    </div>\n" +
-            "    <div class=\"row\">\n" +
-            "        <div class=\"col\">\n" +
-            "            <div class=\"form-element\">\n" +
-            "                <label for=\"descripcion\">Descripción</label>\n" +
-            "                <textarea id=\"descripcion\" name=\"descripcion\" rows=\"4\" cols=\"50\" placeholder=\"Ingresa la descripción de la solicitud\">" + sol.getDescripcion() + "</textarea>\n" +
-            "            </div>\n" +
-            "        </div>\n" +
-            "        <div class=\"col\">\n" +
-            "            <div class=\"form-element\">\n" +
-            "                <label for=\"pdf\">Subir archivo</label>\n" +
-            "                <input type=\"file\" id=\"pdf\" name=\"pdf\" accept=\"application/pdf\">\n" +
-            "            </div>\n" +
-            "        </div>\n" +
-            "    </div>\n" +
-            "    <div class=\"row\">\n" +
-            "        <div class=\"col\">\n" +
-            "            <div class=\"form-element\">\n" +
-            "                <button type=\"submit\">Agregar</button>\n" +
-            "            </div>\n" +
-            "        </div>\n" +
-            "    </div>\n" +
-            "</div>";
-    return HTML;
-}
- public static void eliminarSolicitud(int id, Connection connection) throws SQLException {
 
-    PreparedStatement preparedStatement = null;
- 
-    try {
-        // Consulta SQL parametrizada para eliminar la fila
-        String sqlTutorial = "DELETE FROM solicitudes WHERE idSolicitud = ?";
-        
-        // Crear una declaración preparada para la consulta de eliminación
-        preparedStatement = connection.prepareStatement(sqlTutorial);
-        
-        // Establecer el parámetro de la consulta
-        preparedStatement.setInt(1, id);
-        
-        // Ejecutar la consulta de eliminación
-        int filasEliminadas = preparedStatement.executeUpdate();
-        
-        if (filasEliminadas > 0) {
-            System.out.println("La fila fue eliminada exitosamente.");
-        } else {
-            System.out.println("No se encontró la fila a eliminar.");
+    public static String editarInfoSolicitud(Solicitudes sol) {
+        if (sol == null) {
+            throw new IllegalArgumentException("La solicitud no puede ser nula.");
         }
-    } finally {
-        // Cerrar los recursos en un bloque finally
-        if (preparedStatement != null) {
-            preparedStatement.close();
-        }
-        if (connection != null) {
-            connection.close();
+        System.out.println(sol.getTipoSolicitud());
+        String HTML = "<div class=\"form\">\n"
+                + "    <h2>Editar solicitud</h2>\n"
+                + "    <hr>\n"
+                + "    <div class=\"row\">\n"
+                + "        <div class=\"col\">\n"
+                + "            <div class=\"form-element\">\n"
+                + "                <label for=\"nombre\">Nombre</label>\n"
+                + "                <input type=\"hidden\" id=\"id\" name=\"id\" required  value=\"" + sol.getIdSolicitud() + "\">\n"
+                + "                <input type=\"text\" id=\"nombre\" name=\"nombre\" placeholder=\"Ingresa el nombre de la solicitud\" maxlength=\"50\" required pattern=\"[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+\" title=\"No se permiten números\" value=\"" + sol.getNombreSol() + "\">\n"
+                + "            </div>\n"
+                + "        </div>\n"
+                + "        <div class=\"col\">\n"
+                + "            <div class=\"form-element\">\n"
+                + "                <label for=\"tipoSolicitud\">Tipo de solicitud</label>\n"
+                + "                <select class=\"form-control\" id=\"tipo\" name=\"tipo\" required>\n"
+                + "                    <option value=\"\" disabled>Seleccione el tipo de solicitud</option>\n"
+                + "                    <option value=\"Peticion\"" + (sol.getTipoSolicitud().equals("Peticion") ? " selected" : "") + ">Peticion</option>\n"
+                + "                    <option value=\"Queja\"" + (sol.getTipoSolicitud().equals("Queja") ? " selected" : "") + ">Queja</option>\n"
+                + "                    <option value=\"Reclamo\"" + (sol.getTipoSolicitud().equals("Reclamo") ? " selected" : "") + ">Reclamo</option>\n"
+                + "                    <option value=\"Sugerencia\"" + (sol.getTipoSolicitud().equals("Sugerencia") ? " selected" : "") + ">Sugerencia</option>\n"
+                + "                </select>\n"
+                + "            </div>\n"
+                + "        </div>\n"
+                + "    </div>\n"
+                + "    <div class=\"row\">\n"
+                + "        <div class=\"col\">\n"
+                + "            <div class=\"form-element\">\n"
+                + "                <label for=\"descripcion\">Descripción</label>\n"
+                + "                <textarea id=\"descripcion\" name=\"descripcion\" rows=\"4\" cols=\"50\" placeholder=\"Ingresa la descripción de la solicitud\">" + sol.getDescripcion() + "</textarea>\n"
+                + "            </div>\n"
+                + "        </div>\n"
+                + "        <div class=\"col\">\n"
+                + "            <div class=\"form-element\">\n"
+                + "                <label for=\"pdf\">Subir archivo</label>\n"
+                + "                <input type=\"file\" id=\"pdf\" name=\"pdf\" accept=\"application/pdf\">\n"
+                + "            </div>\n"
+                + "        </div>\n"
+                + "    </div>\n"
+                + "    <div class=\"row\">\n"
+                + "        <div class=\"col\">\n"
+                + "            <div class=\"form-element\">\n"
+                + "                <button type=\"submit\">Agregar</button>\n"
+                + "            </div>\n"
+                + "        </div>\n"
+                + "    </div>\n"
+                + "</div>";
+        return HTML;
+    }
+
+    public static void eliminarSolicitud(int id, Connection connection) throws SQLException {
+
+        PreparedStatement preparedStatement = null;
+
+        try {
+            // Consulta SQL parametrizada para eliminar la fila
+            String sqlTutorial = "DELETE FROM solicitudes WHERE idSolicitud = ?";
+
+            // Crear una declaración preparada para la consulta de eliminación
+            preparedStatement = connection.prepareStatement(sqlTutorial);
+
+            // Establecer el parámetro de la consulta
+            preparedStatement.setInt(1, id);
+
+            // Ejecutar la consulta de eliminación
+            int filasEliminadas = preparedStatement.executeUpdate();
+
+            if (filasEliminadas > 0) {
+                System.out.println("La fila fue eliminada exitosamente.");
+            } else {
+                System.out.println("No se encontró la fila a eliminar.");
+            }
+        } finally {
+            // Cerrar los recursos en un bloque finally
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
         }
     }
-}
-public static Solicitudes obtenerSolicitud(int id) throws ClassNotFoundException {
+
+    public static Solicitudes obtenerSolicitud(int id) throws ClassNotFoundException {
         Conexion conexion = new Conexion();
         Connection connection = conexion.establecerConexion();
         Solicitudes sol = new Solicitudes();
         try {
 
             // Consulta SQL para obtener datos de la tabla tutorial
-            String sqlTutorial = "SELECT * FROM solicitudes left join pdfs on pdfs.idPdf=solicitudes.idPdf left join usuarios  on usuarios.idUsuario=solicitudes.idUsuario WHERE idSolicitud="+id;
+            String sqlTutorial = "SELECT * FROM solicitudes left join pdfs on pdfs.idPdf=solicitudes.idPdf left join usuarios  on usuarios.idUsuario=solicitudes.idUsuario WHERE idSolicitud=" + id;
 
             // Crear una declaración para la consulta de tutoriales
             Statement statement = connection.createStatement();
             ResultSet resultSetSolicitud = statement.executeQuery(sqlTutorial);
-            
+
             // Iterar sobre los resultados de tutoriales y almacenarlos en el array
             while (resultSetSolicitud.next()) {
-                
+
                 sol.setIdSolicitud(resultSetSolicitud.getInt("idSolicitud"));
                 sol.setNombreSol(resultSetSolicitud.getString("nombreSolicitud"));
                 sol.setTipoSolicitud(resultSetSolicitud.getString("tipoSolicitud"));
