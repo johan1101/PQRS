@@ -1,17 +1,17 @@
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\Servlets\SvAgregarSolicitud.java
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\com\mundo\pqrs\JAXRSConfiguration.java
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\Servlets\SvVisualizar.java
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\Servlets\SvFiltrar.java
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\Servlets\SvRegistrarUsuario.java
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\Clases\Metodos.java
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\com\mundo\pqrs\resources\JavaEE8Resource.java
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\Clases\Fechas.java
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\Clases\EnvioCorreo.java
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\Servlets\SvResponderSolicitud.java
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\Clases\Conexion.java
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\Servlets\SvEditarUsuario.java
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\Servlets\SvEliminarEditarSolicitud.java
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\Servlets\SvLoginCheck.java
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\Servlets\SvBuscarResponder.java
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\Clases\Usuarios.java
-C:\Users\Johan Ordoñez\Desktop\Universidad Mariana\Quinto semestre\Estructuras de datos ll\PQRS-master (2)\PQRS-master\PQRS\src\main\java\Clases\Solicitudes.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\Servlets\SvLoginCheck.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\Servlets\SvRegistrarUsuario.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\Clases\EnvioCorreo.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\Servlets\SvResponderSolicitud.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\Clases\Usuarios.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\Servlets\SvAgregarSolicitud.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\Servlets\SvBuscarResponder.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\com\mundo\pqrs\resources\JavaEE8Resource.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\Servlets\SvEliminarEditarSolicitud.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\Servlets\SvVisualizar.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\Clases\Conexion.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\Clases\Metodos.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\Servlets\SvEditarUsuario.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\Servlets\SvFiltrar.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\Clases\Fechas.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\com\mundo\pqrs\JAXRSConfiguration.java
+C:\Users\maria\Downloads\j\PQRS\PQRS\src\main\java\Clases\Solicitudes.java

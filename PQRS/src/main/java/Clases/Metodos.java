@@ -199,7 +199,48 @@ public class Metodos {
         Collections.sort(array, new Fechas());
         return array;
     }
+    public static ArrayList<Solicitudes> getSolicitudesUs(String cedula) throws ClassNotFoundException {
+        ArrayList<Solicitudes> array = new ArrayList();
+        Conexion conexion = new Conexion();
+        Connection connection = conexion.establecerConexion();
+        try {
 
+            // Consulta SQL para obtener datos de la tabla tutorial
+            String sqlTutorial = "SELECT * FROM pqrs.solicitudes left JOIN  usuarios  on usuarios.idUsuario=solicitudes.idUsuario where cedula="+cedula;
+
+            // Crear una declaración para la consulta de tutoriales
+            Statement statement = connection.createStatement();
+            ResultSet resultSetSolicitud = statement.executeQuery(sqlTutorial);
+
+            // Iterar sobre los resultados de tutoriales y almacenarlos en el array
+            while (resultSetSolicitud.next()) {
+                Solicitudes sol = new Solicitudes();
+                sol.setIdSolicitud(resultSetSolicitud.getInt("idSolicitud"));
+                sol.setNombreSol(resultSetSolicitud.getString("nombreSolicitud"));
+                sol.setTipoSolicitud(resultSetSolicitud.getString("tipoSolicitud"));
+
+                sol.setFechaRegistro(resultSetSolicitud.getDate("fechaRegistro"));
+                sol.setEstado(resultSetSolicitud.getString("estado"));
+                sol.setDescripcion(resultSetSolicitud.getString("descripcion"));
+                sol.setPdf(resultSetSolicitud.getString("pdf"));
+                sol.setUsuario(resultSetSolicitud.getString("cedula"));
+                sol.setRespuesta(resultSetSolicitud.getString("respuesta"));
+                array.add(sol);
+                //data.add(row);
+            }
+
+            // Cerrar la conexión
+            resultSetSolicitud.close();
+            statement.close();
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Manejo de excepciones
+        }
+        Collections.sort(array, new Fechas());
+        return array;
+    }
     public static String listarAdministradores(Solicitudes sol, HttpServletRequest request) {
 
         // Inicializar fechaLimite como null
@@ -384,7 +425,7 @@ public class Metodos {
     }
 
     public static ArrayList<Solicitudes> SolicitudesUsuario(String cedula) throws ClassNotFoundException {
-        ArrayList<Solicitudes> array = getSolicitudes();
+        ArrayList<Solicitudes> array = getSolicitudesUs(cedula);
         ArrayList<Solicitudes> array2 = new ArrayList();
         for (Solicitudes sol : array) {
             if (cedula.equals(sol.getUsuario())) {

@@ -28,7 +28,7 @@ public class SvBuscarResponder extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String busqueda=request.getParameter("buscar");
+        String busqueda=request.getParameter("buscar");        
         response.sendRedirect("solicitudes.jsp?busqueda="+busqueda);
     }
 
@@ -36,7 +36,8 @@ public class SvBuscarResponder extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        String busqueda=request.getParameter("buscar");        
+        response.sendRedirect("usuario.jsp?busqueda="+busqueda);
     }
 
     /**

@@ -58,10 +58,12 @@
         <div class="main-header">
             <h1>Tus solicitudes</h1>
             <div class="search">
-                <input type="text" placeholder="Buscar" />
-                <button type="submit">
-                    <i class="ph-magnifying-glass-bold"></i>
-                </button>
+                <form action="SvBuscarResponder" method="POST">
+                    <input type="text" name="buscar" placeholder="Buscar" />
+                    <button type="submit">
+                        <i class="ph-magnifying-glass-bold"></i>
+                    </button>
+                </form>
             </div>
         </div>
         <div class="horizontal-tabs">
