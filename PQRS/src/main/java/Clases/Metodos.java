@@ -75,7 +75,7 @@ public class Metodos {
                 String toastr = "siPasa";
                 // Establecer el atributo en el objeto HttpServletRequest
                 request.setAttribute("toastr", toastr);
-                request.getRequestDispatcher("usuario.jsp").forward(request, response);
+                request.getRequestDispatcher("usuario.jsp?res=Por responder").forward(request, response);
             } else if (idRol == 2) { // Si es Administrador
                 tipoUsuario = "administrador";
                 session.setAttribute("tipoUsuario", tipoUsuario);
@@ -83,7 +83,7 @@ public class Metodos {
                 String toastr = "siPasa";
                 // Establecer el atributo en el objeto HttpServletRequest
                 request.setAttribute("toastr", toastr);
-                request.getRequestDispatcher("solicitudes.jsp").forward(request, response);
+                request.getRequestDispatcher("solicitudes.jsp?res=no").forward(request, response);
             }
 
         } else {

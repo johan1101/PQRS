@@ -86,8 +86,8 @@
         </div>
         <div class="horizontal-tabs">
             <a href="perfilUsuario" class="active">Perfil</a>
-            <a href="usuario.jsp">Solicitudes</a>
-            <a href="usuario.jsp">Respuestas</a>
+            <a href="usuario.jsp?res=Por responder">Solicitudes</a>
+            <a href="usuario.jsp?res=Respondido">Respuestas</a>
         </div>
         <div class="content-header">
             <div class="content-header-actions">
