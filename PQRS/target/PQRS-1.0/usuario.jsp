@@ -68,8 +68,8 @@
         </div>
         <div class="horizontal-tabs">
             <a href="perfilUsuario.jsp">Perfil</a>
-            <a href="usuario.jsp?res=no"> Solicitudes </a>
-            <a href="#">Respuestas</a>
+            <a href="usuario.jsp?res=Por responder"> Solicitudes </a>
+            <a href="usuario.jsp?res=Respondido">Respuestas</a>
         </div>
         <div class="content-header">
             <div class="content-header-actions">
@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <%                String res = request.getParameter("res");
+        <%  String res = request.getParameter("res");
             String busqueda = request.getParameter("busqueda");
         %>
         <div class="content">
@@ -100,37 +100,22 @@
             <div class="content-main">
 
                 <%
-                    int mensaje = 0;
-                    Metodos.mensaje(request);
-                    for (Solicitudes sol : a) {
-
-                        if (busqueda == null) {
-                            if (sol.getEstado().equals(res)) {
-
-                                if (request.getParameter("par") == null) {
-                %>
-                <%=Metodos.listarUsuario(sol, request)%>
-                <%
-                    mensaje = mensaje + 1;
-                } else {
-                    if (request.getParameter("par").equals(sol.getTipoSolicitud())) {%>
-                <%=Metodos.listarUsuario(sol, request)%>
-                <%
+                int mensaje = 0;
+                 Metodos.mensaje(request);
+                for (Solicitudes sol : a) {
+                if (busqueda == null) {
+                    System.out.println(res);
+                    if (sol.getEstado().equals(res)) {System.out.println("ENTRAAAAAAAAA");
+                        if (request.getParameter("par") == null) {%>
+                            <%=Metodos.listarUsuario(sol, request)%>
+                            <% mensaje = mensaje + 1;
+                        } else {
+                            if (request.getParameter("par").equals(sol.getTipoSolicitud())) {%>
+                        <%=Metodos.listarUsuario(sol, request)%>
+                        <%
                             mensaje = mensaje + 1;
-                        }
-                    }
-                } else {
-                    if (request.getParameter("par") == null) {
-                        mensaje = mensaje + 1;
-                %>
-                <%=Metodos.listarUsuario(sol, request)%>
-                <%
-                } else if (request.getParameter("par").equals(sol.getTipoSolicitud())) {
-                %>
-                <%=Metodos.listarUsuario(sol, request)%>
-                <%                    mensaje = mensaje + 1;
-                        }
-                    }
+                        } }
+                    } 
                 } else if (busqueda.contains(sol.getNombreSol()) || busqueda.contains(sol.getDescripcion()) || busqueda.contains(sol.getUsuario())) {
                 %>
                 <%=Metodos.listarUsuario(sol, request)%>
@@ -300,7 +285,7 @@
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                     swalWithBootstrapButtons.fire(
                             'Cancelado',
-                            'Tu libro imaginario está a salvo :)',
+                            'Tu solicitud imaginario está a salvo :)',
                             'error'
                             );
                 }

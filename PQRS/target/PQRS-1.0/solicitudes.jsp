@@ -98,6 +98,7 @@
         <div class="horizontal-tabs">         
             <a href="solicitudes.jsp?res=no"<%if (res != null && res.equals("no")) {%> class="active" <%}%>>Todas las Solicitudes</a>
             <a href="solicitudes.jsp?res=Por responder" <%if (res != null && res.equals("Por responder")) {%> class="active" <%}%>>Sin Respuesta</a>
+            <a href="solicitudes.jsp?res=Respondido" <%if (res != null && res.equals("Respondido")) {%> class="active" <%}%>>Con Respuesta</a>
         </div>
 
 
@@ -120,20 +121,20 @@
                         if (busqueda == null) {
                             if (sol.getEstado().equals(res)) {
 
-                                if (request.getParameter("par") == null && sol.getEstado().equals("Por responder")) {
+                                if (request.getParameter("par") == null && sol.getEstado().equals(res)) {
                                     mensaje = mensaje + 1;
                 %>
                 <%=Metodos.listarAdministradores(sol, request)%>
                 <%
 
                 } else {
-                    if (request.getParameter("par").equals(sol.getTipoSolicitud()) && sol.getEstado().equals("Por responder")) {%>
+                    if (request.getParameter("par").equals(sol.getTipoSolicitud()) && sol.getEstado().equals(res)) {%>
 
                 <%=Metodos.listarAdministradores(sol, request)%>
                 <% mensaje = mensaje + 1;
                         }
                     }
-                } else {
+                } else if(res.equals("no")) {
                     if (request.getParameter("par") == null) {
                         mensaje = mensaje + 1;
                 %>
