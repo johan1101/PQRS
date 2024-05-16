@@ -16,11 +16,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import javax.mail.MessagingException;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -31,72 +29,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
  */
 public class Metodos {
 
-    public static void agregarUsuario(String cedula, String nombre, String apellido, String celular, String correo, String contrasena, int idRol, Connection connection) throws SQLException {
-
-        String sql = "CALL AgregarUsuario(?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement statement = connection.prepareStatement(sql);
-        statement.setString(1, nombre);
-        statement.setString(2, apellido);
-        statement.setString(3, cedula);
-        statement.setString(4, contrasena);
-        statement.setString(5, celular);
-        statement.setString(6, correo);
-        statement.setInt(7, idRol); // ID del rol
-        statement.executeUpdate();
-    }
-
-    public static void validarIngreso(String cedula, String contrasena, Connection connection, HttpServletResponse response, HttpSession session, HttpServletRequest request) throws SQLException, IOException, ServletException {
-        // Consulta SQL para buscar un usuario con la cédula y contraseña proporcionadas
-        String sql = "SELECT idUsuario, idRol FROM usuarios WHERE cedula = ? AND contrasena = ?";
-
-        PreparedStatement statement = connection.prepareStatement(sql);
-        // Establecer los parámetros en la consulta preparada
-        statement.setString(1, cedula);
-        statement.setString(2, contrasena);
-
-        // Ejecutar la consulta
-        ResultSet resultSet = statement.executeQuery();
-        // Verificar si se encontró un usuario con la cédula y contraseña proporcionadas
-        if (resultSet.next()) {
-            // Obtener el ID del usuario y el ID del rol del usuario
-            int idUsuario = resultSet.getInt("idUsuario");
-            int idRol = resultSet.getInt("idRol");
-
-            String tipoUsuario = "";
-
-            // Agregar el ID del usuario a la sesión
-            session.setAttribute("idUsuario", idUsuario);
-
-            session.setAttribute("cedula", cedula);
-            // Redireccionar según el rol del usuario
-            if (idRol == 1) { // Si es Usuario
-                tipoUsuario = "usuario";
-                session.setAttribute("tipoUsuario", tipoUsuario);
-                String toastr = "siPasa";
-                // Establecer el atributo en el objeto HttpServletRequest
-                request.setAttribute("toastr", toastr);
-                request.getRequestDispatcher("usuario.jsp?res=Por responder").forward(request, response);
-            } else if (idRol == 2) { // Si es Administrador
-                tipoUsuario = "administrador";
-                session.setAttribute("tipoUsuario", tipoUsuario);
-                // Redirigir a la página JSP
-                String toastr = "siPasa";
-                // Establecer el atributo en el objeto HttpServletRequest
-                request.setAttribute("toastr", toastr);
-                request.getRequestDispatcher("solicitudes.jsp?res=no").forward(request, response);
-            }
-
-        } else {
-            // Credenciales incorrectas
-            String toastr = "noPasa";
-            // Establecer el atributo en el objeto HttpServletRequest
-            request.setAttribute("toastr", toastr);
-
-            // Redirigir a la página JSP
-            request.getRequestDispatcher("index.jsp").forward(request, response);
-
-        }
-    }
+    
 
     public static String agregarPdf(Part filePart, ServletContext context, Connection connection) throws IOException, SQLException {
         // Procesa el archivo aquí, por ejemplo, guarda el PDF en el servidor
@@ -241,7 +174,7 @@ public class Metodos {
         Collections.sort(array, new Fechas());
         return array;
     }
-    public static String listarAdministradores(Solicitudes sol, HttpServletRequest request) {
+    public static String listarAdministradores(Solicitudes sol, HttpServletRequest request) throws SQLException {
 
         // Inicializar fechaLimite como null
         Calendar fechaLimite = null;
@@ -292,7 +225,7 @@ public class Metodos {
 
             HTML += "        <h4 style=\"text-align: justify;\">Fecha limite de respuesta: " + fechaLimiteFormateada + "</h4>\n";
         }
-
+       
         if (tipoUsuario.equals("administrador")) {
             HTML += "        <h4 style=\"text-align: justify;\">Usuario: " + sol.getUsuario() + "</h4>\n"
                     + "<hr>";
@@ -313,10 +246,26 @@ public class Metodos {
         HTML += "    </div>\n"
                 + "    <div class=\"card-footer\">\n";
 
-        if (tipoUsuario.equals("administrador") && (sol.getEstado().equals("Por responder"))) {
-            // Verificar si la fecha límite no es nula y si la fecha de registro es anterior a la fecha límite
-            HTML += "        <a id='btnVisualizar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Responder Solicitud</a>\n";
+        if (tipoUsuario.equals("administrador") && (sol.getEstado().equals("Por responder")) || (sol.getEstado().equals("Vencido")) ) {
+                     // Obtener la fecha actual
+                Calendar fechaActual = Calendar.getInstance();
 
+                // Verificar si la fecha límite no es nula y si la fecha actual es posterior a la fecha límite
+                if (fechaLimite != null && fechaActual.after(fechaLimite)) {
+                    // La fecha actual ha pasado la fecha límite, por lo tanto, la solicitud está vencida
+                    HTML += "        <h6 style=\"color: red; text-align: justify;\">¡Esta solicitud está vencida!</h6>\n";
+                    if(sol.getEstado().equals("Por responder")){
+                        
+                        Usuarios us=MetodosUsuarios.obtenerUsuario(Integer.parseInt(sol.getUsuario()));                     
+                        //enviarCorreo(us.getCorreo(),us.getNombre());
+                        EditarEstado(sol.getIdSolicitud(),"Vencido");
+                    }
+                } else{
+                     // Verificar si la fecha límite no es nula y si la fecha de registro es anterior a la fecha límite
+                    HTML += "        <a id='btnVisualizar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Responder Solicitud</a>\n";
+                }
+               
+            
         }
         HTML += "    </div>\n"
                 + "</article>"
@@ -337,7 +286,7 @@ public class Metodos {
                 + "                    Opciones\n"
                 + "                </button>\n"
                 + "                <ul class='dropdown-menu'>\n";
-        if (!sol.getEstado().equals("Respondido")) {
+        if (!sol.getEstado().equals("Respondido") || !sol.getEstado().equals("Vencido") ) {
             HTML += "                    <li><a id='btnEditar' class=\"btn btn-success\" data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Editar</a></li>\n"
                     + "                    <li><hr class='dropdown-divider'></li>\n";
         }
@@ -401,8 +350,8 @@ public class Metodos {
 
         HTML += "    </div>\n"
                 + "    <div class=\"card-footer\">\n";
-        if (tipoUsuario.equals("administrador") && (sol.getEstado().equals("Por responder"))) {
-            HTML += "        <a id='btnVisualizar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Responder Solicitud</a>\n";
+        if ( (sol.getEstado().equals("Vencido"))) {
+            HTML += "        <h6 style=\"color: red; text-align: justify;\">¡Esta solicitud está vencida!</h6>\n";
         }
         HTML += "    </div>\n"
                 + "</article>"
@@ -561,63 +510,9 @@ public class Metodos {
         }
     }
 
-    public static Usuarios obtenerUsuarioPorId(int idUsuario, Connection conn) throws SQLException {
-        // Inicializar el usuario como nulo
-        Usuarios usuario = new Usuarios();
+    
 
-        // Declarar el PreparedStatement y el ResultSet como variables locales
-        try (PreparedStatement consulta = conn.prepareStatement("SELECT * FROM usuarios WHERE idUsuario = ?");) {
-            // Establecer el parámetro en la consulta preparada
-            consulta.setInt(1, idUsuario);
-
-            // Ejecutar la consulta
-            try (ResultSet resultado = consulta.executeQuery()) {
-                // Verificar si se encontró un usuario con el ID proporcionado
-                if (resultado.next()) {
-                    // Crear un objeto de usuario con los datos obtenidos de la base de datos
-
-                    usuario.setIdUsuario(resultado.getInt("idUsuario"));
-                    usuario.setNombre(resultado.getString("nombre"));
-                    usuario.setApellido(resultado.getString("apellido"));
-                    usuario.setCedula(resultado.getString("cedula"));
-                    usuario.setContrasena(resultado.getString("contrasena"));
-                    usuario.setCelular(resultado.getString("celular"));
-                    usuario.setCorreo(resultado.getString("correo"));
-                    usuario.setRol(resultado.getString("idRol"));
-                    // Agregar más atributos según sea necesario
-                }
-            }
-        }
-
-        // Devolver el usuario (puede ser nulo si no se encontró ningún usuario con el ID proporcionado)
-        return usuario;
-    }
-
-    public static int obtenerUsuarioPorIdSolicitud(int idSolicitud, Connection conn) throws SQLException {
-        // Inicializar el usuario como nulo
-        int usuario = 0;
-
-        // Declarar el PreparedStatement y el ResultSet como variables locales
-        try (PreparedStatement consulta = conn.prepareStatement("SELECT * FROM solicitudes WHERE idSolicitud = ?");) {
-            // Establecer el parámetro en la consulta preparada
-            consulta.setInt(1, idSolicitud);
-
-            // Ejecutar la consulta
-            try (ResultSet resultado = consulta.executeQuery()) {
-                // Verificar si se encontró un usuario con el nombre proporcionado
-                if (resultado.next()) {
-                    // Crear un objeto de usuario con los datos obtenidos de la base de datos
-
-                    usuario = (resultado.getInt("idUsuario"));
-
-                    // Agregar más atributos según sea necesario
-                }
-            }
-        }
-
-        // Devolver el usuario (puede ser nulo si no se encontró ningún usuario con el nombre proporcionado)
-        return usuario;
-    }
+    
 
     // Método para editar la respuesta de una solicitud en la base de datos
     public static void editarRespuestaEstado(int idSolicitud, String respuesta, String estado, Connection conn) throws SQLException {
@@ -763,99 +658,41 @@ public class Metodos {
         return sol;
     }
 
-    public static String mostrarInformacionUsuario(Usuarios usuario) {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("<div class=\"form\">");
-        sb.append("<div>");
-        sb.append("<span><img src=\"img/icono.png\" /></span>");
-        sb.append("<h3>Editar información</h3>");
-        sb.append("</div>");
-        sb.append("<hr>");
-        sb.append("<div class=\"row\">");
-        sb.append("<div class=\"col\">");
-        sb.append("<div class=\"form-element\">");
-        sb.append("<label for=\"nombre\">Nombre</label>");
-        sb.append("<input type=\"text\" id=\"nombre\" value=\"").append(usuario.getNombre()).append("\" name=\"nombre\" placeholder=\"Ingresa el nuevo nombre\" maxlength=\"50\" required pattern=\"[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+\" title=\"No se permiten números\" required>");
-        sb.append("</div>");
-        sb.append("</div>");
-        sb.append("<div class=\"col\">");
-        sb.append("<div class=\"form-element\">");
-        sb.append("<label for=\"apellido\">Apellido</label>");
-        sb.append("<input type=\"text\" id=\"apellido\" value=\"").append(usuario.getApellido()).append("\" name=\"apellido\" placeholder=\"Ingresa el nuevo apellido\" maxlength=\"50\" required pattern=\"[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+\" title=\"No se permiten números\" required>");
-        sb.append("</div>");
-        sb.append("</div>");
-        sb.append("</div>");
-        sb.append("<div class=\"row\">");
-        sb.append("<div class=\"col\">");
-        sb.append("<div class=\"form-element\">");
-        sb.append("<label for=\"cedula\">Cédula</label>");
-        sb.append("<input type=\"text\" id=\"cedula\" value=\"").append(usuario.getCedula()).append("\" name=\"cedula\" placeholder=\"Ingresa la nueva cedula\" maxlength=\"10\" required pattern=\"[0-9]+\" title=\"Solo se permiten números\" required>");
-        sb.append("</div>");
-        sb.append("</div>");
-        sb.append("<div class=\"col\">");
-        sb.append("<div class=\"form-element\">");
-        sb.append("<label for=\"celular\">Celular</label>");
-        sb.append("<input type=\"text\" id=\"celular\" value=\"").append(usuario.getCelular()).append("\" name=\"celular\" placeholder=\"Ingresa el nuevo número celular\" maxlength=\"50\" required pattern=\"[0-9]+\" title=\"Solo se permiten números\" required>");
-        sb.append("</div>");
-        sb.append("</div>");
-        sb.append("</div>");
-        sb.append("<div class=\"row\">");
-        sb.append("<div class=\"col\">");
-        sb.append("<div class=\"form-element\">");
-        sb.append("<label for=\"correo\">Correo</label>");
-        sb.append("<input type=\"text\" id=\"correo\" value=\"").append(usuario.getCorreo()).append("\" name=\"correo\" placeholder=\"Ingresa el nuevo correo\" maxlength=\"50\" required required>");
-        sb.append("</div>");
-        sb.append("</div>");
-        sb.append("</div>");
-        sb.append("<div class=\"row\">");
-        sb.append("<div class=\"col\">");
-        sb.append("<div class=\"form-element\">");
-        sb.append("<button type=\"submit\">Editar</button>");
-        sb.append("</div>");
-        sb.append("</div>");
-        sb.append("</div>");
-        sb.append("</div>");
-
-        return sb.toString();
+    
+     public static void EditarEstado(int id, String estado) throws SQLException {
+        Conexion conexion = new Conexion();
+        Connection connection = conexion.establecerConexion();
+        // Llamar al procedimiento almacenado
+        CallableStatement statement = connection.prepareCall("UPDATE solicitudes SET estado='"+estado+"' WHERE idSolicitud="+id);
+        statement.execute();
     }
+     
+    public static void enviarCorreo (String correo, String nombre){
+        String emailFrom = "pqrsresponse@gmail.com"; // Cambia esto por tu dirección de correo electrónico
+        String passwordFrom = "wkro wbtv mnoi gsjy"; // Cambia esto por tu contraseña
+        String emailTo = correo; // Cambia esto por la dirección de correo electrónico del destinatario
+        String subject = "Solicitud atendida: " + nombre;
 
-    public void editarUsuario(int idUsuario, String nombre, String apellido, String cedula, String celular, String correo, Connection conn) throws SQLException {
+        // Contenido del correo electrónico
+        String content = "Cordial saludo," + "\n"
+                + "Espero que este mensaje le encuentre bien. Quisiera informarle que se ha vencido el tiempo para su respuesta. Por favor contacte a soporte"+ "\n"
+                + "Mil disculpas.";
 
-        String sql = "CALL editarUsuario(?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, idUsuario);
-            stmt.setString(2, nombre);
-            stmt.setString(3, apellido);
-            stmt.setString(4, cedula);
-            stmt.setString(5, celular);
-            stmt.setString(6, correo);
-            stmt.executeUpdate();
+        // Crear instancia de EnvioCorreos y configurar detalles del correo
+        EnvioCorreo envioCorreos = new EnvioCorreo();
+        envioCorreos.setEmailFrom(emailFrom);
+        envioCorreos.setPasswordFrom(passwordFrom);
+        envioCorreos.setTo(emailTo);
+        envioCorreos.setSubject(subject);
+        envioCorreos.setContent(content);
+        System.out.println("SE VA A ENVIAR");
+        // Intentar enviar el correo electrónico
+        try {
+            envioCorreos.sendEmail();
+            System.out.println("Correo enviado con exito");           
+        } catch (MessagingException ex) {
+            System.out.println("Error al enviar el correo");
         }
-
     }
-
-    public static boolean verificarExistenciaCedula(String cedula, Connection conn) throws SQLException {
-        boolean cedulaExistente = false;
-
-        // Consulta SQL para verificar si la cédula ya existe en la base de datos
-        String consultaSQL = "SELECT * FROM usuarios WHERE cedula = ?";
-
-        // Declarar el PreparedStatement y el ResultSet como variables locales
-        try (PreparedStatement consulta = conn.prepareStatement(consultaSQL)) {
-            // Establecer el parámetro en la consulta preparada
-            consulta.setString(1, cedula);
-
-            // Ejecutar la consulta
-            try (ResultSet resultado = consulta.executeQuery()) {
-                // Verificar si se encontró alguna fila en el resultado
-                if (resultado.next()) {
-                    // La cédula ya existe en la base de datos
-                    cedulaExistente = true;
-                }
-            }
-        }
-
-        return cedulaExistente;
-    }
+    
 }

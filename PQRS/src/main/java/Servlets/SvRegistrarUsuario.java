@@ -6,6 +6,7 @@ package Servlets;
 
 import Clases.Conexion;
 import Clases.Metodos;
+import Clases.MetodosUsuarios;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -57,14 +58,14 @@ public class SvRegistrarUsuario extends HttpServlet {
         int idRol = (1);
 
         try {
-            cedulaExistente = metodo.verificarExistenciaCedula(cedula, conectarBD);
+            cedulaExistente = MetodosUsuarios.verificarExistenciaCedula(cedula, conectarBD);
         } catch (SQLException ex) {
             Logger.getLogger(SvRegistrarUsuario.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         if (cedulaExistente == false) {
             try {
-                metodo.agregarUsuario(cedula, nombre, apellido, celular, correo, contrasena, idRol, conectarBD);
+                MetodosUsuarios.agregarUsuario(cedula, nombre, apellido, celular, correo, contrasena, idRol, conectarBD);
             } catch (SQLException ex) {
                 Logger.getLogger(SvRegistrarUsuario.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -99,6 +99,7 @@
             <a href="solicitudes.jsp?res=no"<%if (res != null && res.equals("no")) {%> class="active" <%}%>>Todas las Solicitudes</a>
             <a href="solicitudes.jsp?res=Por responder" <%if (res != null && res.equals("Por responder")) {%> class="active" <%}%>>Sin Respuesta</a>
             <a href="solicitudes.jsp?res=Respondido" <%if (res != null && res.equals("Respondido")) {%> class="active" <%}%>>Con Respuesta</a>
+            <a href="solicitudes.jsp?res=Vencido" <%if (res != null && res.equals("Vencido")) {%> class="active" <%}%>>Vencidas</a>
         </div>
 
 
@@ -119,7 +120,7 @@
                     for (Solicitudes sol : a) {
 
                         if (busqueda == null) {
-                            if (sol.getEstado().equals(res)) {
+                            if (sol.getEstado().equals(res)|| sol.getEstado().equals("Todos")) {
 
                                 if (request.getParameter("par") == null && sol.getEstado().equals(res)) {
                                     mensaje = mensaje + 1;
@@ -232,7 +233,7 @@
         };
 
         // Mostrar una notificación Toastr de éxito
-        toastr.success('Bienvenido!', '!Hola¡');
+        toastr.success('Bienvenido!', 'Hola!');
     }
     
 </script>

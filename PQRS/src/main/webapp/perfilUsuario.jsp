@@ -1,3 +1,4 @@
+<%@page import="Clases.MetodosUsuarios"%>
 <%@page import="Clases.Usuarios"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="Clases.Conexion"%>
@@ -43,7 +44,7 @@
     Usuarios usuario = new Usuarios();
     Connection conn = conectar.establecerConexion();
     int idUsuario = (Integer) request.getSession().getAttribute("idUsuario");
-    usuario = metodo.obtenerUsuarioPorId(idUsuario, conn);
+    usuario = MetodosUsuarios.obtenerUsuarioPorId(idUsuario, conn);
 %>
 <!-- partial:index.partial.html -->
 <header class="header">

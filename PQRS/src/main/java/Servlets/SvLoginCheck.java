@@ -2,6 +2,7 @@ package Servlets;
 
 import Clases.Conexion;
 import Clases.Metodos;
+import Clases.MetodosUsuarios;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -47,7 +48,7 @@ public class SvLoginCheck extends HttpServlet {
         
         try {
             request.getSession().setAttribute("usuario", cedula);
-            metodo.validarIngreso(cedula, contrasenia, connection, response, session, request);
+            MetodosUsuarios.validarIngreso(cedula, contrasenia, connection, response, session, request);
         } catch (SQLException ex) {
             Logger.getLogger(SvLoginCheck.class.getName()).log(Level.SEVERE, null, ex);
         }

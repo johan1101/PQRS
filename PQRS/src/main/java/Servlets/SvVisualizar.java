@@ -6,6 +6,7 @@ package Servlets;
 
 import Clases.Conexion;
 import Clases.Metodos;
+import Clases.MetodosUsuarios;
 import Clases.Solicitudes;
 import Clases.Usuarios;
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class SvVisualizar extends HttpServlet {
 
         try {
             System.out.println("corriendo metodo para obtener el usuario");
-            user = metodo.obtenerUsuarioPorId(idUsuario, conn);
+            user = MetodosUsuarios.obtenerUsuarioPorId(idUsuario, conn);
             System.out.println("Usuario obtenido con exito");
         } catch (SQLException ex) {
             Logger.getLogger(SvVisualizar.class.getName()).log(Level.SEVERE, null, ex);
@@ -88,8 +89,8 @@ public class SvVisualizar extends HttpServlet {
         try {
             System.out.println("corriendo metodo para obtener el correo del usuario");
             
-            usuario = metodo.obtenerUsuarioPorIdSolicitud(idSolicitud ,conn);
-            user = metodo.obtenerUsuarioPorId(usuario ,conn);
+            usuario = MetodosUsuarios.obtenerUsuarioPorIdSolicitud(idSolicitud ,conn);
+            user = MetodosUsuarios.obtenerUsuarioPorId(usuario ,conn);
         } catch (SQLException ex) {
             Logger.getLogger(SvVisualizar.class.getName()).log(Level.SEVERE, null, ex);
         }

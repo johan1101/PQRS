@@ -6,6 +6,7 @@ package Servlets;
 
 import Clases.Conexion;
 import Clases.Metodos;
+import Clases.MetodosUsuarios;
 import Clases.Usuarios;
 import java.io.IOException;
 import java.sql.Connection;
@@ -44,12 +45,12 @@ public class SvEditarUsuario extends HttpServlet {
         int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
         id = idUsuario;
         try {
-            usuario = metodo.obtenerUsuarioPorId(idUsuario, conn);
+            usuario = MetodosUsuarios.obtenerUsuarioPorId(idUsuario, conn);
         } catch (SQLException ex) {
             Logger.getLogger(SvEditarUsuario.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        String html = metodo.mostrarInformacionUsuario(usuario);
+        String html = MetodosUsuarios.mostrarInformacionUsuario(usuario);
 
         cedulaA = usuario.getCedula();
 
@@ -75,7 +76,7 @@ public class SvEditarUsuario extends HttpServlet {
 
         if (!cedulaA.equals(cedula)) {
             try {
-                cedulaExistente = metodo.verificarExistenciaCedula(cedula, conn);
+                cedulaExistente = MetodosUsuarios.verificarExistenciaCedula(cedula, conn);
             } catch (SQLException ex) {
                 Logger.getLogger(SvEditarUsuario.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -83,7 +84,7 @@ public class SvEditarUsuario extends HttpServlet {
 
         if (cedulaExistente == false) {
             try {
-                metodo.editarUsuario(id, nombre, apellido, cedula, celular, correo, conn);
+                MetodosUsuarios.editarUsuario(id, nombre, apellido, cedula, celular, correo, conn);
             } catch (SQLException ex) {
                 Logger.getLogger(SvEditarUsuario.class.getName()).log(Level.SEVERE, null, ex);
             }
