@@ -29,8 +29,6 @@ import org.apache.pdfbox.text.PDFTextStripper;
  */
 public class Metodos {
 
-    
-
     public static String agregarPdf(Part filePart, ServletContext context, Connection connection) throws IOException, SQLException {
         // Procesa el archivo aquí, por ejemplo, guarda el PDF en el servidor
         // Directorio de carga en el servidor donde se guardarán los PDFs
@@ -89,7 +87,6 @@ public class Metodos {
         statement.execute();
     }
 
-
     public static ArrayList<Solicitudes> getSolicitudes() throws ClassNotFoundException {
         ArrayList<Solicitudes> array = new ArrayList();
         Conexion conexion = new Conexion();
@@ -132,6 +129,7 @@ public class Metodos {
         Collections.sort(array, new Fechas());
         return array;
     }
+
     public static ArrayList<Solicitudes> getSolicitudesUs(String cedula) throws ClassNotFoundException {
         ArrayList<Solicitudes> array = new ArrayList();
         Conexion conexion = new Conexion();
@@ -139,7 +137,7 @@ public class Metodos {
         try {
 
             // Consulta SQL para obtener datos de la tabla tutorial
-            String sqlTutorial = "SELECT * FROM pqrs.solicitudes left JOIN  usuarios  on usuarios.idUsuario=solicitudes.idUsuario where cedula="+cedula;
+            String sqlTutorial = "SELECT * FROM pqrs.solicitudes left JOIN  usuarios  on usuarios.idUsuario=solicitudes.idUsuario where cedula=" + cedula;
 
             // Crear una declaración para la consulta de tutoriales
             Statement statement = connection.createStatement();
@@ -174,6 +172,7 @@ public class Metodos {
         Collections.sort(array, new Fechas());
         return array;
     }
+
     public static String listarAdministradores(Solicitudes sol, HttpServletRequest request) throws SQLException {
 
         // Inicializar fechaLimite como null
@@ -225,7 +224,7 @@ public class Metodos {
 
             HTML += "        <h4 style=\"text-align: justify;\">Fecha limite de respuesta: " + fechaLimiteFormateada + "</h4>\n";
         }
-       
+
         if (tipoUsuario.equals("administrador")) {
             HTML += "        <h4 style=\"text-align: justify;\">Usuario: " + sol.getUsuario() + "</h4>\n"
                     + "<hr>";
@@ -246,26 +245,27 @@ public class Metodos {
         HTML += "    </div>\n"
                 + "    <div class=\"card-footer\">\n";
 
-        if (tipoUsuario.equals("administrador") && (sol.getEstado().equals("Por responder")) || (sol.getEstado().equals("Vencido")) ) {
-                     // Obtener la fecha actual
-                Calendar fechaActual = Calendar.getInstance();
+        if (tipoUsuario.equals("administrador") && (sol.getEstado().equals("Por responder")) || (sol.getEstado().equals("Vencido"))) {
+            // Obtener la fecha actual
+            Calendar fechaActual = Calendar.getInstance();
 
-                // Verificar si la fecha límite no es nula y si la fecha actual es posterior a la fecha límite
-                if (fechaLimite != null && fechaActual.after(fechaLimite)) {
-                    // La fecha actual ha pasado la fecha límite, por lo tanto, la solicitud está vencida
-                    HTML += "        <h6 style=\"color: red; text-align: justify;\">¡Esta solicitud está vencida!</h6>\n";
-                    if(sol.getEstado().equals("Por responder")){
-                        
-                        Usuarios us=MetodosUsuarios.obtenerUsuario(Integer.parseInt(sol.getUsuario()));                     
-                        //enviarCorreo(us.getCorreo(),us.getNombre());
-                        EditarEstado(sol.getIdSolicitud(),"Vencido");
-                    }
-                } else{
-                     // Verificar si la fecha límite no es nula y si la fecha de registro es anterior a la fecha límite
-                    HTML += "        <a id='btnVisualizar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Responder Solicitud</a>\n";
+            // Verificar si la fecha límite no es nula y si la fecha actual es posterior a la fecha límite
+            if (fechaLimite != null && fechaActual.after(fechaLimite)) {
+                // La fecha actual ha pasado la fecha límite, por lo tanto, la solicitud está vencida
+                HTML += "        <h6 style=\"color: red; text-align: justify;\">¡Esta solicitud está vencida!</h6>\n";
+                if (sol.getEstado().equals("Por responder")) {
+                    Conexion conexion = new Conexion();
+                    Connection conn = conexion.establecerConexion();
+                    int usuario = MetodosUsuarios.obtenerUsuarioPorIdSolicitud(sol.getIdSolicitud(), conn);
+                    Usuarios user = MetodosUsuarios.obtenerUsuarioPorId(usuario, conn);
+                    enviarCorreo(user.getCorreo(), sol.getNombreSol());
+                    EditarEstado(sol.getIdSolicitud(), "Vencido");
                 }
-               
-            
+            } else {
+                // Verificar si la fecha límite no es nula y si la fecha de registro es anterior a la fecha límite
+                HTML += "        <a id='btnVisualizar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Responder Solicitud</a>\n";
+            }
+
         }
         HTML += "    </div>\n"
                 + "</article>"
@@ -286,7 +286,7 @@ public class Metodos {
                 + "                    Opciones\n"
                 + "                </button>\n"
                 + "                <ul class='dropdown-menu'>\n";
-        if (!sol.getEstado().equals("Respondido") || !sol.getEstado().equals("Vencido") ) {
+        if (!sol.getEstado().equals("Respondido") && !sol.getEstado().equals("Vencido")) {
             HTML += "                    <li><a id='btnEditar' class=\"btn btn-success\" data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Editar</a></li>\n"
                     + "                    <li><hr class='dropdown-divider'></li>\n";
         }
@@ -350,7 +350,7 @@ public class Metodos {
 
         HTML += "    </div>\n"
                 + "    <div class=\"card-footer\">\n";
-        if ( (sol.getEstado().equals("Vencido"))) {
+        if ((sol.getEstado().equals("Vencido"))) {
             HTML += "        <h6 style=\"color: red; text-align: justify;\">¡Esta solicitud está vencida!</h6>\n";
         }
         HTML += "    </div>\n"
@@ -510,10 +510,6 @@ public class Metodos {
         }
     }
 
-    
-
-    
-
     // Método para editar la respuesta de una solicitud en la base de datos
     public static void editarRespuestaEstado(int idSolicitud, String respuesta, String estado, Connection conn) throws SQLException {
         // Definir la llamada al procedimiento almacenado
@@ -658,24 +654,23 @@ public class Metodos {
         return sol;
     }
 
-    
-     public static void EditarEstado(int id, String estado) throws SQLException {
+    public static void EditarEstado(int id, String estado) throws SQLException {
         Conexion conexion = new Conexion();
         Connection connection = conexion.establecerConexion();
         // Llamar al procedimiento almacenado
-        CallableStatement statement = connection.prepareCall("UPDATE solicitudes SET estado='"+estado+"' WHERE idSolicitud="+id);
+        CallableStatement statement = connection.prepareCall("UPDATE solicitudes SET estado='" + estado + "' WHERE idSolicitud=" + id);
         statement.execute();
     }
-     
-    public static void enviarCorreo (String correo, String nombre){
+
+    public static void enviarCorreo(String correo, String nombre) {
         String emailFrom = "pqrsresponse@gmail.com"; // Cambia esto por tu dirección de correo electrónico
         String passwordFrom = "wkro wbtv mnoi gsjy"; // Cambia esto por tu contraseña
         String emailTo = correo; // Cambia esto por la dirección de correo electrónico del destinatario
-        String subject = "Solicitud atendida: " + nombre;
+        String subject = "Información de su petición: " + nombre;
 
         // Contenido del correo electrónico
         String content = "Cordial saludo," + "\n"
-                + "Espero que este mensaje le encuentre bien. Quisiera informarle que se ha vencido el tiempo para su respuesta. Por favor contacte a soporte"+ "\n"
+                + "Espero que este mensaje le encuentre bien. Quisiera informarle que se ha vencido el tiempo para su respuesta. Por favor contacte a soporte" + "\n"
                 + "Mil disculpas.";
 
         // Crear instancia de EnvioCorreos y configurar detalles del correo
@@ -689,10 +684,10 @@ public class Metodos {
         // Intentar enviar el correo electrónico
         try {
             envioCorreos.sendEmail();
-            System.out.println("Correo enviado con exito");           
+            System.out.println("Correo enviado con exito");
         } catch (MessagingException ex) {
             System.out.println("Error al enviar el correo");
         }
     }
-    
+
 }

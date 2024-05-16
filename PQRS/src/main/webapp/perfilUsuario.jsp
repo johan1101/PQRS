@@ -11,6 +11,7 @@
 
 <!-- toastr -->
 <% 
+    String res = request.getParameter("res");
     String toastr;
     toastr = (String) request.getAttribute("toastr");
     System.out.println(toastr);
@@ -86,9 +87,11 @@
             </div>
         </div>
         <div class="horizontal-tabs">
-            <a href="perfilUsuario" class="active">Perfil</a>
-            <a href="usuario.jsp?res=Por responder">Solicitudes</a>
-            <a href="usuario.jsp?res=Respondido">Respuestas</a>
+            <a href="perfilUsuario.jsp?res=Perfil" <%if (res != null && res.equals("Perfil")) {%> class="active" <%}%>">Perfil</a>
+            <a href="usuario.jsp?res=Todos" <%if (res != null && res.equals("Todos")) {%> class="active" <%}%>>Solicitudes</a>
+            <a href="usuario.jsp?res=Por responder"<%if (res != null && res.equals("Por responder")) {%> class="active" <%}%>> Pendientes </a>
+            <a href="usuario.jsp?res=Respondido"<%if (res != null && res.equals("Respondido")) {%> class="active" <%}%>>Respuestas</a>
+            <a href="usuario.jsp?res=Vencido"<%if (res != null && res.equals("Vencido")) {%> class="active" <%}%>>Vencidas</a>
         </div>
         <div class="content-header">
             <div class="content-header-actions">

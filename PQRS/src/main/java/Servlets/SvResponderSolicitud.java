@@ -92,7 +92,7 @@ public class SvResponderSolicitud extends HttpServlet {
             Logger.getLogger(SvResponderSolicitud.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        response.sendRedirect("solicitudes.jsp");
+        response.sendRedirect("solicitudes.jsp?res=no");
     }
 
     @Override

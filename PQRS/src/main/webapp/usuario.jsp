@@ -70,7 +70,7 @@
             String busqueda = request.getParameter("busqueda");
         %>
         <div class="horizontal-tabs">
-            <a href="perfilUsuario.jsp">Perfil</a>
+            <a href="perfilUsuario.jsp?res=Perfil" <%if (res != null && res.equals("Perfil")) {%> class="active" <%}%>">Perfil</a>
             <a href="usuario.jsp?res=Todos" <%if (res != null && res.equals("Todos")) {%> class="active" <%}%>>Solicitudes</a>
             <a href="usuario.jsp?res=Por responder"<%if (res != null && res.equals("Por responder")) {%> class="active" <%}%>> Pendientes </a>
             <a href="usuario.jsp?res=Respondido"<%if (res != null && res.equals("Respondido")) {%> class="active" <%}%>>Respuestas</a>

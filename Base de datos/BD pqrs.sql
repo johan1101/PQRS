@@ -17,11 +17,6 @@ CREATE TABLE roles(
     INSERT INTO roles(rol) VALUES('usuario'),
     ('administrador');
 
-CREATE TABLE pdfs(
-	idPdf INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(250)
-);
-
 CREATE TABLE usuarios(
 	idUsuario INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100),
@@ -162,4 +157,3 @@ BEGIN
 END //
 
 DELIMITER ;
-

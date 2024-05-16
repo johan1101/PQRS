@@ -47,7 +47,7 @@ public class SvEliminarEditarSolicitud extends HttpServlet {
         } catch (SQLException ex) {
             Logger.getLogger(SvEliminarEditarSolicitud.class.getName()).log(Level.SEVERE, null, ex);
         }
-        response.sendRedirect("usuario.jsp?alert=eliminado");
+        response.sendRedirect("usuario.jsp?alert=eliminado&res=Todos");
     }
 
 
@@ -91,7 +91,7 @@ public class SvEliminarEditarSolicitud extends HttpServlet {
             Logger.getLogger(SvEliminarEditarSolicitud.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        response.sendRedirect("usuario.jsp?alert=editado");
+        response.sendRedirect("usuario.jsp?alert=editado&res=Todos");
     }
 
     

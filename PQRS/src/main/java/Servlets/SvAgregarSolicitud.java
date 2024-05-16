@@ -88,7 +88,7 @@ public class SvAgregarSolicitud extends HttpServlet {
             Logger.getLogger(SvAgregarSolicitud.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        response.sendRedirect("usuario.jsp");
+        response.sendRedirect("usuario.jsp?res=Todos");
     }
 
     @Override

@@ -103,6 +103,7 @@ public class MetodosUsuarios {
         // Devolver el usuario (puede ser nulo si no se encontró ningún usuario con el nombre proporcionado)
         return usuario;
     }
+    
     public static String mostrarInformacionUsuario(Usuarios usuario) {
         StringBuilder sb = new StringBuilder();
 
