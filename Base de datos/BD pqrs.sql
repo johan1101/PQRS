@@ -157,3 +157,11 @@ BEGIN
 END //
 
 DELIMITER ;
+UPDATE solicitudes
+    SET 
+        estado='Por responder'
+    WHERE idSolicitud = 3;
+    UPDATE usuarios
+    SET 
+        correo = 'mariacasanova2346@gmail.com'
+    WHERE idUsuario = 2;

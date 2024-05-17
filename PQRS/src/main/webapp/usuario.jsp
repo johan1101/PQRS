@@ -24,7 +24,37 @@
     <%
     }
 %>
+<%
+    String alert = request.getParameter("alert"); //Recibe alerta para sweet alert 
+    if (alert != null) {//Prevenir errores
+        if (alert.equals("editado")) { //Caso de añadido exitoso
 
+%>
+<script>
+    $(document).ready(function () {
+        editado();
+    });
+</script>
+<%} else if (alert.equals("eliminado")) {
+%>
+<script>
+    $(document).ready(function () {
+        eliminado();
+    });
+</script>
+<%
+        }else if (alert.equals("anadido")) {
+%>
+<script>
+    $(document).ready(function () {
+        anadido();
+    });
+</script>
+<%
+        }
+    }
+
+%>
 <%
     ArrayList<Solicitudes> a = Metodos.SolicitudesUsuario((String) session.getAttribute("cedula"));
 %>
@@ -106,6 +136,7 @@
                 int mensaje = 0;
                  Metodos.mensaje(request);
                 for (Solicitudes sol : a) {
+                
                 if (busqueda == null) {
                     System.out.println(res);
                     if (sol.getEstado().equals(res) || res.equals("Todos")) {
@@ -288,7 +319,7 @@
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                     swalWithBootstrapButtons.fire(
                             'Cancelado',
-                            'Tu solicitud imaginario está a salvo :)',
+                            'Tu solicitud imaginaria está a salvo :)',
                             'error'
                             );
                 }
@@ -403,7 +434,34 @@
         // Mostrar una notificación Toastr de éxito
         toastr.success('Bienvenido!', '!Hola¡');
     }
-
+                function editado() {
+               Swal.fire({
+                    icon: 'warning', // Icono de éxito
+                    title: 'Editado exitosamente!', // Título de la notificación
+                    text: '¡Revisalo!', // Texto de la notificación
+                    showConfirmButton: false, // No muestra el botón de confirmación
+                    timer: 1500 // Tiempo de duración de la notificación (en milisegundos)
+                })
+            }
+            function eliminado() {
+               Swal.fire({
+                    icon: 'success', // Icono de éxito
+                    title: 'Eliminado exitosamente!', // Título de la notificación
+                    text: '¡Revisalo!', // Texto de la notificación
+                    showConfirmButton: false, // No muestra el botón de confirmación
+                    timer: 1500 // Tiempo de duración de la notificación (en milisegundos)
+                })
+            }
+            function anadido() {
+            // Utiliza la librería Swal para mostrar una notificación de éxito
+            Swal.fire({
+                icon: 'success', // Icono de éxito
+                title: 'Solicitud añadida!', // Título de la notificación
+                text: '¡Puedes verla!', // Texto de la notificación
+                showConfirmButton: false, // No muestra el botón de confirmación
+                timer: 1500 // Tiempo de duración de la notificación (en milisegundos)
+            })
+        }
 </script>
 
 

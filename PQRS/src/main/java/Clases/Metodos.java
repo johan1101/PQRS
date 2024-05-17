@@ -175,8 +175,38 @@ public class Metodos {
 
     public static String listarAdministradores(Solicitudes sol, HttpServletRequest request) throws SQLException {
 
-        // Inicializar fechaLimite como null
+         // Inicializar fechaLimite como null
         Calendar fechaLimite = null;
+                if ((sol.getEstado().equals("Por responder")) && sol.getTipoSolicitud().equals("Peticion")) {
+                        // Obtener la fecha actual
+                        Calendar fechaActuall = Calendar.getInstance();
+                        Date fechaActual = sol.getFechaRegistro();
+                        // Crear una instancia de Calendar
+                        fechaLimite = Calendar.getInstance();
+                        // Establecer la fecha actual en el Calendar
+                        fechaLimite.setTime(fechaActual);
+                        // Sumar 15 días a la fecha actual
+                        fechaLimite.add(Calendar.DAY_OF_MONTH, 15);
+
+                        // Formatear la fecha límite
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        String fechaLimiteFormateada = dateFormat.format(fechaLimite.getTime());
+                        // Verificar si la fecha límite no es nula y si la fecha actual es posterior a la fecha límite
+                        if (fechaLimite != null && fechaActuall.after(fechaLimite)) {
+                            // La fecha actual ha pasado la fecha límite, por lo tanto, la solicitud está vencida
+                            if (sol.getEstado().equals("Por responder")) {
+                                Conexion conexion = new Conexion();
+                                Connection conn = conexion.establecerConexion();
+                                int usuario = MetodosUsuarios.obtenerUsuarioPorIdSolicitud(sol.getIdSolicitud(), conn);
+                                Usuarios user = MetodosUsuarios.obtenerUsuarioPorId(usuario, conn);
+                                sol.setEstado("Vencido");
+                                System.out.println("---------"+sol.getEstado());
+                                EditarEstado(sol.getIdSolicitud(), "Vencido");
+                                enviarCorreo(user.getCorreo(), sol.getNombreSol());    
+                               
+                            }
+                        } 
+                }
 
         String tipoUsuario = (String) request.getSession().getAttribute("tipoUsuario");
         String HTML = "<article class=\"card article-container\">\n"
@@ -246,34 +276,57 @@ public class Metodos {
                 + "    <div class=\"card-footer\">\n";
 
         if (tipoUsuario.equals("administrador") && (sol.getEstado().equals("Por responder")) || (sol.getEstado().equals("Vencido"))) {
-            // Obtener la fecha actual
-            Calendar fechaActual = Calendar.getInstance();
 
-            // Verificar si la fecha límite no es nula y si la fecha actual es posterior a la fecha límite
-            if (fechaLimite != null && fechaActual.after(fechaLimite)) {
-                // La fecha actual ha pasado la fecha límite, por lo tanto, la solicitud está vencida
-                HTML += "        <h6 style=\"color: red; text-align: justify;\">¡Esta solicitud está vencida!</h6>\n";
-                if (sol.getEstado().equals("Por responder")) {
-                    Conexion conexion = new Conexion();
-                    Connection conn = conexion.establecerConexion();
-                    int usuario = MetodosUsuarios.obtenerUsuarioPorIdSolicitud(sol.getIdSolicitud(), conn);
-                    Usuarios user = MetodosUsuarios.obtenerUsuarioPorId(usuario, conn);
-                    enviarCorreo(user.getCorreo(), sol.getNombreSol());
-                    EditarEstado(sol.getIdSolicitud(), "Vencido");
+                
+                if (sol.getEstado().equals("Vencido")) {
+                    HTML += "        <h6 style=\"color: red; text-align: justify;\">¡Esta solicitud está vencida!</h6>\n";
                 }
             } else {
                 // Verificar si la fecha límite no es nula y si la fecha de registro es anterior a la fecha límite
                 HTML += "        <a id='btnVisualizar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Responder Solicitud</a>\n";
             }
 
-        }
+        
         HTML += "    </div>\n"
                 + "</article>"
                 + "<br>";
         return HTML;
     }
 
-    public static String listarUsuario(Solicitudes sol, HttpServletRequest request) {
+    public static String listarUsuario(Solicitudes sol, HttpServletRequest request) throws SQLException {
+        
+         // Inicializar fechaLimite como null
+        Calendar fechaLimite = null;
+                if ((sol.getEstado().equals("Por responder")) && sol.getTipoSolicitud().equals("Peticion")) {
+                        // Obtener la fecha actual
+                        Calendar fechaActuall = Calendar.getInstance();
+                        Date fechaActual = sol.getFechaRegistro();
+                        // Crear una instancia de Calendar
+                        fechaLimite = Calendar.getInstance();
+                        // Establecer la fecha actual en el Calendar
+                        fechaLimite.setTime(fechaActual);
+                        // Sumar 15 días a la fecha actual
+                        fechaLimite.add(Calendar.DAY_OF_MONTH, 15);
+
+                        // Formatear la fecha límite
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        String fechaLimiteFormateada = dateFormat.format(fechaLimite.getTime());
+                        // Verificar si la fecha límite no es nula y si la fecha actual es posterior a la fecha límite
+                        if (fechaLimite != null && fechaActuall.after(fechaLimite)) {
+                            // La fecha actual ha pasado la fecha límite, por lo tanto, la solicitud está vencida
+                            if (sol.getEstado().equals("Por responder")) {
+                                Conexion conexion = new Conexion();
+                                Connection conn = conexion.establecerConexion();
+                                int usuario = MetodosUsuarios.obtenerUsuarioPorIdSolicitud(sol.getIdSolicitud(), conn);
+                                Usuarios user = MetodosUsuarios.obtenerUsuarioPorId(usuario, conn);
+                                sol.setEstado("Vencido");
+                                System.out.println("---------"+sol.getEstado());
+                                EditarEstado(sol.getIdSolicitud(), "Vencido");
+                                enviarCorreo(user.getCorreo(), sol.getNombreSol());    
+                               
+                            }
+                        } 
+                }
         String tipoUsuario = (String) request.getSession().getAttribute("tipoUsuario");
         String HTML = "<article class=\"card\">\n"
                 + "    <div class=\"card-header\">\n"
@@ -321,17 +374,18 @@ public class Metodos {
         if (sol.getTipoSolicitud().equals("Peticion")) {
             Date fechaActual = sol.getFechaRegistro();
             // Crear una instancia de Calendar
-            Calendar calendar = Calendar.getInstance();
+            fechaLimite = Calendar.getInstance();
             // Establecer la fecha actual en el Calendar
-            calendar.setTime(fechaActual);
+            fechaLimite.setTime(fechaActual);
             // Sumar 15 días a la fecha actual
-            calendar.add(Calendar.DAY_OF_MONTH, 15);
+            fechaLimite.add(Calendar.DAY_OF_MONTH, 15);
 
             // Formatear la fecha límite
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String fechaLimiteFormateada = dateFormat.format(calendar.getTime());
+            String fechaLimiteFormateada = dateFormat.format(fechaLimite.getTime());
 
             HTML += "        <h4>Fecha limite de respuesta: " + fechaLimiteFormateada + "</h4>\n";
+            
         }
 
         HTML += "<hr>\n";
@@ -350,13 +404,16 @@ public class Metodos {
 
         HTML += "    </div>\n"
                 + "    <div class=\"card-footer\">\n";
+
         if ((sol.getEstado().equals("Vencido"))) {
             HTML += "        <h6 style=\"color: red; text-align: justify;\">¡Esta solicitud está vencida!</h6>\n";
         }
         HTML += "    </div>\n"
                 + "</article>"
                 + "<br>";
-        return HTML;
+       
+    
+         return HTML;
     }
 
     public static String mensaje(HttpServletRequest request) {
