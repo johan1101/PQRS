@@ -15,37 +15,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
+ * MetodosUsuarios
  *
- * @author maria
+ * @author Johan- María
  */
 public class MetodosUsuarios {
-    public static Usuarios obtenerUsuario(int id) throws SQLException{
-        Conexion conexion = new Conexion();
-        Connection conn = conexion.establecerConexion();
-        Usuarios us=new Usuarios();
-       
-
-        // Declarar la conexión, el PreparedStatement y el ResultSet como variables locales
-        PreparedStatement consulta = conn.prepareStatement("SELECT * FROM pqrs.solicitudes left JOIN  usuarios  on usuarios.idUsuario=solicitudes.idUsuario WHERE idSolicitud = ?");
-        {
-            // Establecer el parámetro en la consulta preparada
-            consulta.setInt(1, id);
-
-            // Ejecutar la consulta
-            ResultSet resultado = consulta.executeQuery();
-
-            // Verificar si se encontró una solicitud con el ID proporcionado
-            if (resultado.next()) {
-                // Crear un objeto de solicitud con los datos obtenidos de la base de datos
-                us.setIdUsuario(resultado.getInt("idUsuario"));
-                us.setNombre(resultado.getString("nombre"));
-                us.setApellido(resultado.getString("apellido"));
-                us.setCedula(resultado.getString("cedula"));
-                us.setCorreo(resultado.getString("correo"));
-            }
-        }
-        return us;
-    }
+    /**
+     * obtenerUsuario
+     * Obtener objeto de tipo USUARIO por ID
+     */
+ 
     public static Usuarios obtenerUsuarioPorId(int idUsuario, Connection conn) throws SQLException {
         // Inicializar el usuario como nulo
         Usuarios usuario = new Usuarios();
@@ -69,7 +48,6 @@ public class MetodosUsuarios {
                     usuario.setCelular(resultado.getString("celular"));
                     usuario.setCorreo(resultado.getString("correo"));
                     usuario.setRol(resultado.getString("idRol"));
-                    // Agregar más atributos según sea necesario
                 }
             }
         }
@@ -77,6 +55,9 @@ public class MetodosUsuarios {
         // Devolver el usuario (puede ser nulo si no se encontró ningún usuario con el ID proporcionado)
         return usuario;
     }
+    /**
+     * obtenerUsuarioPorIdSolicitud
+     */
     public static int obtenerUsuarioPorIdSolicitud(int idSolicitud, Connection conn) throws SQLException {
         
         // Inicializar el usuario como nulo
@@ -103,7 +84,9 @@ public class MetodosUsuarios {
         // Devolver el usuario (puede ser nulo si no se encontró ningún usuario con el nombre proporcionado)
         return usuario;
     }
-    
+    /**
+     * mostrarInformacionUsuario
+     */
     public static String mostrarInformacionUsuario(Usuarios usuario) {
         StringBuilder sb = new StringBuilder();
 
@@ -160,7 +143,9 @@ public class MetodosUsuarios {
 
         return sb.toString();
     }
-
+    /**
+     * editarUsuario
+     */
     public static void editarUsuario(int idUsuario, String nombre, String apellido, String cedula, String celular, String correo, Connection conn) throws SQLException {
 
         String sql = "CALL editarUsuario(?, ?, ?, ?, ?, ?)";
@@ -175,7 +160,9 @@ public class MetodosUsuarios {
         }
 
     }
-
+    /**
+     * verificarExistenciaCedula
+     */
     public static boolean verificarExistenciaCedula(String cedula, Connection conn) throws SQLException {
         boolean cedulaExistente = false;
 
@@ -199,6 +186,9 @@ public class MetodosUsuarios {
 
         return cedulaExistente;
     }
+    /**
+     * agregarUsuario
+     */
     public static void agregarUsuario(String cedula, String nombre, String apellido, String celular, String correo, String contrasena, int idRol, Connection connection) throws SQLException {
 
         String sql = "CALL AgregarUsuario(?, ?, ?, ?, ?, ?, ?)";
@@ -212,7 +202,9 @@ public class MetodosUsuarios {
         statement.setInt(7, idRol); // ID del rol
         statement.executeUpdate();
     }
-
+    /**
+     * validarIngreso
+     */
     public static void validarIngreso(String cedula, String contrasena, Connection connection, HttpServletResponse response, HttpSession session, HttpServletRequest request) throws SQLException, IOException, ServletException {
         // Consulta SQL para buscar un usuario con la cédula y contraseña proporcionadas
         String sql = "SELECT idUsuario, idRol FROM usuarios WHERE cedula = ? AND contrasena = ?";

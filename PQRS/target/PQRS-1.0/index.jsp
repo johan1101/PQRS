@@ -8,16 +8,15 @@
     <%@include file= "styles/styleLogin.css" %>
 </style>
 
-<% 
+<%  //Manejo de alertas
     String toastr;
     toastr = (String) request.getAttribute("toastr");
-    System.out.println(toastr);
 
     if(toastr != null && toastr.equals("registrado")){
     %>
     <script>
     $(document).ready(function () {
-        registrado();
+        registrado();//Registrado
     });
 </script>
     <%
@@ -25,7 +24,7 @@
     %>
     <script>
     $(document).ready(function () {
-        noRegistrado();
+        noRegistrado();//No registrado
     });
 </script>
     <%
@@ -33,7 +32,7 @@
     %>
     <script>
     $(document).ready(function () {
-        noPasa();
+        noPasa();//Datos incorrectos
     });
 </script>
     <%
@@ -149,7 +148,7 @@
         toastr.error('Ya existe un usuario con esa cedula', '!Ups¡');
     }
     
-            function noPasa() {
+        function noPasa() {
         // Configurar opciones Toastr
         toastr.options = {
             "closeButton": false,

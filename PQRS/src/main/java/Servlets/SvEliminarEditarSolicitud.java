@@ -22,8 +22,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 /**
+ * SvEliminarEditarSolicitud
  *
- * @author maria
+ * @author Johan- María
  */
 @MultipartConfig
 @WebServlet(name = "SvEliminarEditarSolicitud", urlPatterns = {"/SvEliminarEditarSolicitud"})
@@ -36,21 +37,25 @@ public class SvEliminarEditarSolicitud extends HttpServlet {
 
     }
 
-
+    /**
+     * Metodo GET para eliminar solicitud
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       Connection connection = conexion.establecerConexion();
+       Connection connection = conexion.establecerConexion();//Conexion
        int id = Integer.parseInt( request.getParameter("id"));
         try {
-            Metodos.eliminarSolicitud(id, connection);
+            Metodos.eliminarSolicitud(id, connection);//Metodo eliminar
         } catch (SQLException ex) {
             Logger.getLogger(SvEliminarEditarSolicitud.class.getName()).log(Level.SEVERE, null, ex);
         }
         response.sendRedirect("usuario.jsp?alert=eliminado&res=Todos");
     }
 
-
+    /**
+     * Metodo POST para editar solicitud 
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -69,7 +74,7 @@ public class SvEliminarEditarSolicitud extends HttpServlet {
         String estado = "Por responder";
         int idUsuario = (Integer) request.getSession().getAttribute("idUsuario");
         System.out.println(idUsuario);
-        String fileName = "";
+        String fileName = request.getParameter("pdfv");
 
         //Obtener el contexto del servlet
         ServletContext context = getServletContext();

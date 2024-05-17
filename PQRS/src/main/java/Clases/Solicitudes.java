@@ -3,11 +3,14 @@ package Clases;
 import java.sql.Date;
 
 /**
+ * Solicitudes
  *
- * @author Johan Ordoñez
+ * @author Johan- María
  */
 public class Solicitudes {
-
+    /**
+     * Parametros
+     */
     private int idSolicitud;
     private String nombreSol;
     private String tipoSolicitud;
@@ -17,7 +20,10 @@ public class Solicitudes {
     private String pdf;
     private String usuario;
     private String respuesta;
-
+    
+    /**
+     * Constructor
+     */
     public Solicitudes(int idSolicitud, String nombreSol, String tipoSolicitud, Date fechaRegistro, String estado, String descripcion, String pdf, String usuario, String respuesta) {
         this.idSolicitud = idSolicitud;
         this.nombreSol = nombreSol;
@@ -29,10 +35,12 @@ public class Solicitudes {
         this.usuario = usuario;
         this.respuesta = respuesta;
     }
-
+    
     public Solicitudes() {
     }
-
+    /**
+     * Getter and Setter
+     */
     public int getIdSolicitud() {
         return idSolicitud;
     }

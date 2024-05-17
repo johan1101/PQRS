@@ -24,11 +24,16 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
 /**
+ * Metodos
  *
- * @author Johan Ordoñez
+ * @author Johan- María
  */
 public class Metodos {
 
+    /**
+     * agregarPdf
+     * Metodo para agregar el PDF
+     */
     public static String agregarPdf(Part filePart, ServletContext context, Connection connection) throws IOException, SQLException {
         // Procesa el archivo aquí, por ejemplo, guarda el PDF en el servidor
         // Directorio de carga en el servidor donde se guardarán los PDFs
@@ -64,11 +69,15 @@ public class Metodos {
         }
         return pdfText;
     }
-
+    /**
+     * agregarSolicitud
+     * Metodo para agregar la solicitud
+     */
     public static void agregarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, String pdf, int idUsuario, String respuesta, Connection connection) throws SQLException {
 
         // Llamar al procedimiento almacenado
         CallableStatement statement = connection.prepareCall("{CALL AgregarSolicitud(?, ?, ?, ?, ?, ?, ?)}");
+        //Establecer los parametros
         statement.setString(1, nombreSolicitud);
         statement.setString(2, tipoSolicitud);
         statement.setString(3, estado);
@@ -86,9 +95,13 @@ public class Metodos {
         }
         statement.execute();
     }
-
+    /**
+     * getSolicitudes
+     * Metodo para obtener TODAS las solicitudes
+     */
     public static ArrayList<Solicitudes> getSolicitudes() throws ClassNotFoundException {
-        ArrayList<Solicitudes> array = new ArrayList();
+        ArrayList<Solicitudes> array = new ArrayList();//Nuevo array
+        //Conexion
         Conexion conexion = new Conexion();
         Connection connection = conexion.establecerConexion();
         try {
@@ -103,6 +116,7 @@ public class Metodos {
             // Iterar sobre los resultados de tutoriales y almacenarlos en el array
             while (resultSetSolicitud.next()) {
                 Solicitudes sol = new Solicitudes();
+                //Llenar el objeto
                 sol.setIdSolicitud(resultSetSolicitud.getInt("idSolicitud"));
                 sol.setNombreSol(resultSetSolicitud.getString("nombreSolicitud"));
                 sol.setTipoSolicitud(resultSetSolicitud.getString("tipoSolicitud"));
@@ -114,7 +128,6 @@ public class Metodos {
                 sol.setUsuario(resultSetSolicitud.getString("cedula"));
                 sol.setRespuesta(resultSetSolicitud.getString("respuesta"));
                 array.add(sol);
-                //data.add(row);
             }
 
             // Cerrar la conexión
@@ -126,12 +139,17 @@ public class Metodos {
             e.printStackTrace();
             // Manejo de excepciones
         }
+        //Ordenar por fecha
         Collections.sort(array, new Fechas());
-        return array;
+        return array;//Devolver el array
     }
-
+    /**
+     * getSolicitudesUs
+     * Obtener las solicitudes de los Usuarios
+     */
     public static ArrayList<Solicitudes> getSolicitudesUs(String cedula) throws ClassNotFoundException {
-        ArrayList<Solicitudes> array = new ArrayList();
+        ArrayList<Solicitudes> array = new ArrayList();//Nuevo array a llenar
+        //Conexion
         Conexion conexion = new Conexion();
         Connection connection = conexion.establecerConexion();
         try {
@@ -146,6 +164,7 @@ public class Metodos {
             // Iterar sobre los resultados de tutoriales y almacenarlos en el array
             while (resultSetSolicitud.next()) {
                 Solicitudes sol = new Solicitudes();
+                //Llenar el objeto
                 sol.setIdSolicitud(resultSetSolicitud.getInt("idSolicitud"));
                 sol.setNombreSol(resultSetSolicitud.getString("nombreSolicitud"));
                 sol.setTipoSolicitud(resultSetSolicitud.getString("tipoSolicitud"));
@@ -156,8 +175,7 @@ public class Metodos {
                 sol.setPdf(resultSetSolicitud.getString("pdf"));
                 sol.setUsuario(resultSetSolicitud.getString("cedula"));
                 sol.setRespuesta(resultSetSolicitud.getString("respuesta"));
-                array.add(sol);
-                //data.add(row);
+                array.add(sol);//Agregar al array
             }
 
             // Cerrar la conexión
@@ -169,44 +187,48 @@ public class Metodos {
             e.printStackTrace();
             // Manejo de excepciones
         }
+        //Ordenar por fecha
         Collections.sort(array, new Fechas());
         return array;
     }
-
+    /**
+     * ListarAdministradores
+     * Generar la lista para los administradores
+     */
     public static String listarAdministradores(Solicitudes sol, HttpServletRequest request) throws SQLException {
 
-         // Inicializar fechaLimite como null
+        // Inicializar fechaLimite como null
         Calendar fechaLimite = null;
-                if ((sol.getEstado().equals("Por responder")) && sol.getTipoSolicitud().equals("Peticion")) {
-                        // Obtener la fecha actual
-                        Calendar fechaActuall = Calendar.getInstance();
-                        Date fechaActual = sol.getFechaRegistro();
-                        // Crear una instancia de Calendar
-                        fechaLimite = Calendar.getInstance();
-                        // Establecer la fecha actual en el Calendar
-                        fechaLimite.setTime(fechaActual);
-                        // Sumar 15 días a la fecha actual
-                        fechaLimite.add(Calendar.DAY_OF_MONTH, 15);
+        if ((sol.getEstado().equals("Por responder")) && sol.getTipoSolicitud().equals("Peticion")) {
+            // Obtener la fecha actual
+            Calendar fechaActuall = Calendar.getInstance();
+            Date fechaActual = sol.getFechaRegistro();
+            // Crear una instancia de Calendar
+            fechaLimite = Calendar.getInstance();
+            // Establecer la fecha actual en el Calendar
+            fechaLimite.setTime(fechaActual);
+            // Sumar 15 días a la fecha actual
+            fechaLimite.add(Calendar.DAY_OF_MONTH, 15);
 
-                        // Formatear la fecha límite
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                        String fechaLimiteFormateada = dateFormat.format(fechaLimite.getTime());
-                        // Verificar si la fecha límite no es nula y si la fecha actual es posterior a la fecha límite
-                        if (fechaLimite != null && fechaActuall.after(fechaLimite)) {
-                            // La fecha actual ha pasado la fecha límite, por lo tanto, la solicitud está vencida
-                            if (sol.getEstado().equals("Por responder")) {
-                                Conexion conexion = new Conexion();
-                                Connection conn = conexion.establecerConexion();
-                                int usuario = MetodosUsuarios.obtenerUsuarioPorIdSolicitud(sol.getIdSolicitud(), conn);
-                                Usuarios user = MetodosUsuarios.obtenerUsuarioPorId(usuario, conn);
-                                sol.setEstado("Vencido");
-                                System.out.println("---------"+sol.getEstado());
-                                EditarEstado(sol.getIdSolicitud(), "Vencido");
-                                enviarCorreo(user.getCorreo(), sol.getNombreSol());    
-                               
-                            }
-                        } 
+            // Formatear la fecha límite
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String fechaLimiteFormateada = dateFormat.format(fechaLimite.getTime());
+            // Verificar si la fecha límite no es nula y si la fecha actual es posterior a la fecha límite
+            if (fechaLimite != null && fechaActuall.after(fechaLimite)) {
+                // La fecha actual ha pasado la fecha límite, por lo tanto, la solicitud está vencida
+                if (sol.getEstado().equals("Por responder")) {
+                    Conexion conexion = new Conexion();
+                    Connection conn = conexion.establecerConexion();
+                    int usuario = MetodosUsuarios.obtenerUsuarioPorIdSolicitud(sol.getIdSolicitud(), conn);
+                    Usuarios user = MetodosUsuarios.obtenerUsuarioPorId(usuario, conn);
+                    sol.setEstado("Vencido");
+                    System.out.println("---------" + sol.getEstado());
+                    EditarEstado(sol.getIdSolicitud(), "Vencido");
+                    enviarCorreo(user.getCorreo(), sol.getNombreSol());
+
                 }
+            }
+        }
 
         String tipoUsuario = (String) request.getSession().getAttribute("tipoUsuario");
         String HTML = "<article class=\"card article-container\">\n"
@@ -277,56 +299,57 @@ public class Metodos {
 
         if (tipoUsuario.equals("administrador") && (sol.getEstado().equals("Por responder")) || (sol.getEstado().equals("Vencido"))) {
 
-                
-                if (sol.getEstado().equals("Vencido")) {
-                    HTML += "        <h6 style=\"color: red; text-align: justify;\">¡Esta solicitud está vencida!</h6>\n";
-                }
-            } else {
-                // Verificar si la fecha límite no es nula y si la fecha de registro es anterior a la fecha límite
-                HTML += "        <a id='btnVisualizar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Responder Solicitud</a>\n";
+            if (sol.getEstado().equals("Vencido")) {
+                HTML += "        <h6 style=\"color: red; text-align: justify;\">¡Esta solicitud está vencida!</h6>\n";
             }
+        } else {
+            // Verificar si la fecha límite no es nula y si la fecha de registro es anterior a la fecha límite
+            HTML += "        <a id='btnVisualizar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Responder Solicitud</a>\n";
+        }
 
-        
         HTML += "    </div>\n"
                 + "</article>"
                 + "<br>";
         return HTML;
     }
-
+    /**
+     * listarUsuario
+     * Generar la lista para los usuarios
+     */
     public static String listarUsuario(Solicitudes sol, HttpServletRequest request) throws SQLException {
-        
-         // Inicializar fechaLimite como null
-        Calendar fechaLimite = null;
-                if ((sol.getEstado().equals("Por responder")) && sol.getTipoSolicitud().equals("Peticion")) {
-                        // Obtener la fecha actual
-                        Calendar fechaActuall = Calendar.getInstance();
-                        Date fechaActual = sol.getFechaRegistro();
-                        // Crear una instancia de Calendar
-                        fechaLimite = Calendar.getInstance();
-                        // Establecer la fecha actual en el Calendar
-                        fechaLimite.setTime(fechaActual);
-                        // Sumar 15 días a la fecha actual
-                        fechaLimite.add(Calendar.DAY_OF_MONTH, 15);
 
-                        // Formatear la fecha límite
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                        String fechaLimiteFormateada = dateFormat.format(fechaLimite.getTime());
-                        // Verificar si la fecha límite no es nula y si la fecha actual es posterior a la fecha límite
-                        if (fechaLimite != null && fechaActuall.after(fechaLimite)) {
-                            // La fecha actual ha pasado la fecha límite, por lo tanto, la solicitud está vencida
-                            if (sol.getEstado().equals("Por responder")) {
-                                Conexion conexion = new Conexion();
-                                Connection conn = conexion.establecerConexion();
-                                int usuario = MetodosUsuarios.obtenerUsuarioPorIdSolicitud(sol.getIdSolicitud(), conn);
-                                Usuarios user = MetodosUsuarios.obtenerUsuarioPorId(usuario, conn);
-                                sol.setEstado("Vencido");
-                                System.out.println("---------"+sol.getEstado());
-                                EditarEstado(sol.getIdSolicitud(), "Vencido");
-                                enviarCorreo(user.getCorreo(), sol.getNombreSol());    
-                               
-                            }
-                        } 
+        // Inicializar fechaLimite como null
+        Calendar fechaLimite = null;
+        if ((sol.getEstado().equals("Por responder")) && sol.getTipoSolicitud().equals("Peticion")) {
+            // Obtener la fecha actual
+            Calendar fechaActuall = Calendar.getInstance();
+            Date fechaActual = sol.getFechaRegistro();
+            // Crear una instancia de Calendar
+            fechaLimite = Calendar.getInstance();
+            // Establecer la fecha actual en el Calendar
+            fechaLimite.setTime(fechaActual);
+            // Sumar 15 días a la fecha actual
+            fechaLimite.add(Calendar.DAY_OF_MONTH, 15);
+
+            // Formatear la fecha límite
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String fechaLimiteFormateada = dateFormat.format(fechaLimite.getTime());
+            // Verificar si la fecha límite no es nula y si la fecha actual es posterior a la fecha límite
+            if (fechaLimite != null && fechaActuall.after(fechaLimite)) {
+                // La fecha actual ha pasado la fecha límite, por lo tanto, la solicitud está vencida
+                if (sol.getEstado().equals("Por responder")) {
+                    Conexion conexion = new Conexion();
+                    Connection conn = conexion.establecerConexion();
+                    int usuario = MetodosUsuarios.obtenerUsuarioPorIdSolicitud(sol.getIdSolicitud(), conn);
+                    Usuarios user = MetodosUsuarios.obtenerUsuarioPorId(usuario, conn);
+                    sol.setEstado("Vencido");
+                    System.out.println("---------" + sol.getEstado());
+                    EditarEstado(sol.getIdSolicitud(), "Vencido");
+                    enviarCorreo(user.getCorreo(), sol.getNombreSol());
+
                 }
+            }
+        }
         String tipoUsuario = (String) request.getSession().getAttribute("tipoUsuario");
         String HTML = "<article class=\"card\">\n"
                 + "    <div class=\"card-header\">\n"
@@ -385,7 +408,7 @@ public class Metodos {
             String fechaLimiteFormateada = dateFormat.format(fechaLimite.getTime());
 
             HTML += "        <h4>Fecha limite de respuesta: " + fechaLimiteFormateada + "</h4>\n";
-            
+
         }
 
         HTML += "<hr>\n";
@@ -411,11 +434,13 @@ public class Metodos {
         HTML += "    </div>\n"
                 + "</article>"
                 + "<br>";
-       
-    
-         return HTML;
-    }
 
+        return HTML;
+    }
+    /**
+     *  mensaje
+     *  Genera un mensaje para indicar que no hay solicitudes
+     */
     public static String mensaje(HttpServletRequest request) {
         String HTML = "<article class=\"card\">\n"
                 + "    <div class=\"card-footer\">\n"
@@ -429,28 +454,20 @@ public class Metodos {
                 + "<br>";
         return HTML;
     }
-
-    public static ArrayList<Solicitudes> SolicitudesUsuario(String cedula) throws ClassNotFoundException {
-        ArrayList<Solicitudes> array = getSolicitudesUs(cedula);
-        ArrayList<Solicitudes> array2 = new ArrayList();
-        for (Solicitudes sol : array) {
-            if (cedula.equals(sol.getUsuario())) {
-                array2.add(sol);
-            }
-        }
-        Collections.sort(array, new Fechas());
-        return array2;
-    }
-
+    /**
+     * EditarSolicitud
+     */
     public static void EditarSolicitud(int id, String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, String pdf, int idUsuario, String respuesta, Connection connection) throws SQLException {
 
         // Llamar al procedimiento almacenado
         CallableStatement statement = connection.prepareCall("{CALL editarSolicitud(?,?, ?, ?, ?, ?, ?, ?)}");
+        //Parametros
         statement.setInt(1, id);
         statement.setString(2, nombreSolicitud);
         statement.setString(3, tipoSolicitud);
         statement.setString(4, estado);
         statement.setString(5, descripcion);
+        //GestionPDF
         if (pdf.equals("")) {
             statement.setNull(6, java.sql.Types.VARCHAR); // Establecer el parámetro como NULL
         } else {
@@ -465,11 +482,14 @@ public class Metodos {
         statement.execute();
 
     }
-
+    /**
+     * EliminarSolicitud
+     */
     public static void eliminarSolicitud(String nombreSolicitud, String tipoSolicitud, String estado, String descripcion, String pdf, int idUsuario, Connection connection) throws SQLException {
 
         // Llamar al procedimiento almacenado
         CallableStatement statement = connection.prepareCall("{CALL AgregarSolicitud(?, ?, ?, ?, ?, ?)}");
+        //Parametros
         statement.setString(1, nombreSolicitud);
         statement.setString(2, tipoSolicitud);
         statement.setString(3, estado);
@@ -482,7 +502,9 @@ public class Metodos {
         statement.setInt(6, idUsuario);
         statement.execute();
     }
-
+    /**
+     * mostrarInfoSolicitud
+     */
     public static String mostrarInfoSolicitud(Solicitudes sol, Usuarios usuario) {
         if (sol == null) {
             throw new IllegalArgumentException("La solicitud no puede ser nula.");
@@ -533,7 +555,9 @@ public class Metodos {
                 + "                    </div>";
         return HTML;
     }
-
+    /**
+     * obtenerSolicitudPorId 
+     */
     public static Solicitudes obtenerSolicitudPorId(int idSolicitud, Connection conn) throws SQLException {
 
         // Inicializar la solicitud como nula
@@ -567,7 +591,10 @@ public class Metodos {
         }
     }
 
-    // Método para editar la respuesta de una solicitud en la base de datos
+    /**
+     * editarRespuestaEstado
+     * Método para editar la respuesta de una solicitud en la base de datos
+     */
     public static void editarRespuestaEstado(int idSolicitud, String respuesta, String estado, Connection conn) throws SQLException {
         // Definir la llamada al procedimiento almacenado
         String sql = "{CALL editarRespuesta(?, ?, ?)}";
@@ -583,7 +610,10 @@ public class Metodos {
             cs.executeUpdate();
         }
     }
-
+    /**
+     * editarInfoSolicitud
+     * Método para editar la informacion de una solicitud en la base de datos
+     */
     public static String editarInfoSolicitud(Solicitudes sol) {
         if (sol == null) {
             throw new IllegalArgumentException("La solicitud no puede ser nula.");
@@ -597,6 +627,7 @@ public class Metodos {
                 + "            <div class=\"form-element\">\n"
                 + "                <label for=\"nombre\">Nombre</label>\n"
                 + "                <input type=\"hidden\" id=\"id\" name=\"id\" required  value=\"" + sol.getIdSolicitud() + "\">\n"
+                + "                <input type=\"hidden\" id=\"pdfv\" name=\"pdfv\" required  value=\"" + sol.getPdf() + "\">\n"
                 + "                <input type=\"text\" id=\"nombre\" name=\"nombre\" placeholder=\"Ingresa el nombre de la solicitud\" maxlength=\"50\" required pattern=\"[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+\" title=\"No se permiten números\" value=\"" + sol.getNombreSol() + "\">\n"
                 + "            </div>\n"
                 + "        </div>\n"
@@ -637,7 +668,9 @@ public class Metodos {
                 + "</div>";
         return HTML;
     }
-
+    /**
+     * eliminarSolicitud
+     */
     public static void eliminarSolicitud(int id, Connection connection) throws SQLException {
 
         PreparedStatement preparedStatement = null;
@@ -670,7 +703,10 @@ public class Metodos {
             }
         }
     }
-
+    /**
+     * obtenerSolicitud
+     * Obtener un objeto de solicitud por medio del ID
+     */
     public static Solicitudes obtenerSolicitud(int id) throws ClassNotFoundException {
         Conexion conexion = new Conexion();
         Connection connection = conexion.establecerConexion();
@@ -710,7 +746,9 @@ public class Metodos {
         }
         return sol;
     }
-
+    /**
+     * EditarEstado 
+     */
     public static void EditarEstado(int id, String estado) throws SQLException {
         Conexion conexion = new Conexion();
         Connection connection = conexion.establecerConexion();
@@ -718,7 +756,10 @@ public class Metodos {
         CallableStatement statement = connection.prepareCall("UPDATE solicitudes SET estado='" + estado + "' WHERE idSolicitud=" + id);
         statement.execute();
     }
-
+    /**
+     * enviarCorreo
+     * Metodo para enviar correo  
+     */
     public static void enviarCorreo(String correo, String nombre) {
         String emailFrom = "pqrsresponse@gmail.com"; // Cambia esto por tu dirección de correo electrónico
         String passwordFrom = "wkro wbtv mnoi gsjy"; // Cambia esto por tu contraseña

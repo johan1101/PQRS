@@ -19,8 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * SvRegistrarUsuario
  *
- * @author Johan Ordoñez
+ * @author Johan- María
  */
 @WebServlet(name = "SvRegistrarUsuario", urlPatterns = {"/SvRegistrarUsuario"})
 public class SvRegistrarUsuario extends HttpServlet {
@@ -35,11 +36,13 @@ public class SvRegistrarUsuario extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-
+    //Conexion
     Metodos metodo = new Metodos();
 
     Conexion conexion = new Conexion();
-
+    /**
+     * Metodo POST para registro de usuario
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

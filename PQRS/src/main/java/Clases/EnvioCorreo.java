@@ -8,8 +8,14 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+/**
+ * EnvioCorreo
+ * @author Johan- María
+ */
 public class EnvioCorreo {
-
+    /**
+     * Atributos
+     */
     private static String emailFrom = "";
     private static String passwordFrom = "";
     private String emailTo;
@@ -19,11 +25,17 @@ public class EnvioCorreo {
     private Properties mProperties;
     private Session mSession;
     private MimeMessage mCorreo;
-
+    
+    /**
+     * Constructor
+     */
     public EnvioCorreo() {
         mProperties = new Properties();
     }
-
+    /**
+     * Getter and Setter
+     */
+    
     public void setEmailFrom(String emailFrom) {
         this.emailFrom = emailFrom;
     }
@@ -43,7 +55,10 @@ public class EnvioCorreo {
     public void setContent(String content) {
         this.content = content;
     }
-
+    /**
+     * Metodo para enviar el email
+     * @throws MessagingException 
+     */
     public void sendEmail() throws MessagingException {
         createEmail();
 
@@ -52,7 +67,10 @@ public class EnvioCorreo {
         mTransport.sendMessage(mCorreo, mCorreo.getRecipients(Message.RecipientType.TO));
         mTransport.close();
     }
-
+    /**
+     * Metodo para crear el email
+     * @throws MessagingException 
+     */
     private void createEmail() throws MessagingException {
         // Configurar propiedades del servidor SMTP
         mProperties.put("mail.smtp.host", "smtp.gmail.com");

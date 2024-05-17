@@ -16,8 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
+ * SvLoginCheck
  *
- * @author Johan Ordoñez
+ * @author Johan- María
  */
 @WebServlet(name = "SvLoginCheck", urlPatterns = {"/SvLoginCheck"})
 public class SvLoginCheck extends HttpServlet {
@@ -32,10 +33,12 @@ public class SvLoginCheck extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-    
+    //Conexion
     Metodos metodo = new Metodos();
     Conexion conexion = new Conexion();
-
+    /**
+     * Metodo POST para login
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

@@ -10,7 +10,7 @@
 </style>
 
 <!-- toastr -->
-<% 
+<%  //Manejo alertas
     String res = request.getParameter("res");
     String toastr;
     toastr = (String) request.getAttribute("toastr");

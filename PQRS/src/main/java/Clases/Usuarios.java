@@ -1,11 +1,14 @@
 package Clases;
 
 /**
+ * Solicitudes
  *
- * @author Johan Ordoñez
+ * @author Johan- María
  */
 public class Usuarios {
-
+    /**
+     * Parametros
+     */
     private int idUsuario;
     private String nombre;
     private String apellido;
@@ -15,6 +18,9 @@ public class Usuarios {
     private String correo;
     private String rol;
     
+    /**
+     * Constructor
+     */
     public Usuarios(){
         
     }
@@ -29,7 +35,9 @@ public class Usuarios {
         this.correo = correo;
         this.rol = rol;
     }
-
+    /**
+     * Getter and Setter
+     */
     public int getIdUsuario() {
         return idUsuario;
     }

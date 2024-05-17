@@ -2,9 +2,15 @@ package Clases;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-
+/**
+ * Conexion
+ * @author Johan- María
+ */
 public class Conexion {
-
+    /**
+     * Metodo para establecer la conexion con la base de datos
+     * @return conn
+     */
     public Connection establecerConexion() {
         String url = "jdbc:mysql://localhost:3306/pqrs?serverTimeZone=utc";
         String user = "root";

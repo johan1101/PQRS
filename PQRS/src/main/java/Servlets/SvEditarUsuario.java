@@ -20,8 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * SvEditarUsuario
  *
- * @author Johan Ordoñez
+ * @author Johan- María
  */
 @WebServlet(name = "SvEditarUsuario", urlPatterns = {"/SvEditarUsuario"})
 public class SvEditarUsuario extends HttpServlet {
@@ -30,12 +31,15 @@ public class SvEditarUsuario extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
     }
+    //Conexiones
     Metodos metodo = new Metodos();
     Usuarios usuario = new Usuarios();
     Conexion conexion = new Conexion();
     int id = 0;
     String cedulaA = null;
-
+    /**
+     * Metodo GET para cargar info para editar
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -59,7 +63,9 @@ public class SvEditarUsuario extends HttpServlet {
         // Se escribe la información del contacto en el cuerpo de la respuesta
         response.getWriter().write(html);
     }
-
+    /**
+     * Metodo POST para editar 
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

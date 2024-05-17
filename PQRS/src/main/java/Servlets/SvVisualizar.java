@@ -22,8 +22,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
+ * SvVisualizar
  *
- * @author Johan Ordoñez
+ * @author Johan- María
  */
 @WebServlet(name = "SvVisualizar", urlPatterns = {"/SvVisualizar"})
 public class SvVisualizar extends HttpServlet {

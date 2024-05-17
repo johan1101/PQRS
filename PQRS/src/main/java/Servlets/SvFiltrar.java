@@ -13,8 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * SvFiltrar
  *
- * @author maria
+ * @author Johan- María
  */
 @WebServlet(name = "SvFiltrar", urlPatterns = {"/SvFiltrar"})
 public class SvFiltrar extends HttpServlet {
@@ -25,7 +26,13 @@ public class SvFiltrar extends HttpServlet {
 
     }
 
-
+    /**
+     * Metodo GET para filtrar
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

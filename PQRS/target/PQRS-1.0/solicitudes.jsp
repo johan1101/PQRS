@@ -7,12 +7,12 @@
 <%@page import="Clases.Conexion"%>
 <%@include file= "templates/header.jsp" %>
 <%
-
+    //Solicitudes
     ArrayList<Solicitudes> a = Metodos.getSolicitudes();
 
 %>
 
-<% 
+<%  //Manejo alertas
     String toastr;
     toastr = (String) request.getAttribute("toastr");
     System.out.println(toastr);
@@ -20,7 +20,7 @@
     %>
     <script>
     $(document).ready(function () {
-        bienvenida();
+        bienvenida();//Alerta bienvenida
     });
 </script>
     <%
@@ -117,6 +117,7 @@
 
                 <%
                     int mensaje = 0;
+                    //FILTRADO
                     for (Solicitudes sol : a) {
 
                         if (busqueda == null) {
@@ -184,6 +185,9 @@
 </form>
 
 <script>
+    /**
+     * Metodo VER
+     */
     $(document).on('click', '#btnVisualizar', function () {
         var idMostrado = $(this).attr('data-nombre'); // Obtiene el valor del atributo data-nombre del botón
         $.ajax({
@@ -198,7 +202,9 @@
             }
         });
     });
-
+    /**
+     * Gestion Descripcion
+     */
     document.addEventListener('DOMContentLoaded', function () {
         var expandirEnlaces = document.querySelectorAll('.expandir-descripcion');
         expandirEnlaces.forEach(function (enlace) {

@@ -10,7 +10,7 @@
 </style>
 <!-- partial:index.partial.html -->
 
-<% 
+<%  //Manejo alertas
     String toastr;
     toastr = (String) request.getAttribute("toastr");
 
@@ -54,9 +54,8 @@
         }
     }
 
-%>
-<%
-    ArrayList<Solicitudes> a = Metodos.SolicitudesUsuario((String) session.getAttribute("cedula"));
+    //Llenar solicitudes
+    ArrayList<Solicitudes> a = Metodos.getSolicitudesUs((String) session.getAttribute("cedula"));
 %>
 <header class="header">
     <div class="header-content responsive-wrapper">
@@ -96,7 +95,8 @@
                 </form>
             </div>
         </div>
-        <%  String res = request.getParameter("res");
+        <%  //Parametros de busqueda y filtrado
+            String res = request.getParameter("res");
             String busqueda = request.getParameter("busqueda");
         %>
         <div class="horizontal-tabs">
@@ -134,7 +134,8 @@
 
                 <%
                 int mensaje = 0;
-                 Metodos.mensaje(request);
+                Metodos.mensaje(request);
+                //FILTRADO
                 for (Solicitudes sol : a) {
                 
                 if (busqueda == null) {

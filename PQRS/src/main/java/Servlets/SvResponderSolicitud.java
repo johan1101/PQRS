@@ -20,8 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * SvResponderSolicitud
  *
- * @author Johan Ordoñez
+ * @author Johan- María
  */
 @WebServlet(name = "SvResponderSolicitud", urlPatterns = {"/SvResponderSolicitud"})
 public class SvResponderSolicitud extends HttpServlet {
@@ -36,10 +37,13 @@ public class SvResponderSolicitud extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-    
+    //Conexion
     Metodos metodo = new Metodos();
     Conexion conexion = new Conexion();
-
+    
+    /**
+     * Metodo POST para la respuesta y envio de correo 
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

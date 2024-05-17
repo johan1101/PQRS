@@ -22,8 +22,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 /**
+ * SvAgregarSolicitud
  *
- * @author Johan Ordoñez
+ * @author Johan- María
  */
 @MultipartConfig
 @WebServlet(name = "SvAgregarSolicitud", urlPatterns = {"/SvAgregarSolicitud"})
@@ -39,10 +40,13 @@ public class SvAgregarSolicitud extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-
+    //Conexiones
     Metodos metodo = new Metodos();
     Conexion conexion = new Conexion();
-
+    
+    /**
+     * Metodo POST para agregar solicitud
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
