@@ -302,7 +302,8 @@ public class Metodos {
             if (sol.getEstado().equals("Vencido")) {
                 HTML += "        <h6 style=\"color: red; text-align: justify;\">¡Esta solicitud está vencida!</h6>\n";
             }
-        } else {
+        } 
+        if(tipoUsuario.equals("administrador") && (sol.getEstado().equals("Por responder")) ){
             // Verificar si la fecha límite no es nula y si la fecha de registro es anterior a la fecha límite
             HTML += "        <a id='btnVisualizar'  data-nombre='" + sol.getIdSolicitud() + "'  href=\"#\">Responder Solicitud</a>\n";
         }
